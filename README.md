@@ -21,7 +21,7 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 | Tài liệu | Nội dung |
 |---|---|
-| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 47 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 52 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
 | [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
 | [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
 | [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
@@ -143,14 +143,15 @@ Chi tiết: [docs/HUONG-DAN-BO-NHAN-MAIL.md](docs/HUONG-DAN-BO-NHAN-MAIL.md) ·
 ├── VERSION, BUILD              Số phiên bản (tự tăng khi đóng gói)
 ├── sql/                        Cấu trúc CSDL + dữ liệu khởi tạo
 │   ├── 01_schema.sql
-│   └── 02_du_lieu_mau.sql
+│   ├── 02_du_lieu_mau.sql
+│   └── 03_nang_cap.sql         Nâng cấp CSDL cài từ bản cũ (chạy lại được)
 ├── cpp/                        Bộ nhận mail (C++17, không phụ thuộc thư viện ngoài)
 │   ├── include/  src/          Mã nguồn
 │   ├── webui/                  Giao diện đồ hoạ (nhúng vào tệp thực thi khi build)
 │   ├── cmake/                  Kịch bản nhúng tài nguyên, toolchain mingw-w64
 │   └── CMakeLists.txt
 ├── php/                        Web quản trị (PHP thuần, không cần composer)
-│   ├── index.php  cai-dat.php
+│   ├── index.php  cai-dat.php  nang-cap.php
 │   ├── app/core/               Db, Auth, Ung, Util, View, NhatKy, Ai, LuuMail
 │   ├── app/controllers/        Điều khiển từng trang
 │   ├── app/views/              Giao diện
@@ -241,6 +242,12 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.2.2 — 05/09/2026
+
+- **Tài liệu:** bổ sung đầy đủ các tính năng của bản 1.2.x — quy trình kỹ thuật thêm mục 15 *Nâng cấp hệ thống đang chạy* (ba lớp bảo vệ, vì sao chạy lại nhiều lần vẫn an toàn, trình tự 5 bước), hướng dẫn sử dụng thêm mục 12 *Nâng cấp lên phiên bản mới* và mục 16.1–16.2 về hộp Thư rác kèm cách xử lý tận gốc bằng bộ lọc Gmail.
+- **Tài liệu:** sơ đồ CSDL và bảng mô tả bảng `email` nay có cột `tu_spam`; thêm 3 ảnh minh hoạ (trang nâng cấp, ô quét Thư rác, huy hiệu *Hộp Thư rác*).
+- **Sửa lỗi bản PDF:** chữ tiếng Việt trong khối mã bị loang lổ dấu do `DejaVu Sans Mono` thiếu ký tự dựng sẵn (ể, ổ, ữ…). Đưa `Liberation Mono` lên trước trong danh sách font.
+
 ### 1.2.1 — 05/09/2026
 
 - **Chia hạn mức quét:** hộp Thư rác dùng phần còn thừa của *Số mail mỗi lần quét*, nhưng không bao giờ dưới một phần năm hạn mức. Bản 1.2.0 cấp cho lượt quét Thư rác một hạn mức đầy đủ nữa nên một buổi nhiều thư rác có tệp đính kèm sẽ nuốt gấp đôi số mail đã đặt.
@@ -256,8 +263,8 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 
 ### 1.1.0 — 05/09/2026
 
-- **Tài liệu:** thêm bộ tài liệu đầy đủ — [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) và [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md), kèm 8 sơ đồ SVG và 20 ảnh chụp màn hình.
-- **Tài liệu:** xuất bản [bản PDF trọn bộ 47 trang](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf) tông vàng mệnh Kim, dựng bằng `scripts/tao-pdf.js`.
+- **Tài liệu:** thêm bộ tài liệu đầy đủ — [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) và [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md), kèm 8 sơ đồ SVG và 23 ảnh chụp màn hình.
+- **Tài liệu:** xuất bản [bản PDF trọn bộ 52 trang](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf) tông vàng mệnh Kim, dựng bằng `scripts/tao-pdf.js`.
 - **Phát hành:** thêm workflow `.github/workflows/phat-hanh.yml` — đẩy thẻ `vX.Y.Z` là GitHub tự biên dịch Windows + Linux, đóng gói web và tạo bản phát hành kèm tệp tải về.
 - **Sửa lỗi giao diện:** các ô nhập trong biểu mẫu bị lệch nhau (rõ nhất ở trang *Chờ phân luồng tay*). Nguyên nhân: `.truong` dùng `display:flex` khiến dấu `*` bắt buộc rớt xuống dòng riêng; lớp `.truong.rong` trùng tên với `.rong` của khung báo trống; các ô `<input list=…>` không ghi `type` nên rơi về khung mặc định của trình duyệt.
 - **Sửa lỗi giao diện:** mọi ô nhập một dòng nay cùng cao 38px nên thanh lọc ở các trang Nhật ký, Thống kê, Tất cả văn bản đều thẳng hàng.

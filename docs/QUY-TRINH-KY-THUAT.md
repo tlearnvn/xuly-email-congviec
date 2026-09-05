@@ -27,6 +27,7 @@ phụ trách công nghệ thông tin, người tiếp nhận bàn giao, hoặc n
 12. [Nhật ký và khả năng truy vết](#12-nhật-ký-và-khả-năng-truy-vết)
 13. [Những quyết định thiết kế đáng chú ý](#13-những-quyết-định-thiết-kế-đáng-chú-ý)
 14. [Quy trình phát hành phiên bản](#14-quy-trình-phát-hành-phiên-bản)
+15. [Nâng cấp hệ thống đang chạy](#15-nâng-cấp-hệ-thống-đang-chạy)
 
 ---
 
@@ -280,6 +281,15 @@ ngược tới MySQL 5.7 và MariaDB 10.3 — mức phổ biến nhất trên sh
 Kết nối được đặt `SET time_zone = '+07:00'` ngay sau khi mở, nên mọi mốc thời gian trong CSDL
 đều là **giờ Việt Nam**, không phải giờ máy chủ.
 
+Một số cột đáng chú ý trong bảng `email`:
+
+| Cột | Kiểu | Dùng để làm gì |
+|---|---|---|
+| `hash_noi_dung`, `hash_tep`, `hash_tong_hop` | `CHAR(64)` | Ba lớp băm chống trùng, xem [mục 5](#5-cơ-chế-chống-trùng-lặp) |
+| `phien_ban`, `id_email_goc` | `INT`, `BIGINT` | Chuỗi phiên bản khi trường sửa tệp rồi gửi lại |
+| `nguon_phan_luong`, `do_tin_cay` | `ENUM`, `DECIMAL` | Mã này đọc từ đâu ra và tin được bao nhiêu |
+| **`tu_spam`** | `TINYINT(1)` | Bằng 1 nếu thư vớt được từ hộp Thư rác, xem [mục 3.1](#31-thư-bị-google-xếp-vào-hộp-thư-rác). Có chỉ mục `idx_email_spam` để lọc nhanh |
+
 ### 6.1. Vì sao lưu tệp trong CSDL thay vì trong thư mục?
 
 Đây là quyết định được cân nhắc kỹ, vì lưu BLOB trong CSDL thường bị coi là phản mẫu.
@@ -499,6 +509,77 @@ Kết quả nằm trong `dist/`:
 
 Bản Windows được biên dịch chéo bằng `mingw-w64` và liên kết tĩnh hoàn toàn, chỉ phụ thuộc
 `KERNEL32`, `SHELL32`, `WINHTTP`, `WS2_32` và `msvcrt` — đều có sẵn trong mọi bản Windows.
+
+---
+
+## 15. Nâng cấp hệ thống đang chạy
+
+Mục 14 nói về việc **phát hành** một bản mới. Mục này nói về việc **đưa bản mới lên** một hệ
+thống đã có dữ liệu thật.
+
+Phần lớn bản nâng cấp chỉ cần chép đè mã nguồn. Nhưng khi bản mới thêm cột hoặc thêm khoá cấu
+hình thì cơ sở dữ liệu cũ phải được bổ sung — nếu không, câu lệnh ghi sẽ đâm vào cột không tồn
+tại và hỏng giữa phiên đồng bộ.
+
+### 15.1. Ba lớp bảo vệ
+
+**Một — chặn từ đầu, không để hỏng giữa chừng.** Ngay sau khi kết nối MySQL, bộ nhận mail đối
+chiếu `information_schema.COLUMNS` với danh sách cột bắt buộc. Thiếu cột thì nó **từ chối kết
+nối** và in ra đúng tên cột thiếu kèm cách sửa, thay vì để lỗi SQL khó hiểu nổ ra giữa lúc
+đang xử lý thư:
+
+```
+Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu 1 cột:
+email.tu_spam (thêm từ bản 1.2.0).
+Hãy mở https://<tên-miền>/nang-cap.php một lần để bổ sung,
+hoặc nạp tệp sql/03_nang_cap.sql bằng phpMyAdmin.
+Dữ liệu cũ được giữ nguyên, không mất gì.
+```
+
+Danh sách cột bắt buộc khai trong `KhoMySql::kiemTraCotMoi()`, mỗi mục ghi kèm bản đầu tiên
+cần tới nó — thêm cột mới ở bản sau thì thêm một dòng vào đó.
+
+**Hai — trang nâng cấp bằng web.** `php/nang-cap.php` liệt kê từng việc kèm trạng thái *Đã có*
+/ *Còn thiếu*, bấm một nút là xong.
+
+![Trang nâng cấp cơ sở dữ liệu](hinh/web-14-nang-cap.png)
+
+**Ba — tệp SQL cho người quen phpMyAdmin.** `sql/03_nang_cap.sql` làm đúng việc đó bằng SQL
+thuần.
+
+### 15.2. Vì sao chạy lại nhiều lần vẫn an toàn
+
+MySQL 5.7 và 8.0 **không có** `ADD COLUMN IF NOT EXISTS` (chỉ MariaDB mới có), nên không thể
+viết câu lệnh vô hại theo kiểu thông thường. Cả hai đường nâng cấp đều hỏi
+`information_schema` trước rồi mới quyết định:
+
+```sql
+SET @co = (SELECT COUNT(*) FROM information_schema.COLUMNS
+           WHERE TABLE_SCHEMA = DATABASE()
+             AND TABLE_NAME = 'email' AND COLUMN_NAME = 'tu_spam');
+SET @sql = IF(@co = 0,
+  'ALTER TABLE `email` ADD COLUMN `tu_spam` TINYINT(1) NOT NULL DEFAULT 0 AFTER `ghi_chu_ai`',
+  'DO 0');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+```
+
+Khoá cấu hình dùng `INSERT IGNORE` nên chạy lại **không ghi đè** giá trị quản trị đã tự chỉnh.
+
+Mọi thao tác đều là *thêm mới*: không `DROP`, không `MODIFY`, không `UPDATE` dữ liệu sẵn có.
+Chạy nhầm hai lần cũng chỉ tốn vài giây.
+
+### 15.3. Trình tự nâng cấp khuyên dùng
+
+| Bước | Việc | Ghi chú |
+|---|---|---|
+| 1 | Sao lưu CSDL | cPanel → phpMyAdmin → *Export*. Một tệp `.sql` là đủ cả dữ liệu lẫn tệp đính kèm |
+| 2 | Chép đè phần web | Giải nén `web-cpanel-vX.Y.Z.zip` vào `public_html`. **Không** đụng tới `cau-hinh.php` |
+| 3 | Chạy `nang-cap.php` | Bấm *Nâng cấp ngay*, rồi **xoá tệp đó đi** |
+| 4 | Thay bộ nhận mail | Đóng bản cũ, giải nén bản mới, giữ nguyên `mailrouter.ini` |
+| 5 | Bấm *Kiểm tra kết nối* | Nếu bước 3 bị bỏ sót thì đây là chỗ báo |
+
+Tệp cấu hình của cả hai phía (`cau-hinh.php` và `mailrouter.ini`) **không nằm trong gói phát
+hành**, nên chép đè không làm mất thông tin kết nối hay token Gmail đã lưu.
 
 ---
 

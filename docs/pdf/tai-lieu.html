@@ -153,7 +153,10 @@ ul.ds-con,ol.ds-con{ margin:1.4mm 0 1mm; padding-left:5mm; }
 ul.ds-con>li{ margin-bottom:1mm; }
 
 code{
-  font-family:"Cascadia Mono",Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
+  /* Liberation Mono đứng trước DejaVu Sans Mono: DejaVu Sans Mono THIẾU các ký tự
+     tiếng Việt dựng sẵn (ể, ổ, ữ…) nên nếu nó thắng thì phần thiếu rơi sang font
+     khác, chữ trong khối mã bị vênh và loang lổ dấu. */
+  font-family:"Cascadia Mono",Consolas,"Liberation Mono","DejaVu Sans Mono",monospace;
   font-size:.88em; background:var(--kim-nhat); color:#6d5310;
   border:.4pt solid var(--vien); border-radius:1mm; padding:.3mm 1.2mm;
   overflow-wrap:anywhere; word-break:break-word;
@@ -216,14 +219,14 @@ figcaption{
   <h1>Hệ thống phân luồng<br>Mail công vụ</h1>
   <div class="bia-gach"></div>
   <div class="bia-phu">Tài liệu quy trình kỹ thuật<br>và hướng dẫn sử dụng</div>
-  <div class="bia-the">Phiên bản 1.2.1 · build 9 · 05/09/2026</div>
+  <div class="bia-the">Phiên bản 1.2.2 · build 10 · 05/09/2026</div>
   <div class="bia-chan">Thiết kế bởi <strong>Trương Anh Tuấn</strong></div>
 </div>
 
 <div class="ml">
   <h2>Mục lục</h2>
   <div class="ml-gach"></div>
-  <div class="ml-phan"><span class="ml-so">Phần I</span><a href="#phan-I">Quy trình kỹ thuật</a></div><ul class="ml-ds"><li><a href="#kt-1-kiến-trúc-tổng-thể">1. Kiến trúc tổng thể</a></li><li><a href="#kt-2-quy-ước-mã-001_001_tat">2. Quy ước mã 001_001_TAT</a></li><li><a href="#kt-3-quy-trình-xử-lý-một-bức-thư">3. Quy trình xử lý một bức thư</a></li><li><a href="#kt-4-thuật-toán-phân-luồng-và-điểm-tin-cậy">4. Thuật toán phân luồng và điểm tin cậy</a></li><li><a href="#kt-5-cơ-chế-chống-trùng-lặp">5. Cơ chế chống trùng lặp</a></li><li><a href="#kt-6-cơ-sở-dữ-liệu">6. Cơ sở dữ liệu</a></li><li><a href="#kt-7-hai-cách-triển-khai">7. Hai cách triển khai</a></li><li><a href="#kt-8-đăng-nhập-gmail-và-vòng-đời-token">8. Đăng nhập Gmail và vòng đời token</a></li><li><a href="#kt-9-trợ-lý-ai">9. Trợ lý AI</a></li><li><a href="#kt-10-vòng-đời-một-công-việc">10. Vòng đời một công việc</a></li><li><a href="#kt-11-phân-quyền">11. Phân quyền</a></li><li><a href="#kt-12-nhật-ký-và-khả-năng-truy-vết">12. Nhật ký và khả năng truy vết</a></li><li><a href="#kt-13-những-quyết-định-thiết-kế-đáng-chú-ý">13. Những quyết định thiết kế đáng chú ý</a></li><li><a href="#kt-14-quy-trình-phát-hành-phiên-bản">14. Quy trình phát hành phiên bản</a></li><li><a href="#kt-xem-thêm">Xem thêm</a></li></ul><div class="ml-phan"><span class="ml-so">Phần II</span><a href="#phan-II">Hướng dẫn sử dụng</a></div><ul class="ml-ds"><li><a href="#hd-1-hệ-thống-làm-gì-cho-bạn">1. Hệ thống làm gì cho bạn</a></li><li><a href="#hd-2-đăng-nhập">2. Đăng nhập</a></li><li><a href="#hd-3-hộp-việc-của-tôi">3. Hộp việc của tôi</a></li><li><a href="#hd-4-xem-và-tải-văn-bản">4. Xem và tải văn bản</a></li><li><a href="#hd-5-đổi-mật-khẩu-và-thông-tin-cá-nhân">5. Đổi mật khẩu và thông tin cá nhân</a></li><li><a href="#hd-6-bảng-điều-khiển">6. Bảng điều khiển</a></li><li><a href="#hd-7-chờ-phân-luồng-tay">7. Chờ phân luồng tay</a></li><li><a href="#hd-8-thống-kê-nộp-báo-cáo">8. Thống kê nộp báo cáo</a></li><li><a href="#hd-9-quản-lý-danh-mục">9. Quản lý danh mục</a></li><li><a href="#hd-10-nhật-ký-hệ-thống">10. Nhật ký hệ thống</a></li><li><a href="#hd-11-cài-đặt-hệ-thống">11. Cài đặt hệ thống</a></li><li><a href="#hd-12-khởi-động-bộ-nhận-mail">12. Khởi động bộ nhận mail</a></li><li><a href="#hd-13-kết-nối-máy-chủ">13. Kết nối máy chủ</a></li><li><a href="#hd-14-đăng-nhập-gmail">14. Đăng nhập Gmail</a></li><li><a href="#hd-15-chạy-đồng-bộ-và-hẹn-giờ-tự-động">15. Chạy đồng bộ và hẹn giờ tự động</a></li><li><a href="#hd-16-cách-đặt-tên-tệp-khi-gửi-báo-cáo">16. Cách đặt tên tệp khi gửi báo cáo</a></li><li><a href="#hd-17-xử-lý-sự-cố-thường-gặp">17. Xử lý sự cố thường gặp</a></li><li><a href="#hd-18-câu-hỏi-thường-gặp">18. Câu hỏi thường gặp</a></li><li><a href="#hd-xem-thêm">Xem thêm</a></li></ul>
+  <div class="ml-phan"><span class="ml-so">Phần I</span><a href="#phan-I">Quy trình kỹ thuật</a></div><ul class="ml-ds"><li><a href="#kt-1-kiến-trúc-tổng-thể">1. Kiến trúc tổng thể</a></li><li><a href="#kt-2-quy-ước-mã-001_001_tat">2. Quy ước mã 001_001_TAT</a></li><li><a href="#kt-3-quy-trình-xử-lý-một-bức-thư">3. Quy trình xử lý một bức thư</a></li><li><a href="#kt-4-thuật-toán-phân-luồng-và-điểm-tin-cậy">4. Thuật toán phân luồng và điểm tin cậy</a></li><li><a href="#kt-5-cơ-chế-chống-trùng-lặp">5. Cơ chế chống trùng lặp</a></li><li><a href="#kt-6-cơ-sở-dữ-liệu">6. Cơ sở dữ liệu</a></li><li><a href="#kt-7-hai-cách-triển-khai">7. Hai cách triển khai</a></li><li><a href="#kt-8-đăng-nhập-gmail-và-vòng-đời-token">8. Đăng nhập Gmail và vòng đời token</a></li><li><a href="#kt-9-trợ-lý-ai">9. Trợ lý AI</a></li><li><a href="#kt-10-vòng-đời-một-công-việc">10. Vòng đời một công việc</a></li><li><a href="#kt-11-phân-quyền">11. Phân quyền</a></li><li><a href="#kt-12-nhật-ký-và-khả-năng-truy-vết">12. Nhật ký và khả năng truy vết</a></li><li><a href="#kt-13-những-quyết-định-thiết-kế-đáng-chú-ý">13. Những quyết định thiết kế đáng chú ý</a></li><li><a href="#kt-14-quy-trình-phát-hành-phiên-bản">14. Quy trình phát hành phiên bản</a></li><li><a href="#kt-15-nâng-cấp-hệ-thống-đang-chạy">15. Nâng cấp hệ thống đang chạy</a></li><li><a href="#kt-xem-thêm">Xem thêm</a></li></ul><div class="ml-phan"><span class="ml-so">Phần II</span><a href="#phan-II">Hướng dẫn sử dụng</a></div><ul class="ml-ds"><li><a href="#hd-1-hệ-thống-làm-gì-cho-bạn">1. Hệ thống làm gì cho bạn</a></li><li><a href="#hd-2-đăng-nhập">2. Đăng nhập</a></li><li><a href="#hd-3-hộp-việc-của-tôi">3. Hộp việc của tôi</a></li><li><a href="#hd-4-xem-và-tải-văn-bản">4. Xem và tải văn bản</a></li><li><a href="#hd-5-đổi-mật-khẩu-và-thông-tin-cá-nhân">5. Đổi mật khẩu và thông tin cá nhân</a></li><li><a href="#hd-6-bảng-điều-khiển">6. Bảng điều khiển</a></li><li><a href="#hd-7-chờ-phân-luồng-tay">7. Chờ phân luồng tay</a></li><li><a href="#hd-8-thống-kê-nộp-báo-cáo">8. Thống kê nộp báo cáo</a></li><li><a href="#hd-9-quản-lý-danh-mục">9. Quản lý danh mục</a></li><li><a href="#hd-10-nhật-ký-hệ-thống">10. Nhật ký hệ thống</a></li><li><a href="#hd-11-cài-đặt-hệ-thống">11. Cài đặt hệ thống</a></li><li><a href="#hd-12-nâng-cấp-lên-phiên-bản-mới">12. Nâng cấp lên phiên bản mới</a></li><li><a href="#hd-13-khởi-động-bộ-nhận-mail">13. Khởi động bộ nhận mail</a></li><li><a href="#hd-14-kết-nối-máy-chủ">14. Kết nối máy chủ</a></li><li><a href="#hd-15-đăng-nhập-gmail">15. Đăng nhập Gmail</a></li><li><a href="#hd-16-chạy-đồng-bộ-và-hẹn-giờ-tự-động">16. Chạy đồng bộ và hẹn giờ tự động</a></li><li><a href="#hd-17-cách-đặt-tên-tệp-khi-gửi-báo-cáo">17. Cách đặt tên tệp khi gửi báo cáo</a></li><li><a href="#hd-18-xử-lý-sự-cố-thường-gặp">18. Xử lý sự cố thường gặp</a></li><li><a href="#hd-19-câu-hỏi-thường-gặp">19. Câu hỏi thường gặp</a></li><li><a href="#hd-xem-thêm">Xem thêm</a></li></ul>
 </div>
 
 <section class="phan" id="phan-I"><div class="phan-bia"><div class="phan-so">PHẦN I</div><h1 class="phan-ten">Quy trình kỹ thuật</h1><div class="phan-mo-ta">Hệ thống hoạt động thế nào, vì sao thiết kế như vậy</div><div class="hoa-van"><span></span><span class="giua"></span><span></span></div></div><p class="dan-de">Hệ thống phân luồng Mail công vụ — Phòng GDPT-GDTX, Sở GD&amp;ĐT Đồng Nai</p>
@@ -304,6 +307,8 @@ figcaption{
 <figure class="so-do"><img src="../hinh/so-do-csdl.svg" alt="Sơ đồ cơ sở dữ liệu"><figcaption>Sơ đồ cơ sở dữ liệu</figcaption></figure>
 <p>Toàn bộ 15 bảng dùng <code>utf8mb4</code> / <code>utf8mb4_unicode_ci</code> và <code>ROW_FORMAT=DYNAMIC</code>, tương thích ngược tới MySQL 5.7 và MariaDB 10.3 — mức phổ biến nhất trên shared hosting hiện nay.</p>
 <p>Kết nối được đặt <code>SET time_zone = '+07:00'</code> ngay sau khi mở, nên mọi mốc thời gian trong CSDL đều là <strong>giờ Việt Nam</strong>, không phải giờ máy chủ.</p>
+<p>Một số cột đáng chú ý trong bảng <code>email</code>:</p>
+<div class="bang-bao"><table><thead><tr><th>Cột</th><th>Kiểu</th><th>Dùng để làm gì</th></tr></thead><tbody><tr><td><code>hash_noi_dung</code>, <code>hash_tep</code>, <code>hash_tong_hop</code></td><td><code>CHAR(64)</code></td><td>Ba lớp băm chống trùng, xem <a href="#5-cơ-chế-chống-trùng-lặp">mục 5</a></td></tr><tr><td><code>phien_ban</code>, <code>id_email_goc</code></td><td><code>INT</code>, <code>BIGINT</code></td><td>Chuỗi phiên bản khi trường sửa tệp rồi gửi lại</td></tr><tr><td><code>nguon_phan_luong</code>, <code>do_tin_cay</code></td><td><code>ENUM</code>, <code>DECIMAL</code></td><td>Mã này đọc từ đâu ra và tin được bao nhiêu</td></tr><tr><td><strong><code>tu_spam</code></strong></td><td><code>TINYINT(1)</code></td><td>Bằng 1 nếu thư vớt được từ hộp Thư rác, xem <a href="#31-thư-bị-google-xếp-vào-hộp-thư-rác">mục 3.1</a>. Có chỉ mục <code>idx_email_spam</code> để lọc nhanh</td></tr></tbody></table></div>
 <h3 id="kt-61-vì-sao-lưu-tệp-trong-csdl-thay-vì-trong-thư-mục">6.1. Vì sao lưu tệp trong CSDL thay vì trong thư mục?</h3>
 <p>Đây là quyết định được cân nhắc kỹ, vì lưu BLOB trong CSDL thường bị coi là phản mẫu. Lý do chọn cách này:</p>
 <ul><li><strong>Sao lưu trọn gói.</strong> Một lệnh <code>mysqldump</code> là có đủ dữ liệu lẫn tệp. Không sợ cảnh sao lưu CSDL xong quên mất thư mục <code>uploads/</code>, đến khi phục hồi thì mất hết tệp.</li><li><strong>Chống trùng ở mức nội dung.</strong> Ràng buộc UNIQUE trên <code>hash_tep</code> do chính CSDL bảo đảm, không phụ thuộc vào việc mã ứng dụng có kiểm tra đúng hay không.</li><li><strong>Tính toàn vẹn giao dịch.</strong> Bản ghi công việc và tệp đính kèm cùng vào ra trong một giao dịch — không có cảnh tệp nằm chỏng chơ mà không có bản ghi nào trỏ tới.</li><li><strong>Hosting cPanel thường siết quyền ghi thư mục</strong> nhưng lại rộng rãi với dung lượng CSDL.</li></ul>
@@ -379,6 +384,35 @@ không có refresh, chỉ có access?    → dùng tới khi Google từ chối<
 <p>Kết quả nằm trong <code>dist/</code>:</p>
 <div class="bang-bao"><table><thead><tr><th>Tệp</th><th>Nội dung</th></tr></thead><tbody><tr><td><code>mailrouter-linux-x64-vX.Y.Z.tar.gz</code></td><td>Bộ nhận mail cho Linux 64-bit, liên kết tĩnh</td></tr><tr><td><code>mailrouter-windows-x64-vX.Y.Z.zip</code></td><td>Bộ nhận mail cho Windows 64-bit, một tệp <code>.exe</code></td></tr><tr><td><code>web-cpanel-vX.Y.Z.zip</code></td><td>Toàn bộ phần web, giải nén thẳng vào <code>public_html</code></td></tr></tbody></table></div>
 <p>Bản Windows được biên dịch chéo bằng <code>mingw-w64</code> và liên kết tĩnh hoàn toàn, chỉ phụ thuộc <code>KERNEL32</code>, <code>SHELL32</code>, <code>WINHTTP</code>, <code>WS2_32</code> và <code>msvcrt</code> — đều có sẵn trong mọi bản Windows.</p>
+<hr>
+<h2 id="kt-15-nâng-cấp-hệ-thống-đang-chạy">15. Nâng cấp hệ thống đang chạy</h2>
+<p>Mục 14 nói về việc <strong>phát hành</strong> một bản mới. Mục này nói về việc <strong>đưa bản mới lên</strong> một hệ thống đã có dữ liệu thật.</p>
+<p>Phần lớn bản nâng cấp chỉ cần chép đè mã nguồn. Nhưng khi bản mới thêm cột hoặc thêm khoá cấu hình thì cơ sở dữ liệu cũ phải được bổ sung — nếu không, câu lệnh ghi sẽ đâm vào cột không tồn tại và hỏng giữa phiên đồng bộ.</p>
+<h3 id="kt-151-ba-lớp-bảo-vệ">15.1. Ba lớp bảo vệ</h3>
+<p><strong>Một — chặn từ đầu, không để hỏng giữa chừng.</strong> Ngay sau khi kết nối MySQL, bộ nhận mail đối chiếu <code>information_schema.COLUMNS</code> với danh sách cột bắt buộc. Thiếu cột thì nó <strong>từ chối kết nối</strong> và in ra đúng tên cột thiếu kèm cách sửa, thay vì để lỗi SQL khó hiểu nổ ra giữa lúc đang xử lý thư:</p>
+<pre class="ma"><code>Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu 1 cột:
+email.tu_spam (thêm từ bản 1.2.0).
+Hãy mở https://&lt;tên-miền&gt;/nang-cap.php một lần để bổ sung,
+hoặc nạp tệp sql/03_nang_cap.sql bằng phpMyAdmin.
+Dữ liệu cũ được giữ nguyên, không mất gì.</code></pre>
+<p>Danh sách cột bắt buộc khai trong <code>KhoMySql::kiemTraCotMoi()</code>, mỗi mục ghi kèm bản đầu tiên cần tới nó — thêm cột mới ở bản sau thì thêm một dòng vào đó.</p>
+<p><strong>Hai — trang nâng cấp bằng web.</strong> <code>php/nang-cap.php</code> liệt kê từng việc kèm trạng thái <em>Đã có</em> / <em>Còn thiếu</em>, bấm một nút là xong.</p>
+<figure class="anh-chup"><img src="../hinh/web-14-nang-cap.png" alt="Trang nâng cấp cơ sở dữ liệu"><figcaption>Trang nâng cấp cơ sở dữ liệu</figcaption></figure>
+<p><strong>Ba — tệp SQL cho người quen phpMyAdmin.</strong> <code>sql/03_nang_cap.sql</code> làm đúng việc đó bằng SQL thuần.</p>
+<h3 id="kt-152-vì-sao-chạy-lại-nhiều-lần-vẫn-an-toàn">15.2. Vì sao chạy lại nhiều lần vẫn an toàn</h3>
+<p>MySQL 5.7 và 8.0 <strong>không có</strong> <code>ADD COLUMN IF NOT EXISTS</code> (chỉ MariaDB mới có), nên không thể viết câu lệnh vô hại theo kiểu thông thường. Cả hai đường nâng cấp đều hỏi <code>information_schema</code> trước rồi mới quyết định:</p>
+<pre class="ma ma-sql"><code>SET @co = (SELECT COUNT(*) FROM information_schema.COLUMNS
+           WHERE TABLE_SCHEMA = DATABASE()
+             AND TABLE_NAME = 'email' AND COLUMN_NAME = 'tu_spam');
+SET @sql = IF(@co = 0,
+  'ALTER TABLE `email` ADD COLUMN `tu_spam` TINYINT(1) NOT NULL DEFAULT 0 AFTER `ghi_chu_ai`',
+  'DO 0');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;</code></pre>
+<p>Khoá cấu hình dùng <code>INSERT IGNORE</code> nên chạy lại <strong>không ghi đè</strong> giá trị quản trị đã tự chỉnh.</p>
+<p>Mọi thao tác đều là <em>thêm mới</em>: không <code>DROP</code>, không <code>MODIFY</code>, không <code>UPDATE</code> dữ liệu sẵn có. Chạy nhầm hai lần cũng chỉ tốn vài giây.</p>
+<h3 id="kt-153-trình-tự-nâng-cấp-khuyên-dùng">15.3. Trình tự nâng cấp khuyên dùng</h3>
+<div class="bang-bao"><table><thead><tr><th>Bước</th><th>Việc</th><th>Ghi chú</th></tr></thead><tbody><tr><td>1</td><td>Sao lưu CSDL</td><td>cPanel → phpMyAdmin → <em>Export</em>. Một tệp <code>.sql</code> là đủ cả dữ liệu lẫn tệp đính kèm</td></tr><tr><td>2</td><td>Chép đè phần web</td><td>Giải nén <code>web-cpanel-vX.Y.Z.zip</code> vào <code>public_html</code>. <strong>Không</strong> đụng tới <code>cau-hinh.php</code></td></tr><tr><td>3</td><td>Chạy <code>nang-cap.php</code></td><td>Bấm <em>Nâng cấp ngay</em>, rồi <strong>xoá tệp đó đi</strong></td></tr><tr><td>4</td><td>Thay bộ nhận mail</td><td>Đóng bản cũ, giải nén bản mới, giữ nguyên <code>mailrouter.ini</code></td></tr><tr><td>5</td><td>Bấm <em>Kiểm tra kết nối</em></td><td>Nếu bước 3 bị bỏ sót thì đây là chỗ báo</td></tr></tbody></table></div>
+<p>Tệp cấu hình của cả hai phía (<code>cau-hinh.php</code> và <code>mailrouter.ini</code>) <strong>không nằm trong gói phát hành</strong>, nên chép đè không làm mất thông tin kết nối hay token Gmail đã lưu.</p>
 <hr>
 <h2 id="kt-xem-thêm">Xem thêm</h2>
 <div class="bang-bao"><table><thead><tr><th>Tài liệu</th><th>Nội dung</th></tr></thead><tbody><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/HUONG-DAN-SU-DUNG.md">Hướng dẫn sử dụng</a></td><td>Dùng hàng ngày, từng màn hình một</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/KIEN-TRUC.md">Kiến trúc hệ thống</a></td><td>Cấu trúc lớp và mã nguồn</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/HUONG-DAN-WEB-CPANEL.md">Cài đặt web trên cPanel</a></td><td>Từng bước lên hosting</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/HUONG-DAN-BO-NHAN-MAIL.md">Cài đặt bộ nhận mail</a></td><td>Chạy trên máy nhà / VPS</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/GMAIL-OAUTH.md">Lấy Client ID Gmail</a></td><td>Thao tác trên Google Cloud Console</td></tr></tbody></table></div>
@@ -492,8 +526,35 @@ không có refresh, chỉ có access?    → dùng tới khi Google từ chối<
 <h3 id="hd-116-nhật-ký">11.6. Nhật ký</h3>
 <p>Chọn mức ghi tối thiểu và số ngày giữ nhật ký. Đặt 0 ngày để giữ mãi.</p>
 <hr>
+<h2 id="hd-12-nâng-cấp-lên-phiên-bản-mới">12. Nâng cấp lên phiên bản mới</h2>
+<p>Khi có bản mới trên <a href="https://github.com/tlearnvn/xuly-email-congviec/releases/latest">trang phát hành</a>, làm theo đúng năm bước dưới đây. Toàn bộ mất chừng mười phút.</p>
+<h3 id="hd-bước-1-sao-lưu-trước-đã">Bước 1 — Sao lưu trước đã</h3>
+<p>cPanel → <strong>phpMyAdmin</strong> → chọn cơ sở dữ liệu → <strong>Export</strong> → <strong>Go</strong>. Một tệp <code>.sql</code> là đủ <strong>cả dữ liệu lẫn tệp đính kèm</strong>, vì tệp được lưu ngay trong cơ sở dữ liệu.</p>
+<p>Đây là bước hay bị bỏ qua nhất, và cũng là bước duy nhất cứu được anh nếu có sự cố.</p>
+<h3 id="hd-bước-2-chép-đè-phần-web">Bước 2 — Chép đè phần web</h3>
+<p>Tải <code>web-cpanel-vX.Y.Z.zip</code>, giải nén vào <code>public_html</code> và cho ghi đè.</p>
+<blockquote><strong>Yên tâm:</strong> tệp <code>cau-hinh.php</code> chứa thông tin kết nối cơ sở dữ liệu <strong>không nằm trong gói phát hành</strong>, nên chép đè không làm mất. Cũng không cần chạy lại <code>cai-dat.php</code>.</blockquote>
+<h3 id="hd-bước-3-chạy-trang-nâng-cấp-cơ-sở-dữ-liệu">Bước 3 — Chạy trang nâng cấp cơ sở dữ liệu</h3>
+<p>Mở <code>https://tên-miền/nang-cap.php</code>. Trang này liệt kê từng thứ bản mới cần, kèm trạng thái:</p>
+<figure class="anh-chup"><img src="../hinh/web-14-nang-cap.png" alt="Trang nâng cấp cơ sở dữ liệu"><figcaption>Trang nâng cấp cơ sở dữ liệu</figcaption></figure>
+<ul><li>Mục nào ghi <strong>Đã có</strong> thì bỏ qua</li><li>Mục nào ghi <strong>Còn thiếu</strong> thì bấm <strong>Nâng cấp ngay</strong></li></ul>
+<p>Nâng cấp chỉ <strong>thêm</strong> cột và thiết lập mới, <strong>không sửa và không xoá</strong> dữ liệu đã lưu. Bấm nhầm hai lần cũng không sao — lần sau nó báo <em>"Cơ sở dữ liệu đã đầy đủ"</em>.</p>
+<p>Xong rồi <strong>xoá tệp <code>nang-cap.php</code></strong> khỏi hosting, để người ngoài không chạy lại được.</p>
+<blockquote>Quen dùng phpMyAdmin hơn thì nạp tệp <code>sql/03_nang_cap.sql</code> cũng cho kết quả y hệt.</blockquote>
+<h3 id="hd-bước-4-thay-bộ-nhận-mail">Bước 4 — Thay bộ nhận mail</h3>
+<p>Đóng bộ nhận mail đang chạy, giải nén bản mới đè lên, <strong>giữ nguyên tệp <code>mailrouter.ini</code></strong> — tệp này chứa thông tin kết nối và token Gmail đã đăng nhập, và cũng không nằm trong gói phát hành nên không bị ghi đè.</p>
+<h3 id="hd-bước-5-kiểm-tra-lại">Bước 5 — Kiểm tra lại</h3>
+<p>Mở bộ nhận mail, vào <em>Kết nối máy chủ</em>, bấm <strong>Kiểm tra kết nối</strong>.</p>
+<p>Nếu bước 3 bị bỏ sót, đây chính là chỗ báo — thông báo sẽ ghi rõ tên cột còn thiếu và bảo anh chạy <code>nang-cap.php</code>:</p>
+<pre class="ma"><code>Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu 1 cột:
+email.tu_spam (thêm từ bản 1.2.0).
+Hãy mở https://&lt;tên-miền&gt;/nang-cap.php một lần để bổ sung.
+Dữ liệu cũ được giữ nguyên, không mất gì.</code></pre>
+<p>Bộ nhận mail <strong>từ chối chạy</strong> khi thấy thiếu, chứ không để hỏng giữa lúc đang nhận thư — nên gặp thông báo này thì cứ bình tĩnh quay lại bước 3.</p>
+<p>Cuối cùng, nhìn chân trang web xem số phiên bản đã đổi chưa. Không cần xoá cache trình duyệt: số phiên bản nằm sẵn trong đường dẫn tệp CSS/JS nên trình duyệt tự tải bản mới.</p>
+<hr>
 <h1 id="hd-phần-c-vận-hành-bộ-nhận-mail">Phần C — Vận hành bộ nhận mail</h1>
-<h2 id="hd-12-khởi-động-bộ-nhận-mail">12. Khởi động bộ nhận mail</h2>
+<h2 id="hd-13-khởi-động-bộ-nhận-mail">13. Khởi động bộ nhận mail</h2>
 <p>Bộ nhận mail chạy trên <strong>máy nhà hoặc VPS</strong>, không chạy trên hosting.</p>
 <p><strong>Trên Windows:</strong> giải nén tệp zip, nhấp đúp <code>mailrouter.exe</code>. Trình duyệt tự mở giao diện điều khiển.</p>
 <p class="dan-de">Trên Linux:</p>
@@ -505,15 +566,15 @@ cd mailrouter-linux-x64
 <p>Màn hình Tổng quan cho biết ngay bốn điều: kho lưu trữ đã kết nối chưa, Gmail đã đăng nhập chưa, trợ lý AI bật hay tắt, và dịch vụ tự động có đang chạy không. Chấm tròn màu xanh là tốt, màu xám là chưa bật.</p>
 <p>Bảng <strong>Nhật ký trực tiếp</strong> ở dưới cùng chạy theo thời gian thực — rất tiện để theo dõi khi đang đồng bộ.</p>
 <hr>
-<h2 id="hd-13-kết-nối-máy-chủ">13. Kết nối máy chủ</h2>
+<h2 id="hd-14-kết-nối-máy-chủ">14. Kết nối máy chủ</h2>
 <figure class="anh-chup"><img src="../hinh/bnm-02-ket-noi.png" alt="Bộ nhận mail — Kết nối máy chủ"><figcaption>Bộ nhận mail — Kết nối máy chủ</figcaption></figure>
 <p>Chọn một trong hai cách:</p>
 <p><strong>Cách A — MySQL trực tiếp.</strong> Điền máy chủ, cổng, tên đăng nhập, mật khẩu, tên cơ sở dữ liệu đúng như cPanel cấp. Nhớ vào cPanel → <em>MySQL Databases</em> → <em>Remote MySQL</em> thêm IP máy của bạn vào danh sách cho phép.</p>
 <p><strong>Cách B — Qua API PHP.</strong> Điền địa chỉ web và khoá API lấy từ <em>Cài đặt → Kết nối bộ nhận mail</em> của trang web. Cách này <strong>dễ hơn nhiều</strong> với hosting phổ thông và với đường truyền IP động ở nhà.</p>
 <p>Bấm <strong>Kiểm tra kết nối</strong> để thử trước khi lưu.</p>
-<blockquote><strong>Gặp lỗi <code>Table ... doesn't exist</code>?</strong> Nghĩa là kết nối đã thông nhưng cơ sở dữ liệu còn rỗng. Hãy chạy <code>cai-dat.php</code> trên hosting trước để tạo bảng. Xem <a href="#17-xử-lý-sự-cố-thường-gặp">mục 17</a>.</blockquote>
+<blockquote><strong>Gặp lỗi <code>Table ... doesn't exist</code>?</strong> Nghĩa là kết nối đã thông nhưng cơ sở dữ liệu còn rỗng. Hãy chạy <code>cai-dat.php</code> trên hosting trước để tạo bảng. Xem <a href="#18-xử-lý-sự-cố-thường-gặp">mục 18</a>.</blockquote>
 <hr>
-<h2 id="hd-14-đăng-nhập-gmail">14. Đăng nhập Gmail</h2>
+<h2 id="hd-15-đăng-nhập-gmail">15. Đăng nhập Gmail</h2>
 <figure class="anh-chup"><img src="../hinh/bnm-03-gmail.png" alt="Bộ nhận mail — Tài khoản Gmail"><figcaption>Bộ nhận mail — Tài khoản Gmail</figcaption></figure>
 <p>Hai cách, chọn cách nào cũng được:</p>
 <p><strong>Cách 1 — Có Client ID.</strong> Dán Client ID và Client Secret lấy từ Google Cloud Console (xem <a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/GMAIL-OAUTH.md">hướng dẫn lấy</a>), bấm <strong>Đăng nhập Google</strong>. Trình duyệt mở trang cấp quyền của Google, bạn chọn hộp thư công vụ và bấm đồng ý. Xong.</p>
@@ -523,15 +584,27 @@ cd mailrouter-linux-x64
 <ul><li>Chữ <strong>xanh</strong> <em>"Tự gia hạn — không cần đăng nhập lại"</em> → yên tâm, hệ thống tự lo</li><li>Chữ <strong>đỏ</strong> <em>"Phải đăng nhập lại (thiếu refresh token)"</em> → nên đăng nhập lại bằng Cách 1 để lấy refresh token</li></ul>
 <p>Access token của Google chỉ sống khoảng một giờ, nhưng hệ thống tự đổi lấy token mới trước khi hết hạn, và lưu lại vào tệp cấu hình. Bạn không phải làm gì cả.</p>
 <hr>
-<h2 id="hd-15-chạy-đồng-bộ-và-hẹn-giờ-tự-động">15. Chạy đồng bộ và hẹn giờ tự động</h2>
+<h2 id="hd-16-chạy-đồng-bộ-và-hẹn-giờ-tự-động">16. Chạy đồng bộ và hẹn giờ tự động</h2>
 <figure class="anh-chup"><img src="../hinh/bnm-04-phan-luong.png" alt="Bộ nhận mail — Phân luồng &amp; đồng bộ"><figcaption>Bộ nhận mail — Phân luồng &amp; đồng bộ</figcaption></figure>
 <p><strong>Chạy thủ công:</strong> bấm nút <strong>Nhận mail ngay</strong> ở góc trên bên phải. Theo dõi tiến trình ở bảng nhật ký trực tiếp.</p>
 <p><strong>Chạy tự động:</strong> bật <em>Dịch vụ tự động</em> và đặt chu kỳ (ví dụ 15 phút). Bộ nhận mail sẽ tự quét theo chu kỳ đó, chỉ cần để cửa sổ chạy nền.</p>
 <p><strong>Truy vấn Gmail</strong> mặc định là <code>has:attachment newer_than:30d</code> — chỉ lấy thư có tệp đính kèm trong 30 ngày gần nhất. Sửa được nếu cần, dùng đúng cú pháp tìm kiếm của Gmail.</p>
-<p><strong>Quét cả hộp Thư rác (Spam)</strong> — nên để bật. Google hay xếp nhầm báo cáo của các trường vào Thư rác; tắt mục này là bỏ sót, và thống kê sẽ báo <em>"chưa nộp"</em> oan cho trường đã gửi. Thư trong <strong>Thùng rác</strong> thì hệ thống luôn bỏ qua, vì đó là thư ai đó đã chủ động xoá.</p>
-<p>Thư vớt được từ Thư rác hiện huy hiệu vàng <strong>"Hộp Thư rác"</strong> ở trang chi tiết và trang phân luồng tay, và được đếm riêng trong kết quả mỗi phiên.</p>
+<p>Kết thúc mỗi phiên, hệ thống báo lại các con số: mail đã quét, mail mới, bản cập nhật, trùng bị bỏ qua, công việc tạo, tệp đính kèm, chờ phân luồng, <strong>vớt từ Thư rác</strong>, và lỗi.</p>
+<h3 id="hd-161-quét-cả-hộp-thư-rác">16.1. Quét cả hộp Thư rác</h3>
+<figure class="anh-chup"><img src="../hinh/bnm-07-quet-spam.png" alt="Ô đánh dấu quét hộp Thư rác"><figcaption>Ô đánh dấu quét hộp Thư rác</figcaption></figure>
+<p>Ô <strong>Quét cả hộp Thư rác (Spam)</strong> — <strong>nên để bật</strong>, và mặc định đã bật sẵn.</p>
+<p>Google hay xếp nhầm báo cáo của các trường vào Thư rác: hàng chục trường gửi thư nội dung gần giống nhau trong cùng một buổi, tệp đính kèm nặng, hoặc trường gửi từ hộp thư chưa cấu hình đúng. Tắt mục này là <strong>bỏ sót</strong>, và thống kê sẽ báo <em>"chưa nộp"</em> oan cho trường đã gửi.</p>
+<p>Thư trong <strong>Thùng rác</strong> thì hệ thống luôn bỏ qua, vì đó là thư ai đó đã chủ động xoá.</p>
+<p>Thư vớt được từ Thư rác hiện huy hiệu vàng <strong>"Hộp Thư rác"</strong> ở trang chi tiết và trang phân luồng tay:</p>
+<figure class="anh-chup"><img src="../hinh/web-15-huy-hieu-thu-rac.png" alt="Huy hiệu Hộp Thư rác trên trang chi tiết"><figcaption>Huy hiệu Hộp Thư rác trên trang chi tiết</figcaption></figure>
+<p>Nhật ký cũng ghi một dòng cảnh báo kèm địa chỉ người gửi, để anh biết mà xử lý tận gốc.</p>
 <blockquote><strong>Lưu ý khi đặt điều kiện lọc:</strong> nếu bạn lọc theo nhãn tự đặt (ví dụ <code>label:baocao</code>) thì phần quét Thư rác gần như không tìm được gì, vì Gmail không gắn nhãn của bạn cho thư đã bị xếp vào Thư rác. Nên lọc theo <code>has:attachment</code> hoặc theo người gửi thì hơn.</blockquote>
-<p>Kết thúc mỗi phiên, hệ thống báo lại tám con số: mail đã quét, mail mới, bản cập nhật, trùng bị bỏ qua, công việc tạo, tệp đính kèm, chờ phân luồng, và lỗi.</p>
+<p><strong>Hộp Thư rác dùng bao nhiêu trong hạn mức?</strong> Ô <em>Số mail mỗi lần quét</em> là hạn mức chung. Hộp thư chính được lấy trước; hộp Thư rác dùng phần còn thừa, nhưng không bao giờ dưới <strong>một phần năm</strong> hạn mức — để một buổi nhiều thư không làm hộp Thư rác bị bỏ quên.</p>
+<h3 id="hd-162-cách-xử-lý-tận-gốc">16.2. Cách xử lý tận gốc</h3>
+<p>Vớt thư khỏi Thư rác chỉ là <strong>chữa cháy</strong>. Muốn hết hẳn thì phải bảo Gmail đừng xếp nhầm nữa:</p>
+<ol><li>Vào Gmail → <strong>Cài đặt</strong> → <strong>Bộ lọc và địa chỉ bị chặn</strong> → <strong>Tạo bộ lọc mới</strong></li><li>Ô <strong>Từ</strong> điền tên miền của các trường, ví dụ <code>@thpt.edu.vn</code></li><li>Bấm <strong>Tạo bộ lọc</strong></li><li>Tích <strong>"Không bao giờ chuyển vào Thư rác"</strong> → <strong>Tạo bộ lọc</strong></li></ol>
+<p>Dùng Google Workspace thì quản trị viên làm một lần cho cả cơ quan ở <em>Admin console → Apps → Gmail → Spam, Phishing and Malware → Allowlist</em>.</p>
+<blockquote>Hệ thống chỉ xin quyền <strong>đọc</strong> hộp thư (<code>gmail.readonly</code>) nên <strong>không thể tự gỡ nhãn Thư rác</strong> giúp anh — đó là cái giá của việc không bao giờ đụng vào hộp thư công vụ.</blockquote>
 <h3 id="hd-chạy-nền-như-một-dịch-vụ">Chạy nền như một dịch vụ</h3>
 <p><strong>Trên Linux</strong> — dùng tệp <code>mailrouter.service</code> có sẵn trong gói:</p>
 <pre class="ma ma-bash"><code>sudo cp mailrouter.service /etc/systemd/system/
@@ -539,7 +612,7 @@ sudo systemctl enable --now mailrouter</code></pre>
 <p><strong>Trên Windows</strong> — dùng Task Scheduler, đặt lệnh chạy <code>mailrouter.exe dich-vu</code> lúc khởi động máy.</p>
 <hr>
 <h1 id="hd-phần-d-hướng-dẫn-cho-các-trường">Phần D — Hướng dẫn cho các trường</h1>
-<h2 id="hd-16-cách-đặt-tên-tệp-khi-gửi-báo-cáo">16. Cách đặt tên tệp khi gửi báo cáo</h2>
+<h2 id="hd-17-cách-đặt-tên-tệp-khi-gửi-báo-cáo">17. Cách đặt tên tệp khi gửi báo cáo</h2>
 <p><em>Phần này nên trích ra gửi kèm công văn hướng dẫn cho các trường.</em></p>
 <figure class="so-do"><img src="../hinh/so-do-ma-tep.svg" alt="Cấu trúc mã trong tên tệp"><figcaption>Cấu trúc mã trong tên tệp</figcaption></figure>
 <p>Khi gửi báo cáo về Phòng, hãy đặt <strong>tên tệp đính kèm</strong> theo mẫu:</p>
@@ -555,11 +628,11 @@ sudo systemctl enable --now mailrouter</code></pre>
 <p><strong>Gửi nhầm rồi gửi lại có sao không?</strong> Không sao cả. Gửi lại y hệt thì hệ thống nhận ra và bỏ qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nhật, cán bộ sẽ thấy bản mới nhất.</p>
 <hr>
 <h1 id="hd-phần-e">Phần E</h1>
-<h2 id="hd-17-xử-lý-sự-cố-thường-gặp">17. Xử lý sự cố thường gặp</h2>
-<div class="bang-bao"><table><thead><tr><th>Hiện tượng</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody><tr><td><code>Table '...cau_hinh' doesn't exist</code></td><td>Chưa chạy trình cài đặt, CSDL còn rỗng</td><td>Mở <code>https://tên-miền/cai-dat.php</code> chạy hết 4 bước, rồi <strong>xoá tệp <code>cai-dat.php</code></strong> đi</td></tr><tr><td><code>Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu … cột</code></td><td>Nâng cấp mã nguồn nhưng chưa nâng cấp CSDL</td><td>Mở <code>https://tên-miền/nang-cap.php</code>, bấm <strong>Nâng cấp ngay</strong>, rồi <strong>xoá tệp <code>nang-cap.php</code></strong> đi. Dữ liệu cũ giữ nguyên</td></tr><tr><td>Trường khẳng định đã gửi mà hệ thống không thấy</td><td>Thư rơi vào Thư rác, hoặc mục <em>Quét cả hộp Thư rác</em> đang tắt</td><td>Bật lại mục đó trong <em>Phân luồng &amp; đồng bộ</em>, chạy đồng bộ lại; sau đó tạo bộ lọc Gmail “không bao giờ chuyển vào Thư rác” cho tên miền các trường</td></tr><tr><td><code>Access denied for user</code></td><td>Sai tài khoản MySQL, hoặc chưa mở Remote MySQL</td><td>Kiểm tra lại thông tin trong cPanel; hoặc chuyển sang chế độ <em>Qua API PHP</em></td></tr><tr><td>Kết nối MySQL bị từ chối từ máy nhà</td><td>Hosting chặn MySQL từ xa, hoặc IP nhà đã đổi</td><td>Chuyển sang chế độ <em>Qua API PHP</em> — cách này không phụ thuộc IP</td></tr><tr><td>Dòng "Gia hạn" hiện chữ đỏ</td><td>Chỉ có access token, thiếu refresh token</td><td>Đăng nhập lại bằng Client ID để lấy refresh token</td></tr><tr><td>Đồng bộ báo <code>401</code> liên tục</td><td>Token bị thu hồi, hoặc đổi mật khẩu Gmail</td><td>Đăng nhập lại Gmail trong bộ nhận mail</td></tr><tr><td>Nhiều mail vào hàng chờ phân luồng</td><td>Các trường đặt tên tệp sai quy ước</td><td>Gửi lại hướng dẫn ở <a href="#16-cách-đặt-tên-tệp-khi-gửi-báo-cáo">mục 16</a>; cân nhắc bật trợ lý AI</td></tr><tr><td>Tải tệp lớn bị lỗi giữa chừng</td><td><code>post_max_size</code> của hosting nhỏ</td><td>Giảm kích thước khối trong <em>Cài đặt → Kết nối bộ nhận mail</em></td></tr><tr><td>Thống kê thiếu trường</td><td>Còn việc kẹt ở hàng chờ phân luồng</td><td>Dọn hết hàng chờ rồi xem lại</td></tr><tr><td>Giao diện hiển thị sai sau khi nâng cấp</td><td>Trình duyệt còn giữ tệp CSS cũ</td><td>Không cần làm gì — số phiên bản nằm trong đường dẫn CSS nên trình duyệt tự tải mới</td></tr></tbody></table></div>
+<h2 id="hd-18-xử-lý-sự-cố-thường-gặp">18. Xử lý sự cố thường gặp</h2>
+<div class="bang-bao"><table><thead><tr><th>Hiện tượng</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody><tr><td><code>Table '...cau_hinh' doesn't exist</code></td><td>Chưa chạy trình cài đặt, CSDL còn rỗng</td><td>Mở <code>https://tên-miền/cai-dat.php</code> chạy hết 4 bước, rồi <strong>xoá tệp <code>cai-dat.php</code></strong> đi</td></tr><tr><td><code>Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu … cột</code></td><td>Nâng cấp mã nguồn nhưng chưa nâng cấp CSDL</td><td>Mở <code>https://tên-miền/nang-cap.php</code>, bấm <strong>Nâng cấp ngay</strong>, rồi <strong>xoá tệp <code>nang-cap.php</code></strong> đi. Dữ liệu cũ giữ nguyên</td></tr><tr><td>Trường khẳng định đã gửi mà hệ thống không thấy</td><td>Thư rơi vào Thư rác, hoặc mục <em>Quét cả hộp Thư rác</em> đang tắt</td><td>Bật lại mục đó trong <em>Phân luồng &amp; đồng bộ</em>, chạy đồng bộ lại; sau đó tạo bộ lọc Gmail “không bao giờ chuyển vào Thư rác” cho tên miền các trường</td></tr><tr><td><code>Access denied for user</code></td><td>Sai tài khoản MySQL, hoặc chưa mở Remote MySQL</td><td>Kiểm tra lại thông tin trong cPanel; hoặc chuyển sang chế độ <em>Qua API PHP</em></td></tr><tr><td>Kết nối MySQL bị từ chối từ máy nhà</td><td>Hosting chặn MySQL từ xa, hoặc IP nhà đã đổi</td><td>Chuyển sang chế độ <em>Qua API PHP</em> — cách này không phụ thuộc IP</td></tr><tr><td>Dòng "Gia hạn" hiện chữ đỏ</td><td>Chỉ có access token, thiếu refresh token</td><td>Đăng nhập lại bằng Client ID để lấy refresh token</td></tr><tr><td>Đồng bộ báo <code>401</code> liên tục</td><td>Token bị thu hồi, hoặc đổi mật khẩu Gmail</td><td>Đăng nhập lại Gmail trong bộ nhận mail</td></tr><tr><td>Nhiều mail vào hàng chờ phân luồng</td><td>Các trường đặt tên tệp sai quy ước</td><td>Gửi lại hướng dẫn ở <a href="#17-cách-đặt-tên-tệp-khi-gửi-báo-cáo">mục 17</a>; cân nhắc bật trợ lý AI</td></tr><tr><td>Tải tệp lớn bị lỗi giữa chừng</td><td><code>post_max_size</code> của hosting nhỏ</td><td>Giảm kích thước khối trong <em>Cài đặt → Kết nối bộ nhận mail</em></td></tr><tr><td>Thống kê thiếu trường</td><td>Còn việc kẹt ở hàng chờ phân luồng</td><td>Dọn hết hàng chờ rồi xem lại</td></tr><tr><td>Giao diện hiển thị sai sau khi nâng cấp</td><td>Trình duyệt còn giữ tệp CSS cũ</td><td>Không cần làm gì — số phiên bản nằm trong đường dẫn CSS nên trình duyệt tự tải mới</td></tr></tbody></table></div>
 <p>Khi không rõ nguyên nhân, vào <strong>Nhật ký hệ thống</strong>, bấm thẻ <strong>Lỗi</strong>, đọc dòng mới nhất.</p>
 <hr>
-<h2 id="hd-18-câu-hỏi-thường-gặp">18. Câu hỏi thường gặp</h2>
+<h2 id="hd-19-câu-hỏi-thường-gặp">19. Câu hỏi thường gặp</h2>
 <p><strong>Hệ thống có xoá mail trong hộp thư không?</strong> Không. Hệ thống chỉ xin quyền đọc (<code>gmail.readonly</code>), Google sẽ từ chối mọi lệnh xoá hoặc sửa nhãn. Hộp thư công vụ nguyên vẹn.</p>
 <p><strong>Trường có gửi mà thư rơi vào Thư rác thì sao?</strong> Hệ thống <strong>vẫn lấy được</strong>. Mỗi phiên đồng bộ quét hai lượt: hộp thư chính rồi tới hộp Thư rác. Thư vớt được hiện huy hiệu vàng <em>"Hộp Thư rác"</em> để bạn biết.</p>
 <p>Nhưng nên xử lý tận gốc, đừng để lặp lại: vào Gmail → <em>Cài đặt → Bộ lọc và địa chỉ bị chặn → Tạo bộ lọc mới</em>, ô <strong>Từ</strong> điền tên miền của các trường (ví dụ <code>@thpt.edu.vn</code>), bấm <em>Tạo bộ lọc</em>, rồi tích <strong>“Không bao giờ chuyển vào Thư rác”</strong>. Dùng Google Workspace thì quản trị viên làm một lần cho cả cơ quan ở <em>Admin console → Apps → Gmail → Spam, Phishing and Malware → Allowlist</em>.</p>

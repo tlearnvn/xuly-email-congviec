@@ -424,7 +424,10 @@ ul.ds-con,ol.ds-con{ margin:1.4mm 0 1mm; padding-left:5mm; }
 ul.ds-con>li{ margin-bottom:1mm; }
 
 code{
-  font-family:"Cascadia Mono",Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
+  /* Liberation Mono đứng trước DejaVu Sans Mono: DejaVu Sans Mono THIẾU các ký tự
+     tiếng Việt dựng sẵn (ể, ổ, ữ…) nên nếu nó thắng thì phần thiếu rơi sang font
+     khác, chữ trong khối mã bị vênh và loang lổ dấu. */
+  font-family:"Cascadia Mono",Consolas,"Liberation Mono","DejaVu Sans Mono",monospace;
   font-size:.88em; background:var(--kim-nhat); color:#6d5310;
   border:.4pt solid var(--vien); border-radius:1mm; padding:.3mm 1.2mm;
   overflow-wrap:anywhere; word-break:break-word;

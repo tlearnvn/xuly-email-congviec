@@ -62,7 +62,7 @@
   <text x="456" y="176" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · ma_gmail · tieu_de · nguoi_gui</text>
   <text x="456" y="194" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">noi_dung · ngay_nhan · so_tep</text>
   <text x="456" y="212" font-family="Consolas, Menlo, monospace" font-size="11" fill="#dc4437">hash_noi_dung · hash_tep</text>
-  <text x="456" y="230" font-family="Consolas, Menlo, monospace" font-size="11" fill="#dc4437">hash_tong_hop · so_lan_nhan</text>
+  <text x="456" y="230" font-family="Consolas, Menlo, monospace" font-size="11" fill="#dc4437">hash_tong_hop · so_lan_nhan<tspan fill="#e08a06"> · tu_spam</tspan></text>
 
   <rect x="442" y="252" width="316" height="124" rx="10" fill="#ffffff" stroke="#10a05a" stroke-width="2"/>
   <rect x="442" y="252" width="316" height="26" rx="10" fill="#10a05a"/>

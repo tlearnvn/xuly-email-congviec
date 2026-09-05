@@ -27,22 +27,23 @@ Không cần biết lập trình vẫn theo được.
 9. [Quản lý danh mục](#9-quản-lý-danh-mục)
 10. [Nhật ký hệ thống](#10-nhật-ký-hệ-thống)
 11. [Cài đặt hệ thống](#11-cài-đặt-hệ-thống)
+12. [Nâng cấp lên phiên bản mới](#12-nâng-cấp-lên-phiên-bản-mới)
 
 **Phần C — Vận hành bộ nhận mail**
 
-12. [Khởi động bộ nhận mail](#12-khởi-động-bộ-nhận-mail)
-13. [Kết nối máy chủ](#13-kết-nối-máy-chủ)
-14. [Đăng nhập Gmail](#14-đăng-nhập-gmail)
-15. [Chạy đồng bộ và hẹn giờ tự động](#15-chạy-đồng-bộ-và-hẹn-giờ-tự-động)
+13. [Khởi động bộ nhận mail](#13-khởi-động-bộ-nhận-mail)
+14. [Kết nối máy chủ](#14-kết-nối-máy-chủ)
+15. [Đăng nhập Gmail](#15-đăng-nhập-gmail)
+16. [Chạy đồng bộ và hẹn giờ tự động](#16-chạy-đồng-bộ-và-hẹn-giờ-tự-động)
 
 **Phần D — Hướng dẫn cho các trường**
 
-16. [Cách đặt tên tệp khi gửi báo cáo](#16-cách-đặt-tên-tệp-khi-gửi-báo-cáo)
+17. [Cách đặt tên tệp khi gửi báo cáo](#17-cách-đặt-tên-tệp-khi-gửi-báo-cáo)
 
 **Phần E**
 
-17. [Xử lý sự cố thường gặp](#17-xử-lý-sự-cố-thường-gặp)
-18. [Câu hỏi thường gặp](#18-câu-hỏi-thường-gặp)
+18. [Xử lý sự cố thường gặp](#18-xử-lý-sự-cố-thường-gặp)
+19. [Câu hỏi thường gặp](#19-câu-hỏi-thường-gặp)
 
 ---
 
@@ -330,9 +331,72 @@ Chọn mức ghi tối thiểu và số ngày giữ nhật ký. Đặt 0 ngày �
 
 ---
 
+## 12. Nâng cấp lên phiên bản mới
+
+Khi có bản mới trên [trang phát hành](https://github.com/tlearnvn/xuly-email-congviec/releases/latest),
+làm theo đúng năm bước dưới đây. Toàn bộ mất chừng mười phút.
+
+### Bước 1 — Sao lưu trước đã
+
+cPanel → **phpMyAdmin** → chọn cơ sở dữ liệu → **Export** → **Go**. Một tệp `.sql` là đủ **cả
+dữ liệu lẫn tệp đính kèm**, vì tệp được lưu ngay trong cơ sở dữ liệu.
+
+Đây là bước hay bị bỏ qua nhất, và cũng là bước duy nhất cứu được anh nếu có sự cố.
+
+### Bước 2 — Chép đè phần web
+
+Tải `web-cpanel-vX.Y.Z.zip`, giải nén vào `public_html` và cho ghi đè.
+
+> **Yên tâm:** tệp `cau-hinh.php` chứa thông tin kết nối cơ sở dữ liệu **không nằm trong gói
+> phát hành**, nên chép đè không làm mất. Cũng không cần chạy lại `cai-dat.php`.
+
+### Bước 3 — Chạy trang nâng cấp cơ sở dữ liệu
+
+Mở `https://tên-miền/nang-cap.php`. Trang này liệt kê từng thứ bản mới cần, kèm trạng thái:
+
+![Trang nâng cấp cơ sở dữ liệu](hinh/web-14-nang-cap.png)
+
+- Mục nào ghi **Đã có** thì bỏ qua
+- Mục nào ghi **Còn thiếu** thì bấm **Nâng cấp ngay**
+
+Nâng cấp chỉ **thêm** cột và thiết lập mới, **không sửa và không xoá** dữ liệu đã lưu. Bấm nhầm
+hai lần cũng không sao — lần sau nó báo *"Cơ sở dữ liệu đã đầy đủ"*.
+
+Xong rồi **xoá tệp `nang-cap.php`** khỏi hosting, để người ngoài không chạy lại được.
+
+> Quen dùng phpMyAdmin hơn thì nạp tệp `sql/03_nang_cap.sql` cũng cho kết quả y hệt.
+
+### Bước 4 — Thay bộ nhận mail
+
+Đóng bộ nhận mail đang chạy, giải nén bản mới đè lên, **giữ nguyên tệp `mailrouter.ini`** —
+tệp này chứa thông tin kết nối và token Gmail đã đăng nhập, và cũng không nằm trong gói phát
+hành nên không bị ghi đè.
+
+### Bước 5 — Kiểm tra lại
+
+Mở bộ nhận mail, vào *Kết nối máy chủ*, bấm **Kiểm tra kết nối**.
+
+Nếu bước 3 bị bỏ sót, đây chính là chỗ báo — thông báo sẽ ghi rõ tên cột còn thiếu và bảo anh
+chạy `nang-cap.php`:
+
+```
+Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu 1 cột:
+email.tu_spam (thêm từ bản 1.2.0).
+Hãy mở https://<tên-miền>/nang-cap.php một lần để bổ sung.
+Dữ liệu cũ được giữ nguyên, không mất gì.
+```
+
+Bộ nhận mail **từ chối chạy** khi thấy thiếu, chứ không để hỏng giữa lúc đang nhận thư — nên
+gặp thông báo này thì cứ bình tĩnh quay lại bước 3.
+
+Cuối cùng, nhìn chân trang web xem số phiên bản đã đổi chưa. Không cần xoá cache trình duyệt:
+số phiên bản nằm sẵn trong đường dẫn tệp CSS/JS nên trình duyệt tự tải bản mới.
+
+---
+
 # Phần C — Vận hành bộ nhận mail
 
-## 12. Khởi động bộ nhận mail
+## 13. Khởi động bộ nhận mail
 
 Bộ nhận mail chạy trên **máy nhà hoặc VPS**, không chạy trên hosting.
 
@@ -360,7 +424,7 @@ Bảng **Nhật ký trực tiếp** ở dưới cùng chạy theo thời gian th
 
 ---
 
-## 13. Kết nối máy chủ
+## 14. Kết nối máy chủ
 
 ![Bộ nhận mail — Kết nối máy chủ](hinh/bnm-02-ket-noi.png)
 
@@ -377,11 +441,11 @@ nhà.
 Bấm **Kiểm tra kết nối** để thử trước khi lưu.
 
 > **Gặp lỗi `Table ... doesn't exist`?** Nghĩa là kết nối đã thông nhưng cơ sở dữ liệu còn
-> rỗng. Hãy chạy `cai-dat.php` trên hosting trước để tạo bảng. Xem [mục 17](#17-xử-lý-sự-cố-thường-gặp).
+> rỗng. Hãy chạy `cai-dat.php` trên hosting trước để tạo bảng. Xem [mục 18](#18-xử-lý-sự-cố-thường-gặp).
 
 ---
 
-## 14. Đăng nhập Gmail
+## 15. Đăng nhập Gmail
 
 ![Bộ nhận mail — Tài khoản Gmail](hinh/bnm-03-gmail.png)
 
@@ -406,7 +470,7 @@ khi hết hạn, và lưu lại vào tệp cấu hình. Bạn không phải làm
 
 ---
 
-## 15. Chạy đồng bộ và hẹn giờ tự động
+## 16. Chạy đồng bộ và hẹn giờ tự động
 
 ![Bộ nhận mail — Phân luồng & đồng bộ](hinh/bnm-04-phan-luong.png)
 
@@ -419,19 +483,50 @@ quét theo chu kỳ đó, chỉ cần để cửa sổ chạy nền.
 **Truy vấn Gmail** mặc định là `has:attachment newer_than:30d` — chỉ lấy thư có tệp đính kèm
 trong 30 ngày gần nhất. Sửa được nếu cần, dùng đúng cú pháp tìm kiếm của Gmail.
 
-**Quét cả hộp Thư rác (Spam)** — nên để bật. Google hay xếp nhầm báo cáo của các trường vào
-Thư rác; tắt mục này là bỏ sót, và thống kê sẽ báo *"chưa nộp"* oan cho trường đã gửi. Thư
-trong **Thùng rác** thì hệ thống luôn bỏ qua, vì đó là thư ai đó đã chủ động xoá.
+Kết thúc mỗi phiên, hệ thống báo lại các con số: mail đã quét, mail mới, bản cập nhật, trùng
+bị bỏ qua, công việc tạo, tệp đính kèm, chờ phân luồng, **vớt từ Thư rác**, và lỗi.
+
+### 16.1. Quét cả hộp Thư rác
+
+![Ô đánh dấu quét hộp Thư rác](hinh/bnm-07-quet-spam.png)
+
+Ô **Quét cả hộp Thư rác (Spam)** — **nên để bật**, và mặc định đã bật sẵn.
+
+Google hay xếp nhầm báo cáo của các trường vào Thư rác: hàng chục trường gửi thư nội dung gần
+giống nhau trong cùng một buổi, tệp đính kèm nặng, hoặc trường gửi từ hộp thư chưa cấu hình
+đúng. Tắt mục này là **bỏ sót**, và thống kê sẽ báo *"chưa nộp"* oan cho trường đã gửi.
+
+Thư trong **Thùng rác** thì hệ thống luôn bỏ qua, vì đó là thư ai đó đã chủ động xoá.
 
 Thư vớt được từ Thư rác hiện huy hiệu vàng **"Hộp Thư rác"** ở trang chi tiết và trang phân
-luồng tay, và được đếm riêng trong kết quả mỗi phiên.
+luồng tay:
+
+![Huy hiệu Hộp Thư rác trên trang chi tiết](hinh/web-15-huy-hieu-thu-rac.png)
+
+Nhật ký cũng ghi một dòng cảnh báo kèm địa chỉ người gửi, để anh biết mà xử lý tận gốc.
 
 > **Lưu ý khi đặt điều kiện lọc:** nếu bạn lọc theo nhãn tự đặt (ví dụ `label:baocao`) thì
 > phần quét Thư rác gần như không tìm được gì, vì Gmail không gắn nhãn của bạn cho thư đã bị
 > xếp vào Thư rác. Nên lọc theo `has:attachment` hoặc theo người gửi thì hơn.
 
-Kết thúc mỗi phiên, hệ thống báo lại tám con số: mail đã quét, mail mới, bản cập nhật, trùng
-bị bỏ qua, công việc tạo, tệp đính kèm, chờ phân luồng, và lỗi.
+**Hộp Thư rác dùng bao nhiêu trong hạn mức?** Ô *Số mail mỗi lần quét* là hạn mức chung. Hộp
+thư chính được lấy trước; hộp Thư rác dùng phần còn thừa, nhưng không bao giờ dưới **một phần
+năm** hạn mức — để một buổi nhiều thư không làm hộp Thư rác bị bỏ quên.
+
+### 16.2. Cách xử lý tận gốc
+
+Vớt thư khỏi Thư rác chỉ là **chữa cháy**. Muốn hết hẳn thì phải bảo Gmail đừng xếp nhầm nữa:
+
+1. Vào Gmail → **Cài đặt** → **Bộ lọc và địa chỉ bị chặn** → **Tạo bộ lọc mới**
+2. Ô **Từ** điền tên miền của các trường, ví dụ `@thpt.edu.vn`
+3. Bấm **Tạo bộ lọc**
+4. Tích **"Không bao giờ chuyển vào Thư rác"** → **Tạo bộ lọc**
+
+Dùng Google Workspace thì quản trị viên làm một lần cho cả cơ quan ở *Admin console → Apps →
+Gmail → Spam, Phishing and Malware → Allowlist*.
+
+> Hệ thống chỉ xin quyền **đọc** hộp thư (`gmail.readonly`) nên **không thể tự gỡ nhãn Thư
+> rác** giúp anh — đó là cái giá của việc không bao giờ đụng vào hộp thư công vụ.
 
 ### Chạy nền như một dịch vụ
 
@@ -449,7 +544,7 @@ máy.
 
 # Phần D — Hướng dẫn cho các trường
 
-## 16. Cách đặt tên tệp khi gửi báo cáo
+## 17. Cách đặt tên tệp khi gửi báo cáo
 
 *Phần này nên trích ra gửi kèm công văn hướng dẫn cho các trường.*
 
@@ -497,7 +592,7 @@ qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nh�
 
 # Phần E
 
-## 17. Xử lý sự cố thường gặp
+## 18. Xử lý sự cố thường gặp
 
 | Hiện tượng | Nguyên nhân | Cách xử lý |
 |---|---|---|
@@ -508,7 +603,7 @@ qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nh�
 | Kết nối MySQL bị từ chối từ máy nhà | Hosting chặn MySQL từ xa, hoặc IP nhà đã đổi | Chuyển sang chế độ *Qua API PHP* — cách này không phụ thuộc IP |
 | Dòng "Gia hạn" hiện chữ đỏ | Chỉ có access token, thiếu refresh token | Đăng nhập lại bằng Client ID để lấy refresh token |
 | Đồng bộ báo `401` liên tục | Token bị thu hồi, hoặc đổi mật khẩu Gmail | Đăng nhập lại Gmail trong bộ nhận mail |
-| Nhiều mail vào hàng chờ phân luồng | Các trường đặt tên tệp sai quy ước | Gửi lại hướng dẫn ở [mục 16](#16-cách-đặt-tên-tệp-khi-gửi-báo-cáo); cân nhắc bật trợ lý AI |
+| Nhiều mail vào hàng chờ phân luồng | Các trường đặt tên tệp sai quy ước | Gửi lại hướng dẫn ở [mục 17](#17-cách-đặt-tên-tệp-khi-gửi-báo-cáo); cân nhắc bật trợ lý AI |
 | Tải tệp lớn bị lỗi giữa chừng | `post_max_size` của hosting nhỏ | Giảm kích thước khối trong *Cài đặt → Kết nối bộ nhận mail* |
 | Thống kê thiếu trường | Còn việc kẹt ở hàng chờ phân luồng | Dọn hết hàng chờ rồi xem lại |
 | Giao diện hiển thị sai sau khi nâng cấp | Trình duyệt còn giữ tệp CSS cũ | Không cần làm gì — số phiên bản nằm trong đường dẫn CSS nên trình duyệt tự tải mới |
@@ -517,7 +612,7 @@ Khi không rõ nguyên nhân, vào **Nhật ký hệ thống**, bấm thẻ **L�
 
 ---
 
-## 18. Câu hỏi thường gặp
+## 19. Câu hỏi thường gặp
 
 **Hệ thống có xoá mail trong hộp thư không?**
 Không. Hệ thống chỉ xin quyền đọc (`gmail.readonly`), Google sẽ từ chối mọi lệnh xoá hoặc
