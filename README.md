@@ -152,6 +152,9 @@ hành; trên Linux nạp động `libcurl.so.4` (gói `libcurl4`, hầu như b�
 ./scripts/phien-ban.sh bump         # 1.0.3 → 1.0.4
 ./scripts/phien-ban.sh bump minor   # 1.0.4 → 1.1.0
 ./scripts/phien-ban.sh bump major   # 1.1.0 → 2.0.0
+
+# Vừa tăng phiên bản vừa ghi thẳng vào mục "Lịch sử phiên bản" của README
+./scripts/phien-ban.sh bump patch "Sửa lỗi tải tệp lớn" "Thêm bộ lọc theo địa bàn"
 ```
 Mỗi lần chạy `scripts/dong-goi.sh`, **số build tự tăng** và được ghi vào cả phần C++
 (`cpp/include/phien_ban.h`) lẫn phần PHP (`php/app/phien_ban.php`); số phiên bản hiển thị ở chân
@@ -167,6 +170,46 @@ trang web và trên bảng điều khiển của bộ nhận mail.
 | Cơ sở dữ liệu | MySQL ≥ 5.7 hoặc MariaDB ≥ 10.3, bảng mã `utf8mb4` |
 | Bộ nhận mail | Windows 7 64-bit trở lên, hoặc Linux 64-bit có `libcurl4` |
 | Tài khoản Gmail | Bật Gmail API trong Google Cloud Console |
+
+---
+
+## Lịch sử phiên bản
+
+Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay đổi lớn không tương thích ngược,
+**PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
+
+<!-- BAT-DAU-CHANGELOG -->
+### 1.0.1 — 05/09/2026
+
+- **Sửa:** bộ nhận mail kiểm tra cơ sở dữ liệu ngay sau khi kết nối. Nếu CSDL còn trống hoặc thiếu
+  bảng, chương trình hiện hướng dẫn tiếng Việt cụ thể (chạy `cai-dat.php` hoặc nạp
+  `sql/01_schema.sql`) thay vì lỗi SQL thô `Table ... doesn't exist`; trường hợp thiếu một vài bảng
+  thì liệt kê đúng tên bảng còn thiếu.
+- **Tài liệu:** bổ sung tình huống trên vào bảng xử lý sự cố của cả hai hướng dẫn cài đặt.
+- **Công cụ:** `scripts/phien-ban.sh` ghi được entry changelog thẳng vào README khi tăng phiên bản.
+
+### 1.0.0 — 05/09/2026
+
+Phát hành lần đầu.
+
+- **Bộ nhận mail (C++17):** đăng nhập Gmail bằng OAuth 2.0 hoặc token có sẵn (tự gia hạn), đọc thư
+  với quyền chỉ đọc, giải mã MIME/RFC 2047/quoted-printable đúng tiếng Việt.
+- **Phân luồng:** tách mã `<mã trường>_<mã văn bản>_<mã người xử lý>` từ tên tệp rồi tới tiêu đề,
+  chấp nhận nhiều kiểu dấu phân cách; một thư nhiều tệp của nhiều người tách thành nhiều công việc.
+- **Chống trùng ba mức:** cùng mã thư Gmail, trùng nội dung + trùng tệp, trùng nội dung nhưng tệp
+  khác dung lượng (ghi nhận thành phiên bản mới). Khử trùng lặp tệp theo SHA-256.
+- **Trợ lý AI:** tương thích chuẩn OpenAI, tuỳ chỉnh URL / model / API key / max tokens (≤ 64000) /
+  timeout (≤ 300 giây) / ngưỡng tin cậy.
+- **Hai chế độ lưu trữ:** MySQL trực tiếp hoặc qua API PHP khi hosting chặn kết nối MySQL từ xa.
+- **Giao diện đồ hoạ** tiếng Việt nhúng sẵn trong tệp thực thi, kèm chế độ dòng lệnh cho Task
+  Scheduler / cron / systemd.
+- **Web quản trị (PHP thuần):** trình cài đặt 4 bước, bảng điều khiển biểu đồ SVG, hộp việc cá nhân,
+  xem trực tiếp PDF/ảnh hoặc tải tệp, thống kê trường đã nộp / chưa nộp + xuất CSV, danh mục trường
+  và người xử lý, danh mục mã văn bản nới lỏng, phân luồng tay có gợi ý AI, nhật ký đầy đủ, tuỳ
+  chỉnh thương hiệu.
+- **Khác:** toàn hệ thống dùng giờ Việt Nam (GMT+7); số phiên bản tự tăng khi đóng gói; sẵn bản nhị
+  phân Linux 64-bit và Windows 64-bit.
+<!-- KET-THUC-CHANGELOG -->
 
 ---
 

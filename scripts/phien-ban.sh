@@ -11,12 +11,19 @@
 #     ./scripts/phien-ban.sh bump-build     # chỉ tăng số lần build
 #     ./scripts/phien-ban.sh dat 2.3.1      # đặt phiên bản cụ thể
 #     ./scripts/phien-ban.sh sinh           # sinh lại các tệp phái sinh
+#
+#  Ghi kèm lịch sử thay đổi vào mục "Lịch sử phiên bản" của README.md:
+#     ./scripts/phien-ban.sh bump patch "Sửa lỗi tải tệp lớn" "Thêm bộ lọc địa bàn"
+#     ./scripts/phien-ban.sh bump "Sửa lỗi tải tệp lớn"      # ngầm hiểu là patch
+#     ./scripts/phien-ban.sh ghi-chu "Cập nhật tài liệu"     # ghi cho phiên bản hiện tại
 # =====================================================================
 set -euo pipefail
 
 GOC="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TEP_VERSION="$GOC/VERSION"
 TEP_BUILD="$GOC/BUILD"
+TEP_README="$GOC/README.md"
+MOC_CHANGELOG="<!-- BAT-DAU-CHANGELOG -->"
 
 [ -f "$TEP_VERSION" ] || echo "1.0.0" > "$TEP_VERSION"
 [ -f "$TEP_BUILD" ]   || echo "0"     > "$TEP_BUILD"
@@ -67,8 +74,51 @@ EOF
     echo "Đã sinh tệp phiên bản: $pb (build $bd) - $ngay"
 }
 
+# ---------------------------------------------------------------------
+#  Chèn một mục mới vào đầu danh sách lịch sử phiên bản trong README.md
+#  Tham số: <số phiên bản> <ghi chú 1> [ghi chú 2] ...
+# ---------------------------------------------------------------------
+ghi_changelog() {
+    local pb="$1"; shift
+    [ $# -gt 0 ] || return 0
+
+    if [ ! -f "$TEP_README" ]; then
+        echo "Cảnh báo: không tìm thấy README.md, bỏ qua phần lịch sử phiên bản." >&2
+        return 0
+    fi
+    if ! grep -qF "$MOC_CHANGELOG" "$TEP_README"; then
+        echo "Cảnh báo: README.md chưa có mốc $MOC_CHANGELOG, bỏ qua phần lịch sử phiên bản." >&2
+        return 0
+    fi
+
+    local ngay tam
+    ngay="$(ngay_vn '%d/%m/%Y')"
+    tam="$(mktemp)"
+    {
+        echo "### $pb — $ngay"
+        echo
+        local g
+        for g in "$@"; do
+            [ -n "$g" ] && echo "- $g"
+        done
+        echo
+    } > "$tam"
+
+    awk -v moc="$MOC_CHANGELOG" -v tepmoi="$tam" '
+        { print }
+        index($0, moc) {
+            while ((getline dong < tepmoi) > 0) print dong
+            close(tepmoi)
+        }
+    ' "$TEP_README" > "$TEP_README.tam" && mv "$TEP_README.tam" "$TEP_README"
+    rm -f "$tam"
+
+    echo "Đã thêm $# mục vào lịch sử phiên bản $pb trong README.md"
+}
+
 tang() {
-    local loai="${1:-patch}" pb major minor patch
+    local loai="${1:-patch}"; shift || true
+    local pb major minor patch
     pb="$(doc_phien_ban)"
     IFS='.' read -r major minor patch <<< "$pb"
     major="${major:-1}"; minor="${minor:-0}"; patch="${patch:-0}"
@@ -80,31 +130,45 @@ tang() {
     echo "$major.$minor.$patch" > "$TEP_VERSION"
     echo "$(( $(doc_build) + 1 ))" > "$TEP_BUILD"
     sinh_tep_phai_sinh
+    ghi_changelog "$major.$minor.$patch" "$@"
 }
 
-case "${1:-doc}" in
+LENH="${1:-doc}"
+shift || true
+
+case "$LENH" in
     doc)
         echo "$(doc_phien_ban) (build $(doc_build))"
         ;;
     bump)
-        tang "${2:-patch}"
+        LOAI="patch"
+        case "${1:-}" in
+            major|minor|patch) LOAI="$1"; shift ;;
+        esac
+        tang "$LOAI" "$@"
         ;;
     bump-build)
         echo "$(( $(doc_build) + 1 ))" > "$TEP_BUILD"
         sinh_tep_phai_sinh
         ;;
     dat)
-        [ -n "${2:-}" ] || { echo "Thiếu số phiên bản. Ví dụ: $0 dat 2.1.0" >&2; exit 2; }
-        echo "$2" > "$TEP_VERSION"
+        [ -n "${1:-}" ] || { echo "Thiếu số phiên bản. Ví dụ: $0 dat 2.1.0" >&2; exit 2; }
+        PB="$1"; shift
+        echo "$PB" > "$TEP_VERSION"
         echo "$(( $(doc_build) + 1 ))" > "$TEP_BUILD"
         sinh_tep_phai_sinh
+        ghi_changelog "$PB" "$@"
+        ;;
+    ghi-chu)
+        [ $# -gt 0 ] || { echo "Thiếu nội dung ghi chú. Ví dụ: $0 ghi-chu \"Sửa lỗi X\"" >&2; exit 2; }
+        ghi_changelog "$(doc_phien_ban)" "$@"
         ;;
     sinh)
         sinh_tep_phai_sinh
         ;;
     *)
-        echo "Tham số không hợp lệ: $1" >&2
-        sed -n '2,16p' "$0" >&2
+        echo "Tham số không hợp lệ: $LENH" >&2
+        sed -n '2,19p' "$0" >&2
         exit 2
         ;;
 esac
