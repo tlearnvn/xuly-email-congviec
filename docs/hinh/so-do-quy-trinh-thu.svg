@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 1400" width="980" height="1400" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#5a6884"/>
+    </marker>
+    <marker id="ax" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#e08a06"/>
+    </marker>
+    <marker id="al" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#10a05a"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="980" height="1400" fill="#f7f9fd"/>
+  <text x="490" y="42" text-anchor="middle" font-size="23" font-weight="700" fill="#18213a">Quy trình xử lý một bức thư, từ hộp thư tới người xử lý</text>
+  <text x="490" y="66" text-anchor="middle" font-size="13" fill="#65708a">Mỗi bước đều được ghi vào nhật ký · thư gốc trên Gmail không bao giờ bị xoá</text>
+
+  <!-- ===== Bước 1 ===== -->
+  <rect x="110" y="92" width="380" height="66" rx="11" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="110" y="92" width="6" height="66" rx="3" fill="#1e5eff"/>
+  <text x="132" y="118" font-size="14.5" font-weight="700" fill="#1443ab">1 · Lấy danh sách thư mới</text>
+  <text x="132" y="141" font-size="12" fill="#5a6884">Gmail API · chạy theo lịch hoặc bấm nút “Đồng bộ ngay”</text>
+
+  <!-- ===== Bước 2 ===== -->
+  <rect x="110" y="178" width="380" height="66" rx="11" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="110" y="178" width="6" height="66" rx="3" fill="#1e5eff"/>
+  <text x="132" y="204" font-size="14.5" font-weight="700" fill="#1443ab">2 · Tải toàn văn từng thư</text>
+  <text x="132" y="227" font-size="12" fill="#5a6884">Kể cả phần thân và toàn bộ tệp đính kèm</text>
+
+  <!-- ===== Bước 3 ===== -->
+  <rect x="110" y="264" width="380" height="66" rx="11" fill="#ffffff" stroke="#ddd0fa" stroke-width="2"/>
+  <rect x="110" y="264" width="6" height="66" rx="3" fill="#7748e6"/>
+  <text x="132" y="290" font-size="14.5" font-weight="700" fill="#5b32bd">3 · Bóc tách MIME</text>
+  <text x="132" y="313" font-size="12" fill="#5a6884">Tiêu đề, người gửi, nội dung, tên và dung lượng từng tệp</text>
+
+  <!-- ===== Bước 4 ===== -->
+  <rect x="110" y="350" width="380" height="66" rx="11" fill="#ffffff" stroke="#c7ecd8" stroke-width="2"/>
+  <rect x="110" y="350" width="6" height="66" rx="3" fill="#10a05a"/>
+  <text x="132" y="376" font-size="14.5" font-weight="700" fill="#0a6b3c">4 · Tính 3 mã băm SHA-256</text>
+  <text x="132" y="399" font-size="12" fill="#5a6884">hash_noi_dung · hash_tep · hash_tong_hop</text>
+
+  <!-- ===== Quyết định 1 ===== -->
+  <path d="M300,438 L440,502 L300,566 L160,502 z" fill="#fdf3e3" stroke="#e08a06" stroke-width="2"/>
+  <text x="300" y="496" text-anchor="middle" font-size="13.5" font-weight="700" fill="#8e560b">Thư này đã có</text>
+  <text x="300" y="515" text-anchor="middle" font-size="13.5" font-weight="700" fill="#8e560b">trong kho chưa?</text>
+
+  <rect x="580" y="469" width="320" height="66" rx="11" fill="#fdf3e3" stroke="#f6dfb9" stroke-width="2"/>
+  <text x="600" y="494" font-size="13.5" font-weight="700" fill="#8e560b">Trùng — không tạo việc mới</text>
+  <text x="600" y="516" font-size="11.5" fill="#8e560b">Tệp khác dung lượng thì lưu thành phiên bản mới</text>
+
+  <!-- ===== Bước 5 ===== -->
+  <rect x="110" y="600" width="380" height="66" rx="11" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="110" y="600" width="6" height="66" rx="3" fill="#1e5eff"/>
+  <text x="132" y="626" font-size="14.5" font-weight="700" fill="#1443ab">5 · Đọc mã 001_001_TAT</text>
+  <text x="132" y="649" font-size="12" fill="#5a6884">Ưu tiên tên tệp → tiêu đề thư → email người gửi</text>
+
+  <!-- ===== Bước 6 ===== -->
+  <rect x="110" y="686" width="380" height="66" rx="11" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="110" y="686" width="6" height="66" rx="3" fill="#1e5eff"/>
+  <text x="132" y="712" font-size="14.5" font-weight="700" fill="#1443ab">6 · Chấm điểm tin cậy</text>
+  <text x="132" y="735" font-size="12" fill="#5a6884">Đối chiếu danh mục trường và danh mục người xử lý</text>
+
+  <!-- ===== Quyết định 2 ===== -->
+  <path d="M300,774 L440,838 L300,902 L160,838 z" fill="#fdf3e3" stroke="#e08a06" stroke-width="2"/>
+  <text x="300" y="832" text-anchor="middle" font-size="13.5" font-weight="700" fill="#8e560b">Điểm tin cậy</text>
+  <text x="300" y="851" text-anchor="middle" font-size="13.5" font-weight="700" fill="#8e560b">đạt ngưỡng?</text>
+
+  <!-- ===== Nhánh AI ===== -->
+  <rect x="580" y="805" width="320" height="66" rx="11" fill="#ffffff" stroke="#f7cfcb" stroke-width="2"/>
+  <rect x="580" y="805" width="6" height="66" rx="3" fill="#dc4437"/>
+  <text x="602" y="830" font-size="13.5" font-weight="700" fill="#a83026">7 · Nhờ trợ lý AI đọc giúp</text>
+  <text x="602" y="852" font-size="11.5" fill="#5a6884">Chỉ chạy khi quản trị đã bật trợ lý AI</text>
+
+  <path d="M740,908 L860,962 L740,1016 L620,962 z" fill="#fdeeed" stroke="#dc4437" stroke-width="2"/>
+  <text x="740" y="958" text-anchor="middle" font-size="13" font-weight="700" fill="#a83026">AI đọc ra</text>
+  <text x="740" y="976" text-anchor="middle" font-size="13" font-weight="700" fill="#a83026">được mã?</text>
+
+  <rect x="580" y="1060" width="320" height="66" rx="11" fill="#fdf3e3" stroke="#f6dfb9" stroke-width="2"/>
+  <text x="600" y="1085" font-size="13.5" font-weight="700" fill="#8e560b">Vào hàng chờ phân luồng tay</text>
+  <text x="600" y="1107" font-size="11.5" fill="#8e560b">Quản trị mở web, chọn người xử lý</text>
+
+  <!-- ===== Bước 8, 9, 10 ===== -->
+  <rect x="110" y="1130" width="380" height="66" rx="11" fill="#ffffff" stroke="#c7ecd8" stroke-width="2"/>
+  <rect x="110" y="1130" width="6" height="66" rx="3" fill="#10a05a"/>
+  <text x="132" y="1156" font-size="14.5" font-weight="700" fill="#0a6b3c">8 · Tạo hoặc cập nhật công việc</text>
+  <text x="132" y="1179" font-size="12" fill="#5a6884">Gắn đúng trường · mã văn bản · người xử lý</text>
+
+  <rect x="110" y="1216" width="380" height="66" rx="11" fill="#ffffff" stroke="#c7ecd8" stroke-width="2"/>
+  <rect x="110" y="1216" width="6" height="66" rx="3" fill="#10a05a"/>
+  <text x="132" y="1242" font-size="14.5" font-weight="700" fill="#0a6b3c">9 · Lưu tệp vào kho BLOB</text>
+  <text x="132" y="1265" font-size="12" fill="#5a6884">Tệp giống hệt nhau chỉ lưu một bản, đếm tham chiếu</text>
+
+  <rect x="110" y="1302" width="380" height="66" rx="11" fill="#ffffff" stroke="#e3e8f1" stroke-width="2"/>
+  <rect x="110" y="1302" width="6" height="66" rx="3" fill="#65708a"/>
+  <text x="132" y="1328" font-size="14.5" font-weight="700" fill="#47536e">10 · Ghi nhật ký &amp; kết thúc</text>
+  <text x="132" y="1351" font-size="12" fill="#5a6884">Thư gốc trên Gmail giữ nguyên, không xoá, không đổi nhãn</text>
+
+  <!-- ===== Mũi tên trục chính ===== -->
+  <path d="M300,158 L300,174" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+  <path d="M300,244 L300,260" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+  <path d="M300,330 L300,346" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+  <path d="M300,416 L300,434" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+  <path d="M300,566 L300,596" stroke="#10a05a" stroke-width="2.4" marker-end="url(#al)"/>
+  <text x="312" y="586" font-size="12" font-weight="700" fill="#0a6b3c">Chưa có</text>
+  <path d="M300,666 L300,682" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+  <path d="M300,752 L300,770" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+  <path d="M300,902 L300,1126" stroke="#10a05a" stroke-width="2.4" marker-end="url(#al)"/>
+  <text x="312" y="924" font-size="12" font-weight="700" fill="#0a6b3c">Đạt</text>
+  <path d="M300,1196 L300,1212" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+  <path d="M300,1282 L300,1298" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+
+  <!-- ===== Mũi tên nhánh ===== -->
+  <path d="M440,502 L576,502" stroke="#e08a06" stroke-width="2.4" marker-end="url(#ax)"/>
+  <text x="508" y="492" text-anchor="middle" font-size="12" font-weight="700" fill="#8e560b">Đã có</text>
+
+  <path d="M440,838 L740,838 L740,904" stroke="#e08a06" stroke-width="2.4" fill="none" marker-end="url(#ax)"/>
+  <text x="536" y="828" text-anchor="middle" font-size="12" font-weight="700" fill="#8e560b">Chưa đạt</text>
+
+  <path d="M740,1016 L740,1056" stroke="#e08a06" stroke-width="2.4" marker-end="url(#ax)"/>
+  <text x="752" y="1042" font-size="12" font-weight="700" fill="#8e560b">Không</text>
+
+  <path d="M620,962 L540,962 L540,1163 L494,1163" stroke="#10a05a" stroke-width="2.4" fill="none" marker-end="url(#al)"/>
+  <text x="580" y="952" text-anchor="middle" font-size="12" font-weight="700" fill="#0a6b3c">Có</text>
+
+  <path d="M580,1093 L516,1093 L516,1180 L494,1180" stroke="#8a94a8" stroke-width="2.2" fill="none"
+        stroke-dasharray="6 5" marker-end="url(#a)"/>
+  <text x="740" y="1152" text-anchor="middle" font-size="11.5" fill="#65708a">sau khi quản trị chọn xong người xử lý,</text>
+  <text x="740" y="1170" text-anchor="middle" font-size="11.5" fill="#65708a">việc quay lại đúng luồng như trên</text>
+
+  <!-- ===== Chú giải ===== -->
+  <rect x="580" y="92" width="320" height="324" rx="12" fill="#ffffff" stroke="#e3e8f1"/>
+  <text x="600" y="120" font-size="13.5" font-weight="700" fill="#18213a">Chú giải</text>
+
+  <rect x="600" y="136" width="26" height="16" rx="4" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="600" y="136" width="4" height="16" rx="2" fill="#1e5eff"/>
+  <text x="638" y="149" font-size="12" fill="#47536e">Bước xử lý bình thường</text>
+
+  <path d="M613,168 L629,176 L613,184 L597,176 z" fill="#fdf3e3" stroke="#e08a06" stroke-width="2"/>
+  <text x="638" y="181" font-size="12" fill="#47536e">Điểm rẽ nhánh</text>
+
+  <path d="M600,204 L628,204" stroke="#10a05a" stroke-width="2.4" marker-end="url(#al)"/>
+  <text x="638" y="209" font-size="12" fill="#47536e">Đường đi thuận lợi</text>
+
+  <path d="M600,232 L628,232" stroke="#e08a06" stroke-width="2.4" marker-end="url(#ax)"/>
+  <text x="638" y="237" font-size="12" fill="#47536e">Đường đi cần can thiệp</text>
+
+  <path d="M600,260 L628,260" stroke="#8a94a8" stroke-width="2.2" stroke-dasharray="6 5" marker-end="url(#a)"/>
+  <text x="638" y="265" font-size="12" fill="#47536e">Có người thao tác tay</text>
+
+  <line x1="600" y1="284" x2="880" y2="284" stroke="#e3e8f1" stroke-width="1.5"/>
+  <text x="600" y="308" font-size="12" font-weight="700" fill="#18213a">Ba mã băm dùng để làm gì</text>
+  <text x="600" y="330" font-size="11.5" fill="#5a6884">hash_noi_dung — tiêu đề + người gửi + nội dung</text>
+  <text x="600" y="350" font-size="11.5" fill="#5a6884">hash_tep — danh sách “mã tệp : dung lượng”</text>
+  <text x="600" y="370" font-size="11.5" fill="#5a6884">hash_tong_hop — gộp hai mã trên lại</text>
+  <text x="600" y="396" font-size="11.5" fill="#65708a">Trùng nội dung nhưng tệp khác dung lượng</text>
+  <text x="600" y="410" font-size="11.5" fill="#65708a">vẫn được coi là một bản mới.</text>
+</svg>

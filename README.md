@@ -17,6 +17,43 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 ---
 
+## Tài liệu
+
+| Tài liệu | Nội dung |
+|---|---|
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 44 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
+| [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
+| [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
+| [Cài đặt bộ nhận mail](docs/HUONG-DAN-BO-NHAN-MAIL.md) | Chạy trên máy nhà / VPS |
+| [Lấy Client ID Gmail](docs/GMAIL-OAUTH.md) | Thao tác trên Google Cloud Console |
+| [Kiến trúc hệ thống](docs/KIEN-TRUC.md) | Cấu trúc lớp và mã nguồn |
+
+<p align="center">
+  <a href="docs/QUY-TRINH-KY-THUAT.md">
+    <img src="docs/hinh/so-do-kien-truc.svg" alt="Kiến trúc tổng thể" width="880">
+  </a>
+</p>
+
+---
+
+## Tải về
+
+Các bản đã đóng gói sẵn nằm ở mục
+**[Releases](https://github.com/tlearnvn/xuly-email-congviec/releases/latest)** — tải về là dùng
+được ngay, không phải tự biên dịch:
+
+| Tệp | Dùng cho | Cách dùng |
+|---|---|---|
+| `mailrouter-windows-x64-vX.Y.Z.zip` | Bộ nhận mail trên Windows 64-bit | Giải nén, nhấp đúp `mailrouter.exe` |
+| `mailrouter-linux-x64-vX.Y.Z.tar.gz` | Bộ nhận mail trên Linux 64-bit | Giải nén, chạy `./mailrouter giao-dien` |
+| `web-cpanel-vX.Y.Z.zip` | Phần web cho hosting cPanel | Giải nén vào `public_html`, mở `cai-dat.php` |
+| `SHA256SUMS.txt` | Mã băm để kiểm chứng tệp tải về | `sha256sum -c SHA256SUMS.txt` |
+
+Bộ nhận mail là **một tệp nhị phân duy nhất**, không cần cài thêm thư viện nào.
+
+---
+
 ## Hai phần của hệ thống
 
 | Phần | Ngôn ngữ | Chạy ở đâu | Vai trò |
@@ -121,6 +158,8 @@ Chi tiết: [docs/HUONG-DAN-BO-NHAN-MAIL.md](docs/HUONG-DAN-BO-NHAN-MAIL.md) ·
 │   └── assets/                 CSS + JS
 ├── scripts/                    Đóng gói, đánh số phiên bản, dịch vụ systemd, .bat
 ├── docs/                       Tài liệu tiếng Việt
+│   ├── hinh/                   Sơ đồ SVG và ảnh chụp màn hình
+│   └── pdf/                    Bản PDF trọn bộ (tông vàng mệnh Kim)
 └── dist/                       Gói phát hành (sinh ra khi chạy scripts/dong-goi.sh)
 ```
 
@@ -160,6 +199,29 @@ Mỗi lần chạy `scripts/dong-goi.sh`, **số build tự tăng** và được
 (`cpp/include/phien_ban.h`) lẫn phần PHP (`php/app/phien_ban.php`); số phiên bản hiển thị ở chân
 trang web và trên bảng điều khiển của bộ nhận mail.
 
+### Dựng lại bản PDF tài liệu
+
+```bash
+node scripts/tao-pdf.js
+```
+
+Đọc hai tệp `docs/QUY-TRINH-KY-THUAT.md` và `docs/HUONG-DAN-SU-DUNG.md`, dựng
+`docs/pdf/tai-lieu.html` rồi in ra `docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf`.
+Bước in cần một bản Chrome/Chromium (chỉ định bằng biến `CHROME=` nếu máy cài ở nơi khác) và gói
+`playwright-core`; không có thì mở tệp HTML rồi Ctrl+P cũng ra đúng bản đó.
+
+### Phát hành lên GitHub Releases
+
+```bash
+./scripts/phien-ban.sh bump patch "Nội dung thay đổi"   # cập nhật VERSION + README
+git commit -am "Phát hành 1.0.3" && git push
+git tag v1.0.3 && git push origin v1.0.3
+```
+
+Thẻ dạng `vX.Y.Z` sẽ kích hoạt workflow [`.github/workflows/phat-hanh.yml`](.github/workflows/phat-hanh.yml):
+GitHub tự biên dịch cả hai nền tảng, đóng gói phần web, tính SHA-256, rồi tạo bản phát hành kèm
+đủ tệp tải về. Workflow từ chối chạy nếu thẻ không khớp nội dung tệp `VERSION`.
+
 ---
 
 ## Yêu cầu hệ thống
@@ -179,6 +241,14 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.1.0 — 05/09/2026
+
+- **Tài liệu:** thêm bộ tài liệu đầy đủ — [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) và [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md), kèm 8 sơ đồ SVG và 19 ảnh chụp màn hình.
+- **Tài liệu:** xuất bản [bản PDF trọn bộ 44 trang](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf) tông vàng mệnh Kim, dựng bằng `scripts/tao-pdf.js`.
+- **Phát hành:** thêm workflow `.github/workflows/phat-hanh.yml` — đẩy thẻ `vX.Y.Z` là GitHub tự biên dịch Windows + Linux, đóng gói web và tạo bản phát hành kèm tệp tải về.
+- **Sửa lỗi giao diện:** các ô nhập trong biểu mẫu bị lệch nhau (rõ nhất ở trang *Chờ phân luồng tay*). Nguyên nhân: `.truong` dùng `display:flex` khiến dấu `*` bắt buộc rớt xuống dòng riêng; lớp `.truong.rong` trùng tên với `.rong` của khung báo trống; các ô `<input list=…>` không ghi `type` nên rơi về khung mặc định của trình duyệt.
+- **Sửa lỗi giao diện:** mọi ô nhập một dòng nay cùng cao 38px nên thanh lọc ở các trang Nhật ký, Thống kê, Tất cả văn bản đều thẳng hàng.
+
 ### 1.0.2 — 05/09/2026
 
 - **Giao diện:** mục *Tài khoản Gmail* hiển thị rõ token có tự gia hạn được hay không, để biết ngay có phải đăng nhập lại khi hết hạn hay không.

@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Hệ thống phân luồng Mail công vụ — Tài liệu kỹ thuật &amp; Hướng dẫn sử dụng</title>
+<style>
+:root{
+  --kim-dam:#7a5c15;      /* vàng đồng sẫm - chữ tiêu đề */
+  --kim:#a8811f;          /* vàng chủ đạo */
+  --kim-sang:#c9a227;     /* vàng sáng - đường viền, điểm nhấn */
+  --kim-anh:#e3c766;      /* ánh kim nhạt */
+  --kim-nhat:#f6eeda;     /* nền vàng rất nhạt */
+  --kem:#fdfaf3;          /* nền trang, màu kem */
+  --kem-dam:#f3ecdc;
+  --chu:#2f2a21;          /* chữ than ấm */
+  --chu-phu:#6b6152;
+  --chu-nhat:#948870;
+  --vien:#e6dcc4;
+}
+@page{ size:A4; margin:17mm 15mm 16mm 15mm; }
+
+*{box-sizing:border-box;}
+html{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+body{
+  margin:0; background:var(--kem); color:var(--chu);
+  font-family:"Segoe UI","Noto Sans","DejaVu Sans","Liberation Sans",Arial,sans-serif;
+  font-size:10.4pt; line-height:1.62;
+}
+h1,h2,h3,h4,.tieu-de-serif{
+  font-family:"Palatino Linotype",Palatino,Georgia,"Noto Serif","DejaVu Serif","Liberation Serif",serif;
+}
+
+/* ===================== BÌA ===================== */
+/* Cao đúng bằng vùng in của A4 (297 - 17 - 16) để bìa gọn trong một trang
+   và không đè lên đầu trang / chân trang do trình duyệt vẽ ở phần lề. */
+.bia{
+  height:264mm; page-break-after:always; position:relative; border-radius:2mm;
+  background:linear-gradient(155deg,#fdfaf3 0%,#f8f0dc 42%,#f1e4c2 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:0 20mm; overflow:hidden;
+}
+.bia::before{
+  content:""; position:absolute; top:0; left:0; right:0; height:9mm;
+  background:linear-gradient(90deg,var(--kim-dam),var(--kim-sang) 45%,var(--kim-anh) 70%,var(--kim-dam));
+}
+.bia::after{
+  content:""; position:absolute; bottom:0; left:0; right:0; height:4.5mm;
+  background:linear-gradient(90deg,var(--kim-dam),var(--kim-sang) 55%,var(--kim-dam));
+}
+.bia-vien{
+  position:absolute; top:15mm; left:10mm; right:10mm; bottom:10.5mm;
+  border:1.1pt solid var(--kim-sang); border-radius:2mm; pointer-events:none;
+}
+.bia-vien::before{
+  content:""; position:absolute; top:2.2mm; left:2.2mm; right:2.2mm; bottom:2.2mm;
+  border:0.5pt solid rgba(168,129,31,.45); border-radius:2mm;
+}
+.bia-dau{
+  width:26mm; height:26mm; border-radius:50%; margin-bottom:9mm;
+  background:linear-gradient(140deg,var(--kim-anh),var(--kim) 55%,var(--kim-dam));
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3mm 9mm rgba(122,92,21,.28);
+}
+.bia-dau svg{width:13mm;height:13mm;}
+.bia-don-vi{
+  font-size:11pt; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--kim-dam); font-weight:700; margin-bottom:2mm;
+}
+.bia-don-vi-2{ font-size:10.5pt; color:var(--chu-phu); margin-bottom:12mm; letter-spacing:.04em;}
+.bia h1{
+  font-size:30pt; line-height:1.22; color:var(--kim-dam); margin:0 0 5mm;
+  font-weight:700; letter-spacing:.005em;
+}
+.bia-gach{
+  width:52mm; height:1.6pt; margin:0 auto 6mm;
+  background:linear-gradient(90deg,transparent,var(--kim-sang),transparent);
+}
+.bia-phu{ font-size:13.5pt; color:var(--chu-phu); margin-bottom:16mm; line-height:1.6;}
+.bia-the{
+  display:inline-block; padding:2.4mm 8mm; border:1pt solid var(--kim-sang);
+  border-radius:20mm; background:rgba(255,255,255,.62);
+  font-size:10.5pt; color:var(--kim-dam); font-weight:600; letter-spacing:.05em;
+}
+.bia-chan{
+  position:absolute; bottom:19mm; left:0; right:0;
+  font-size:10pt; color:var(--chu-phu);
+}
+.bia-chan strong{color:var(--kim-dam);}
+
+/* ===================== MỤC LỤC ===================== */
+.ml{ page-break-after:always; padding-top:4mm; }
+.ml h2{
+  font-size:19pt; color:var(--kim-dam); margin:0 0 2mm; border:0; padding:0;
+  text-align:center; letter-spacing:.03em;
+}
+.ml-gach{width:38mm;height:1.4pt;margin:0 auto 9mm;
+  background:linear-gradient(90deg,transparent,var(--kim-sang),transparent);}
+.ml-phan{
+  display:flex; align-items:baseline; gap:4mm; margin:7mm 0 2.5mm;
+  padding-bottom:1.6mm; border-bottom:1pt solid var(--kim-sang);
+}
+.ml-so{
+  font-size:8.6pt; letter-spacing:.14em; text-transform:uppercase;
+  color:#fff; background:var(--kim); padding:.9mm 3mm; border-radius:8mm; font-weight:700;
+}
+.ml-phan a{ font-size:14pt; font-weight:700; color:var(--kim-dam); text-decoration:none;
+  font-family:"Palatino Linotype",Palatino,Georgia,"DejaVu Serif",serif;}
+.ml-ds{ list-style:none; margin:0; padding:0 0 0 2mm;
+  column-count:2; column-gap:9mm; }
+.ml-ds li{ padding:1.4mm 0; border-bottom:.4pt dotted var(--vien);
+  break-inside:avoid; page-break-inside:avoid; }
+.ml-ds a{ color:var(--chu); text-decoration:none; font-size:9.8pt; border:0; }
+
+/* ===================== BÌA PHẦN ===================== */
+.phan{ page-break-before:always; }
+.phan-bia{ text-align:center; padding:14mm 0 10mm; margin-bottom:6mm; }
+.phan-so{
+  display:inline-block; font-size:8.8pt; letter-spacing:.2em; font-weight:700;
+  color:#fff; background:linear-gradient(120deg,var(--kim),var(--kim-dam));
+  padding:1.4mm 6mm; border-radius:10mm; margin-bottom:5mm;
+}
+.phan-ten{ font-size:25pt; color:var(--kim-dam); margin:0 0 3mm; border:0; padding:0; }
+.phan-mo-ta{ font-size:11.5pt; color:var(--chu-phu); }
+.hoa-van{ display:flex; align-items:center; justify-content:center; gap:3mm; margin-top:7mm; }
+.hoa-van span{ display:block; height:1pt; width:26mm;
+  background:linear-gradient(90deg,transparent,var(--kim-sang)); }
+.hoa-van span:last-child{ background:linear-gradient(90deg,var(--kim-sang),transparent); }
+.hoa-van .giua{ width:3mm; height:3mm; background:var(--kim-sang);
+  transform:rotate(45deg); border-radius:.6mm; }
+
+/* ===================== NỘI DUNG ===================== */
+h1{ font-size:20pt; color:var(--kim-dam); margin:11mm 0 4mm; }
+/* Các mốc "Phần A / Phần B..." trong tài liệu con luôn bắt đầu trang mới */
+section.phan > h1{ page-break-before:always; margin-top:2mm; padding-bottom:2.5mm;
+  border-bottom:1.6pt solid var(--kim-sang); }
+h2{
+  font-size:15.5pt; color:var(--kim-dam); margin:9mm 0 3.5mm;
+  padding-bottom:2mm; border-bottom:1.1pt solid var(--kim-sang);
+  page-break-after:avoid;
+}
+h3{ font-size:12.4pt; color:#8d6c1a; margin:6.5mm 0 2.5mm; page-break-after:avoid; }
+h4{ font-size:11pt; color:var(--chu); margin:5mm 0 2mm; page-break-after:avoid; }
+p{ margin:0 0 3.2mm; text-align:justify; }
+p.dan-de{ font-weight:700; color:var(--kim-dam); margin-top:5mm; }
+a{ color:#8d6c1a; text-decoration:none; border-bottom:.4pt solid rgba(168,129,31,.4); }
+strong{ color:#453d2d; }
+hr{ border:0; height:1pt; margin:8mm 0;
+  background:linear-gradient(90deg,transparent,var(--kim-sang),transparent); }
+ul,ol{ margin:0 0 3.4mm; padding-left:6mm; }
+li{ margin-bottom:1.4mm; }
+li::marker{ color:var(--kim); }
+ul.ds-con,ol.ds-con{ margin:1.4mm 0 1mm; padding-left:5mm; }
+ul.ds-con>li{ margin-bottom:1mm; }
+
+code{
+  font-family:"Cascadia Mono",Consolas,"DejaVu Sans Mono","Liberation Mono",monospace;
+  font-size:.88em; background:var(--kim-nhat); color:#6d5310;
+  border:.4pt solid var(--vien); border-radius:1mm; padding:.3mm 1.2mm;
+  overflow-wrap:anywhere; word-break:break-word;
+}
+pre.ma{
+  background:#2f2a21; color:#f2e6c8; border-radius:2mm; padding:4mm 5mm;
+  overflow:hidden; margin:0 0 4mm; border-left:1.6mm solid var(--kim-sang);
+  page-break-inside:avoid;
+}
+pre.ma code{
+  background:none; border:0; padding:0; color:inherit; font-size:8.9pt; line-height:1.6;
+  white-space:pre-wrap; word-break:break-word;
+}
+
+blockquote{
+  margin:0 0 4mm; padding:3.2mm 5mm; background:var(--kim-nhat);
+  border-left:1.6mm solid var(--kim-sang); border-radius:0 2mm 2mm 0;
+  color:#5f5340; page-break-inside:avoid;
+}
+blockquote p{ margin:0; }
+
+.bang-bao{ margin:0 0 5mm; page-break-inside:avoid; }
+table{ width:100%; border-collapse:collapse; font-size:9.3pt; }
+thead th{
+  background:linear-gradient(120deg,var(--kim),var(--kim-dam)); color:#fff;
+  text-align:left; font-weight:700; padding:2.2mm 3mm; font-size:8.9pt;
+  letter-spacing:.03em;
+}
+thead th:first-child{ border-top-left-radius:1.6mm; }
+thead th:last-child{ border-top-right-radius:1.6mm; }
+tbody td{ padding:2mm 3mm; border-bottom:.4pt solid var(--vien); vertical-align:top; }
+tbody tr:nth-child(even){ background:#faf5e9; }
+tbody tr:last-child td{ border-bottom:1pt solid var(--kim-sang); }
+
+figure{ margin:0 0 6mm; page-break-inside:avoid; text-align:center; }
+figure img{ max-width:100%; height:auto; }
+figure.so-do img{ max-height:212mm; }
+figure.anh-chup img{
+  max-height:135mm; border:1pt solid var(--vien); border-radius:2mm;
+  box-shadow:0 1.4mm 5mm rgba(122,92,21,.14);
+}
+figcaption{
+  margin-top:2.4mm; font-size:8.8pt; color:var(--chu-nhat); font-style:italic;
+}
+</style>
+</head>
+<body>
+
+<div class="bia">
+  <div class="bia-vien"></div>
+  <div class="bia-dau">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fffdf5" stroke-width="1.7"
+         stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="4.5" width="20" height="15" rx="2.5"/>
+      <path d="M2.6 6.2 12 13.2 21.4 6.2"/>
+    </svg>
+  </div>
+  <div class="bia-don-vi">Sở Giáo dục và Đào tạo Đồng Nai</div>
+  <div class="bia-don-vi-2">Phòng Giáo dục Phổ thông — Giáo dục Thường xuyên</div>
+  <h1>Hệ thống phân luồng<br>Mail công vụ</h1>
+  <div class="bia-gach"></div>
+  <div class="bia-phu">Tài liệu quy trình kỹ thuật<br>và hướng dẫn sử dụng</div>
+  <div class="bia-the">Phiên bản 1.1.0 · build 7 · 05/09/2026</div>
+  <div class="bia-chan">Thiết kế bởi <strong>Trương Anh Tuấn</strong></div>
+</div>
+
+<div class="ml">
+  <h2>Mục lục</h2>
+  <div class="ml-gach"></div>
+  <div class="ml-phan"><span class="ml-so">Phần I</span><a href="#phan-I">Quy trình kỹ thuật</a></div><ul class="ml-ds"><li><a href="#kt-1-kiến-trúc-tổng-thể">1. Kiến trúc tổng thể</a></li><li><a href="#kt-2-quy-ước-mã-001001tat">2. Quy ước mã 001_001_TAT</a></li><li><a href="#kt-3-quy-trình-xử-lý-một-bức-thư">3. Quy trình xử lý một bức thư</a></li><li><a href="#kt-4-thuật-toán-phân-luồng-và-điểm-tin-cậy">4. Thuật toán phân luồng và điểm tin cậy</a></li><li><a href="#kt-5-cơ-chế-chống-trùng-lặp">5. Cơ chế chống trùng lặp</a></li><li><a href="#kt-6-cơ-sở-dữ-liệu">6. Cơ sở dữ liệu</a></li><li><a href="#kt-7-hai-cách-triển-khai">7. Hai cách triển khai</a></li><li><a href="#kt-8-đăng-nhập-gmail-và-vòng-đời-token">8. Đăng nhập Gmail và vòng đời token</a></li><li><a href="#kt-9-trợ-lý-ai">9. Trợ lý AI</a></li><li><a href="#kt-10-vòng-đời-một-công-việc">10. Vòng đời một công việc</a></li><li><a href="#kt-11-phân-quyền">11. Phân quyền</a></li><li><a href="#kt-12-nhật-ký-và-khả-năng-truy-vết">12. Nhật ký và khả năng truy vết</a></li><li><a href="#kt-13-những-quyết-định-thiết-kế-đáng-chú-ý">13. Những quyết định thiết kế đáng chú ý</a></li><li><a href="#kt-14-quy-trình-phát-hành-phiên-bản">14. Quy trình phát hành phiên bản</a></li><li><a href="#kt-xem-thêm">Xem thêm</a></li></ul><div class="ml-phan"><span class="ml-so">Phần II</span><a href="#phan-II">Hướng dẫn sử dụng</a></div><ul class="ml-ds"><li><a href="#hd-1-hệ-thống-làm-gì-cho-bạn">1. Hệ thống làm gì cho bạn</a></li><li><a href="#hd-2-đăng-nhập">2. Đăng nhập</a></li><li><a href="#hd-3-hộp-việc-của-tôi">3. Hộp việc của tôi</a></li><li><a href="#hd-4-xem-và-tải-văn-bản">4. Xem và tải văn bản</a></li><li><a href="#hd-5-đổi-mật-khẩu-và-thông-tin-cá-nhân">5. Đổi mật khẩu và thông tin cá nhân</a></li><li><a href="#hd-6-bảng-điều-khiển">6. Bảng điều khiển</a></li><li><a href="#hd-7-chờ-phân-luồng-tay">7. Chờ phân luồng tay</a></li><li><a href="#hd-8-thống-kê-nộp-báo-cáo">8. Thống kê nộp báo cáo</a></li><li><a href="#hd-9-quản-lý-danh-mục">9. Quản lý danh mục</a></li><li><a href="#hd-10-nhật-ký-hệ-thống">10. Nhật ký hệ thống</a></li><li><a href="#hd-11-cài-đặt-hệ-thống">11. Cài đặt hệ thống</a></li><li><a href="#hd-12-khởi-động-bộ-nhận-mail">12. Khởi động bộ nhận mail</a></li><li><a href="#hd-13-kết-nối-máy-chủ">13. Kết nối máy chủ</a></li><li><a href="#hd-14-đăng-nhập-gmail">14. Đăng nhập Gmail</a></li><li><a href="#hd-15-chạy-đồng-bộ-và-hẹn-giờ-tự-động">15. Chạy đồng bộ và hẹn giờ tự động</a></li><li><a href="#hd-16-cách-đặt-tên-tệp-khi-gửi-báo-cáo">16. Cách đặt tên tệp khi gửi báo cáo</a></li><li><a href="#hd-17-xử-lý-sự-cố-thường-gặp">17. Xử lý sự cố thường gặp</a></li><li><a href="#hd-18-câu-hỏi-thường-gặp">18. Câu hỏi thường gặp</a></li><li><a href="#hd-xem-thêm">Xem thêm</a></li></ul>
+</div>
+
+<section class="phan" id="phan-I"><div class="phan-bia"><div class="phan-so">PHẦN I</div><h1 class="phan-ten">Quy trình kỹ thuật</h1><div class="phan-mo-ta">Hệ thống hoạt động thế nào, vì sao thiết kế như vậy</div><div class="hoa-van"><span></span><span class="giua"></span><span></span></div></div><p class="dan-de">Hệ thống phân luồng Mail công vụ — Phòng GDPT-GDTX, Sở GD&amp;ĐT Đồng Nai</p>
+<p>Tài liệu này mô tả hệ thống làm việc như thế nào ở mức kỹ thuật: dữ liệu đi từ đâu tới đâu, mỗi bước quyết định điều gì, và vì sao lại thiết kế như vậy. Người đọc nhắm tới là cán bộ phụ trách công nghệ thông tin, người tiếp nhận bàn giao, hoặc người cần sửa đổi mã nguồn.</p>
+<hr>
+<h2 id="kt-1-kiến-trúc-tổng-thể">1. Kiến trúc tổng thể</h2>
+<p>Hệ thống gồm hai phần chạy trên hai máy khác nhau, gặp nhau ở một cơ sở dữ liệu MySQL chung.</p>
+<figure class="so-do"><img src="../hinh/so-do-kien-truc.svg" alt="Kiến trúc tổng thể"><figcaption>Kiến trúc tổng thể</figcaption></figure>
+<div class="bang-bao"><table><thead><tr><th>Thành phần</th><th>Ngôn ngữ</th><th>Chạy ở đâu</th><th>Nhiệm vụ</th></tr></thead><tbody><tr><td><strong>Bộ nhận mail</strong></td><td>C++17</td><td>Máy nhà hoặc VPS</td><td>Đọc Gmail, bóc tách, phân luồng, ghi vào CSDL</td></tr><tr><td><strong>Phần web</strong></td><td>PHP 7.4–8.4</td><td>Shared hosting cPanel</td><td>Người xử lý xem việc, quản trị điều hành, thống kê</td></tr><tr><td><strong>Cơ sở dữ liệu</strong></td><td>MySQL / MariaDB</td><td>Cùng máy chủ cPanel</td><td>Chứa toàn bộ dữ liệu, kể cả tệp đính kèm dạng BLOB</td></tr></tbody></table></div>
+<p>Ba nguyên tắc chi phối toàn bộ thiết kế:</p>
+<p><strong>Một là, không phụ thuộc thư viện ngoài.</strong> Bộ nhận mail viết bằng C++ thuần, tự cài đặt lấy mọi thứ cần dùng: bộ phân tích JSON, mã hoá base64, hàm băm SHA-1 và SHA-256, giao thức MySQL ở mức gói tin, và một máy chủ HTTP nhỏ để làm giao diện. Nhờ vậy sản phẩm là <strong>một tệp nhị phân duy nhất</strong>, chép sang máy khác là chạy, không cài đặt gì thêm, không lo xung đột phiên bản thư viện. Phần web cũng vậy: PHP thuần, không dùng composer, không framework.</p>
+<p><strong>Hai là, thư gốc không bao giờ bị đụng tới.</strong> Hệ thống xin quyền <code>gmail.readonly</code> — quyền chỉ đọc. Google sẽ từ chối mọi lệnh xoá hay sửa nhãn kể cả khi mã nguồn có lỗi. Hộp thư công vụ vẫn nguyên vẹn để đối chiếu về sau.</p>
+<p><strong>Ba là, mọi việc đều ghi nhật ký.</strong> Từ lúc kết nối máy chủ, đọc từng bức thư, đến lúc một cán bộ bấm nút "Đã xử lý" — đều có dòng nhật ký ghi lại thời điểm, nguồn, và người thực hiện.</p>
+<hr>
+<h2 id="kt-2-quy-ước-mã-001001tat">2. Quy ước mã <code>001_001_TAT</code></h2>
+<p>Đây là hạt nhân của toàn bộ hệ thống. Trường gửi báo cáo đặt tên tệp đính kèm (hoặc tiêu đề thư) theo đúng quy ước ba phần, hệ thống đọc ra và biết ngay phải chuyển cho ai.</p>
+<figure class="so-do"><img src="../hinh/so-do-ma-tep.svg" alt="Cấu trúc mã trong tên tệp"><figcaption>Cấu trúc mã trong tên tệp</figcaption></figure>
+<p>Ba phần được đối xử <strong>khác nhau một cách có chủ ý</strong>:</p>
+<div class="bang-bao"><table><thead><tr><th>Phần</th><th>Ý nghĩa</th><th>Mức chặt chẽ</th><th>Xử lý khi thiếu / sai</th></tr></thead><tbody><tr><td>Thứ nhất</td><td>Mã trường</td><td><strong>Bắt buộc</strong> có trong danh mục</td><td>Thử đoán qua email người gửi; không được thì đưa vào hàng chờ</td></tr><tr><td>Thứ hai</td><td>Mã văn bản / công việc</td><td><strong>Nới lỏng</strong></td><td>Mã lạ vẫn nhận, tự thêm vào danh mục với cờ "cần đặt tên chính thức"</td></tr><tr><td>Thứ ba</td><td>Mã người xử lý</td><td><strong>Bắt buộc</strong> có trong danh mục</td><td>Dùng người xử lý mặc định nếu đã cấu hình</td></tr></tbody></table></div>
+<p>Phần thứ hai được nới lỏng vì đây là yêu cầu thực tế: đầu năm học phát sinh loại báo cáo mới, văn thư chưa kịp cập nhật danh mục, nhưng các trường đã gửi rồi. Nếu hệ thống từ chối thì mất dữ liệu và mất luôn số liệu thống kê. Cách làm ở đây là <strong>vẫn nhận, vẫn đếm, đánh dấu để quản trị đặt tên sau</strong> — bảng danh mục sẽ hiện dòng đó với nhãn vàng <em>"Mã tự thêm — cần đặt tên chính thức"</em>.</p>
+<p><strong>Thứ tự tìm mã.</strong> Hệ thống tìm mã theo thứ tự ưu tiên giảm dần, dừng lại ở nguồn đầu tiên cho kết quả đủ tin cậy:</p>
+<ol><li><strong>Tên từng tệp đính kèm</strong> — chính xác nhất, vì mỗi tệp có thể thuộc một trường khác nhau</li><li><strong>Tiêu đề thư</strong> — dùng khi tên tệp không có mã</li><li><strong>Email người gửi</strong> — đối chiếu với cột <code>email</code> trong danh mục trường để đoán mã trường</li><li><strong>Trợ lý AI</strong> — nếu quản trị đã bật, và ba cách trên đều không ra kết quả</li></ol>
+<p>Vì bước 1 chạy trên <strong>từng tệp</strong>, một bức thư kèm ba tệp của ba trường khác nhau sẽ sinh ra ba công việc riêng cho ba người xử lý riêng — đúng như mong muốn.</p>
+<hr>
+<h2 id="kt-3-quy-trình-xử-lý-một-bức-thư">3. Quy trình xử lý một bức thư</h2>
+<figure class="so-do"><img src="../hinh/so-do-quy-trinh-thu.svg" alt="Quy trình xử lý một bức thư"><figcaption>Quy trình xử lý một bức thư</figcaption></figure>
+<p>Mỗi phiên đồng bộ, dù chạy theo lịch hay do người dùng bấm nút, đều đi qua đúng mười bước này. Phiên đồng bộ được ghi vào bảng <code>phien_dong_bo</code> với đầy đủ số liệu: bắt đầu lúc nào, kết thúc lúc nào, quét bao nhiêu thư, tạo bao nhiêu việc, gặp bao nhiêu lỗi.</p>
+<p>Điểm cần lưu ý ở <strong>bước 4 và bước 5</strong>: hệ thống tính mã băm và kiểm tra trùng <strong>trước khi</strong> phân luồng. Làm ngược lại sẽ tốn công gọi AI và tra danh mục cho những bức thư mà cuối cùng bị bỏ qua vì trùng.</p>
+<p>Truy vấn Gmail mặc định là <code>has:attachment newer_than:30d</code> — chỉ lấy thư có tệp đính kèm trong vòng 30 ngày. Quản trị đổi được trong mục <em>Phân luồng &amp; đồng bộ</em> của bộ nhận mail. Việc giới hạn 30 ngày giúp phiên đồng bộ đầu tiên không phải tải về toàn bộ lịch sử hộp thư.</p>
+<hr>
+<h2 id="kt-4-thuật-toán-phân-luồng-và-điểm-tin-cậy">4. Thuật toán phân luồng và điểm tin cậy</h2>
+<p>Đọc được ba cụm ký tự trong tên tệp chưa có nghĩa là đã tìm ra mã. Tên tệp <code>tai lieu khong ro.pdf</code> cũng tách được thành ba cụm <code>tai</code> / <code>lieu</code> / <code>khong</code>. Nếu tin ngay thì danh mục văn bản sẽ đầy rác.</p>
+<p>Vì vậy mỗi kết quả đọc được đều phải qua một <strong>thang điểm tin cậy</strong> từ 0 đến 1:</p>
+<div class="bang-bao"><table><thead><tr><th>Căn cứ</th><th>Điểm cộng</th></tr></thead><tbody><tr><td>Điểm nền — tách được ba phần</td><td>0,30</td></tr><tr><td>Mã trường khớp danh mục</td><td>+0,30</td></tr><tr><td>Mã người xử lý khớp danh mục (kể cả bí danh)</td><td>+0,30</td></tr><tr><td>Mã văn bản khớp danh mục</td><td>+0,10</td></tr><tr><td>Cả hai mã số đều là chữ số</td><td>+0,05</td></tr><tr><td>Đúng khuôn chuẩn <em>số _ có-chữ-số _ CHỮ-HOA</em></td><td>+0,20</td></tr></tbody></table></div>
+<p><strong>Ngưỡng chấp nhận là 0,55.</strong> Dưới ngưỡng, kết quả bị vứt bỏ và bức thư chuyển sang bước nhờ AI hoặc vào hàng chờ phân luồng tay. Quản trị chỉnh được ngưỡng này trong <em>Cài đặt → Trợ lý AI → Ngưỡng tin cậy</em>.</p>
+<p>Ngoài ngưỡng còn có <strong>một chốt chặn nữa dành riêng cho việc tự thêm mã văn bản</strong>. Hệ thống chỉ tự tạo mã văn bản mới khi hội đủ hai điều kiện:</p>
+<ul><li>Có ít nhất một <strong>căn cứ đáng tin</strong> khác trong cùng tên tệp — hoặc mã trường khớp danh mục, hoặc mã người xử lý khớp danh mục;</li><li>Bản thân mã văn bản <strong>phải chứa ít nhất một chữ số</strong>.</li></ul>
+<p>Nhờ hai chốt chặn này, <code>tai lieu khong ro.pdf</code> bị loại (không có căn cứ nào khớp danh mục, và <code>lieu</code> không có chữ số), trong khi <code>001_BC09_TAT.pdf</code> được nhận và <code>BC09</code> được tự thêm vào danh mục.</p>
+<p>Kết quả phân luồng được ghi vào cột <code>nguon_ma</code> của bảng <code>cong_viec</code> để về sau còn biết mã này lấy từ đâu: <code>ten_tep</code>, <code>tieu_de</code>, <code>nguoi_gui</code>, <code>ai</code>, hay <code>thu_cong</code>.</p>
+<hr>
+<h2 id="kt-5-cơ-chế-chống-trùng-lặp">5. Cơ chế chống trùng lặp</h2>
+<p>Đây là phần được yêu cầu kỹ nhất, vì thực tế các trường hay gửi lại: gửi nhầm rồi gửi lại, sửa file rồi gửi lại, hoặc bấm gửi hai lần.</p>
+<figure class="so-do"><img src="../hinh/so-do-chong-trung.svg" alt="Cây quyết định chống trùng lặp"><figcaption>Cây quyết định chống trùng lặp</figcaption></figure>
+<h3 id="kt-51-ba-mã-băm">5.1. Ba mã băm</h3>
+<p>Hệ thống tính ba mã băm SHA-256 cho mỗi bức thư:</p>
+<div class="bang-bao"><table><thead><tr><th>Mã băm</th><th>Tính từ</th><th>Trả lời câu hỏi</th></tr></thead><tbody><tr><td><code>hash_noi_dung</code></td><td>Tiêu đề (đã chuẩn hoá) + người gửi + nội dung thư</td><td>Nội dung thư có giống thư cũ không?</td></tr><tr><td><code>hash_tep</code></td><td>Danh sách <code>mã-băm-tệp : dung-lượng</code> đã sắp xếp</td><td>Bộ tệp đính kèm có giống hệt không?</td></tr><tr><td><code>hash_tong_hop</code></td><td>Gộp hai mã trên</td><td>Toàn bộ bức thư có trùng khít không?</td></tr></tbody></table></div>
+<p><em>Chuẩn hoá tiêu đề</em> nghĩa là bỏ các tiền tố <code>RE:</code>, <code>FW:</code>, <code>FWD:</code> (danh sách này sửa được trong Cài đặt), gộp khoảng trắng thừa, và chuyển về chữ thường. Nhờ vậy <code>Bao cao thang 9</code> và <code>RE: Bao cao thang 9</code> được coi là cùng một nội dung.</p>
+<h3 id="kt-52-ba-tình-huống">5.2. Ba tình huống</h3>
+<p>Ba mã băm cho phép phân biệt chính xác ba tình huống hoàn toàn khác nhau:</p>
+<p><strong>Thư mới hoàn toàn</strong> — <code>hash_noi_dung</code> chưa có trong kho. Lưu email, tạo công việc, đưa vào hộp việc, đếm vào thống kê "đã nộp".</p>
+<p><strong>Gửi lại y hệt</strong> — cả <code>hash_noi_dung</code> lẫn <code>hash_tep</code> đều trùng. Không tạo công việc mới, không lưu thêm tệp; chỉ tăng <code>so_lan_nhan</code> của công việc cũ lên một. Người xử lý không bị làm phiền bởi bản trùng.</p>
+<p><strong>Bản cập nhật</strong> — <code>hash_noi_dung</code> trùng nhưng <code>hash_tep</code> khác. Đây chính là trường hợp <em>"trùng nội dung nhưng tệp đính kèm khác dung lượng"</em>. Hệ thống lưu thành <strong>phiên bản mới</strong>: <code>phien_ban</code> của bản mới bằng bản cũ cộng một, bản cũ bị hạ cờ <code>la_ban_moi_nhat</code> xuống 0 nhưng <strong>vẫn được giữ nguyên</strong>. Người xử lý nhìn thấy bản mới nhất trước, và vẫn mở xem được bản cũ khi cần đối chiếu.</p>
+<h3 id="kt-53-kho-tệp-lưu-theo-nội-dung">5.3. Kho tệp lưu theo nội dung</h3>
+<p>Bảng <code>tep_du_lieu</code> là một kho lưu theo nội dung (<em>content-addressed store</em>): khoá là <code>hash_tep</code> được đặt UNIQUE, giá trị là khối <code>LONGBLOB</code>.</p>
+<p>Khi lưu một tệp, hệ thống băm nội dung tệp trước. Nếu mã băm đó đã có, nó <strong>không ghi thêm byte nào</strong> — chỉ tăng <code>so_tham_chieu</code> lên một và trỏ bản ghi <code>tep_dinh_kem</code> mới về khối dữ liệu cũ. Hệ quả rất đáng kể trong thực tế: một công văn của Sở được 12 trường tải về rồi gửi kèm lại trong báo cáo của mình chỉ chiếm <strong>một</strong> chỗ trong CSDL thay vì 12 chỗ.</p>
+<p>Khi xoá, <code>so_tham_chieu</code> giảm dần; khối dữ liệu chỉ thực sự bị xoá khi số này về 0.</p>
+<h3 id="kt-54-ghi-khối-blob-lớn-vào-mysql">5.4. Ghi khối BLOB lớn vào MySQL</h3>
+<p>Hosting cPanel thường đặt <code>max_allowed_packet</code> khá nhỏ (1–16 MB). Một tệp đính kèm 30 MB không thể ghi bằng một câu lệnh. Bộ nhận mail xử lý bằng cách chèn dòng rỗng trước, rồi nối thêm từng khối:</p>
+<pre class="ma ma-sql"><code>UPDATE tep_du_lieu SET noi_dung = CONCAT(noi_dung, X'....') WHERE id = ?</code></pre>
+<p>Kích thước mỗi khối được tính từ <code>max_allowed_packet</code> đọc được của chính máy chủ, trừ hao phần dư cho câu lệnh. Sau khi ghi xong, hệ thống đọc lại độ dài và mã băm để <strong>kiểm chứng tệp còn nguyên vẹn</strong> trước khi báo thành công.</p>
+<hr>
+<h2 id="kt-6-cơ-sở-dữ-liệu">6. Cơ sở dữ liệu</h2>
+<figure class="so-do"><img src="../hinh/so-do-csdl.svg" alt="Sơ đồ cơ sở dữ liệu"><figcaption>Sơ đồ cơ sở dữ liệu</figcaption></figure>
+<p>Toàn bộ 15 bảng dùng <code>utf8mb4</code> / <code>utf8mb4_unicode_ci</code> và <code>ROW_FORMAT=DYNAMIC</code>, tương thích ngược tới MySQL 5.7 và MariaDB 10.3 — mức phổ biến nhất trên shared hosting hiện nay.</p>
+<p>Kết nối được đặt <code>SET time_zone = '+07:00'</code> ngay sau khi mở, nên mọi mốc thời gian trong CSDL đều là <strong>giờ Việt Nam</strong>, không phải giờ máy chủ.</p>
+<h3 id="kt-61-vì-sao-lưu-tệp-trong-csdl-thay-vì-trong-thư-mục">6.1. Vì sao lưu tệp trong CSDL thay vì trong thư mục?</h3>
+<p>Đây là quyết định được cân nhắc kỹ, vì lưu BLOB trong CSDL thường bị coi là phản mẫu. Lý do chọn cách này:</p>
+<ul><li><strong>Sao lưu trọn gói.</strong> Một lệnh <code>mysqldump</code> là có đủ dữ liệu lẫn tệp. Không sợ cảnh sao lưu CSDL xong quên mất thư mục <code>uploads/</code>, đến khi phục hồi thì mất hết tệp.</li><li><strong>Chống trùng ở mức nội dung.</strong> Ràng buộc UNIQUE trên <code>hash_tep</code> do chính CSDL bảo đảm, không phụ thuộc vào việc mã ứng dụng có kiểm tra đúng hay không.</li><li><strong>Tính toàn vẹn giao dịch.</strong> Bản ghi công việc và tệp đính kèm cùng vào ra trong một giao dịch — không có cảnh tệp nằm chỏng chơ mà không có bản ghi nào trỏ tới.</li><li><strong>Hosting cPanel thường siết quyền ghi thư mục</strong> nhưng lại rộng rãi với dung lượng CSDL.</li></ul>
+<p>Đổi lại phải chấp nhận: câu truy vấn lấy danh sách <strong>không bao giờ</strong> được <code>SELECT *</code> trên bảng có BLOB. Toàn bộ mã nguồn tuân thủ nguyên tắc này — cột <code>noi_dung</code> chỉ được đọc đúng lúc người dùng bấm xem hoặc tải tệp.</p>
+<h3 id="kt-62-ba-mối-quan-hệ-chính">6.2. Ba mối quan hệ chính</h3>
+<ul><li><code>email</code> <strong>1 — n</strong> <code>cong_viec</code>: một thư sinh ra nhiều việc (mỗi tệp một trường khác nhau)</li><li><code>tep_dinh_kem</code> <strong>n — 1</strong> <code>tep_du_lieu</code>: nhiều tên tệp trỏ về cùng một khối nội dung</li><li><code>cong_viec.id_van_ban</code> <strong>→</strong> <code>van_ban.id</code>: quan hệ được nới lỏng, mã lạ sinh dòng mới tự động</li></ul>
+<hr>
+<h2 id="kt-7-hai-cách-triển-khai">7. Hai cách triển khai</h2>
+<figure class="so-do"><img src="../hinh/so-do-trien-khai.svg" alt="Hai cách triển khai"><figcaption>Hai cách triển khai</figcaption></figure>
+<p>Bộ nhận mail hỗ trợ hai chế độ lưu trữ, chọn trong mục <em>Kết nối máy chủ</em> của giao diện.</p>
+<p><strong>Cách A — MySQL trực tiếp.</strong> Bộ nhận mail nói chuyện thẳng với MySQL qua cổng 3306 bằng giao thức gói tin tự cài đặt (hỗ trợ cả <code>mysql_native_password</code> và đường nhanh của <code>caching_sha2_password</code>). Nhanh nhất, ít mắt xích nhất. Điều kiện: hosting phải bật <em>Remote MySQL</em> và khai báo IP của máy chạy bộ nhận mail.</p>
+<p><strong>Cách B — Qua API PHP.</strong> Bộ nhận mail gửi dữ liệu qua HTTPS tới <code>api/ingest.php</code> trên chính hosting. Tệp lớn được chia thành nhiều khối base64, mỗi khối được kiểm lại bằng SHA-256 ở phía máy chủ. Cách này <strong>được khuyên dùng cho hosting phổ thông</strong>: không cần mở cổng nào, IP nhà thay đổi cũng không sao, và MySQL không phải phơi ra Internet.</p>
+<p>Hai cách cho ra dữ liệu <strong>giống hệt nhau</strong>. Đổi qua lại bất cứ lúc nào mà không phải nhập lại dữ liệu cũ.</p>
+<h3 id="kt-khoá-api">Khoá API</h3>
+<p>Chế độ B được bảo vệ bằng một khoá API sinh ngẫu nhiên, xem trong <em>Cài đặt → Kết nối bộ nhận mail</em> của trang web. Mỗi yêu cầu tải lên đều phải kèm khoá này. Đổi khoá bất cứ lúc nào, chỉ cần dán lại vào bộ nhận mail.</p>
+<hr>
+<h2 id="kt-8-đăng-nhập-gmail-và-vòng-đời-token">8. Đăng nhập Gmail và vòng đời token</h2>
+<figure class="anh-chup"><img src="../hinh/bnm-03-gmail.png" alt="Tài khoản Gmail trong bộ nhận mail"><figcaption>Tài khoản Gmail trong bộ nhận mail</figcaption></figure>
+<p>Hệ thống hỗ trợ hai cách đăng nhập:</p>
+<p><strong>Cách 1 — Từ đầu bằng Client ID và Client Secret.</strong> Người dùng dán hai giá trị lấy từ Google Cloud Console, bấm <em>Đăng nhập Google</em>. Bộ nhận mail mở trình duyệt tới trang cấp quyền của Google, đồng thời lắng nghe ở <code>http://127.0.0.1:8899/oauth/callback</code> (luồng <em>loopback</em> dành cho ứng dụng cài đặt trên máy). Google trả về mã, bộ nhận mail đổi lấy <code>access_token</code> và <code>refresh_token</code>.</p>
+<p><strong>Cách 2 — Dán sẵn token.</strong> Nếu đã có <code>access_token</code> và <code>refresh_token</code> từ nơi khác, dán thẳng vào là dùng được ngay, không cần Client ID.</p>
+<h3 id="kt-có-phải-đăng-nhập-lại-khi-token-hết-hạn-không">Có phải đăng nhập lại khi token hết hạn không?</h3>
+<p><strong>Không</strong>, miễn là có <code>refresh_token</code>. Access token của Google chỉ sống khoảng một giờ, nhưng refresh token thì lâu dài. Trước mỗi lần gọi API, bộ nhận mail kiểm tra:</p>
+<pre class="ma"><code>token còn hạn (trừ hao 120 giây)?   → dùng luôn
+không còn hạn nhưng có refresh?     → tự đổi lấy token mới, ghi vào tệp cấu hình
+không có refresh, chỉ có access?    → dùng tới khi Google từ chối</code></pre>
+<p>Ngoài ra còn một lớp bảo vệ nữa: nếu Gmail trả về lỗi <code>401</code> giữa chừng, hệ thống tự làm mới token rồi <strong>thử lại đúng yêu cầu đó một lần</strong> trước khi báo lỗi.</p>
+<p>Giao diện hiển thị rõ tình trạng này ở dòng <em>Gia hạn</em>: chữ xanh <strong>"Tự gia hạn — không cần đăng nhập lại"</strong> khi có refresh token, chữ đỏ <strong>"Phải đăng nhập lại (thiếu refresh token)"</strong> khi chỉ có access token.</p>
+<p>Chi tiết cách lấy Client ID xem <a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/GMAIL-OAUTH.md">docs/GMAIL-OAUTH.md</a>.</p>
+<hr>
+<h2 id="kt-9-trợ-lý-ai">9. Trợ lý AI</h2>
+<figure class="anh-chup"><img src="../hinh/web-11-cai-dat-ai.png" alt="Cài đặt trợ lý AI"><figcaption>Cài đặt trợ lý AI</figcaption></figure>
+<p>Trợ lý AI <strong>chỉ chạy khi cách đọc thông thường thất bại</strong> — nghĩa là điểm tin cậy dưới ngưỡng. Đây là lựa chọn có chủ ý: đại đa số thư đặt tên đúng quy ước, gọi AI cho mọi thư vừa chậm vừa tốn tiền mà không thêm được gì.</p>
+<p>Hệ thống dùng giao thức <strong>OpenAI compatible</strong>, nên chạy được với OpenAI, Azure OpenAI, Groq, Together, OpenRouter, và cả mô hình chạy tại chỗ qua Ollama hay LM Studio. Tất cả thông số đều tuỳ chỉnh:</p>
+<div class="bang-bao"><table><thead><tr><th>Thông số</th><th>Giới hạn</th><th>Ghi chú</th></tr></thead><tbody><tr><td>Địa chỉ API</td><td>—</td><td>Ví dụ <code>https://api.openai.com/v1</code> hoặc <code>http://localhost:11434/v1</code></td></tr><tr><td>Model</td><td>—</td><td>Ví dụ <code>gpt-4o-mini</code></td></tr><tr><td>Số token tối đa</td><td>≤ 64000</td><td></td></tr><tr><td>Thời gian chờ</td><td>≤ 300 giây</td><td></td></tr><tr><td>Temperature</td><td>0 – 2</td><td>Nên để thấp (0,1) cho tác vụ trích xuất</td></tr><tr><td>Ngưỡng tin cậy</td><td>0 – 1</td><td>Dưới ngưỡng thì vào hàng chờ phân luồng tay</td></tr></tbody></table></div>
+<p>Câu nhắc hệ thống cũng sửa được. Mặc định, AI được đưa danh mục trường và danh mục người xử lý làm ngữ cảnh, và được yêu cầu <strong>chỉ trả lời bằng JSON</strong>. Kết quả AI đưa ra vẫn phải qua đúng thang điểm tin cậy như mọi nguồn khác — AI không có đặc quyền bỏ qua kiểm tra.</p>
+<p>Lý do AI phán đoán được ghi vào cột <code>ghi_chu_ai</code> và hiện lên trang phân luồng tay, để quản trị nhìn thấy AI đã "nghĩ" gì trước khi quyết định.</p>
+<p><strong>Không bật AI thì hệ thống vẫn chạy đầy đủ</strong>, chỉ là những thư khó đọc sẽ vào thẳng hàng chờ phân luồng tay.</p>
+<hr>
+<h2 id="kt-10-vòng-đời-một-công-việc">10. Vòng đời một công việc</h2>
+<figure class="so-do"><img src="../hinh/so-do-trang-thai.svg" alt="Vòng đời một công việc"><figcaption>Vòng đời một công việc</figcaption></figure>
+<p>Điểm dễ nhầm: <strong>trường được tính là "đã nộp" ngay khi công việc được tạo</strong>, không phải đợi cán bộ xử lý xong. Thống kê trả lời câu hỏi <em>"trường nào đã gửi báo cáo?"</em>, chứ không phải <em>"cán bộ đã làm xong chưa?"</em>.</p>
+<p>Hệ quả cần lưu ý: những việc còn nằm ở <strong>Chờ phân luồng</strong> chưa gắn với trường nào nên chưa vào thống kê. Vì vậy quản trị nên dọn hàng chờ mỗi ngày, nếu không số liệu "chưa nộp" sẽ cao hơn thực tế.</p>
+<hr>
+<h2 id="kt-11-phân-quyền">11. Phân quyền</h2>
+<figure class="so-do"><img src="../hinh/so-do-phan-quyen.svg" alt="Ba vai trò và quyền hạn"><figcaption>Ba vai trò và quyền hạn</figcaption></figure>
+<p>Phân quyền được kiểm tra ở <strong>phía máy chủ trong bộ điều khiển</strong>, không phải bằng cách ẩn nút trên giao diện. Người dùng gõ thẳng địa chỉ của một trang không được phép sẽ nhận thông báo từ chối, chứ không vào được.</p>
+<p>Riêng người xử lý còn bị giới hạn thêm ở mức truy vấn: câu lệnh lấy danh sách việc luôn kèm điều kiện <code>id_nguoi_xu_ly = &lt;id của chính người đang đăng nhập&gt;</code>, nên không có đường nào để xem trộm việc của người khác.</p>
+<hr>
+<h2 id="kt-12-nhật-ký-và-khả-năng-truy-vết">12. Nhật ký và khả năng truy vết</h2>
+<figure class="anh-chup"><img src="../hinh/web-10-nhat-ky.png" alt="Nhật ký hệ thống"><figcaption>Nhật ký hệ thống</figcaption></figure>
+<p>Bảng <code>nhat_ky</code> ghi lại mọi hoạt động với bốn mức: <strong>Gỡ lỗi</strong>, <strong>Thông tin</strong>, <strong>Cảnh báo</strong>, <strong>Lỗi</strong>. Mỗi dòng có thời gian (giờ Việt Nam), nguồn (<code>web</code> / <code>mailrouter</code> / <code>api</code>), hành động, nội dung, địa chỉ IP, và người thực hiện nếu có.</p>
+<p>Quản trị lọc theo mức, theo nguồn, theo khoảng ngày, hoặc tìm theo từ khoá. Mức ghi tối thiểu đặt trong <em>Cài đặt → Nhật ký</em>; chọn <em>Gỡ lỗi</em> khi cần dò tìm sự cố, còn bình thường để <em>Thông tin</em> cho gọn.</p>
+<p>Nhật ký cũ hơn số ngày cấu hình sẽ bị xoá khi bấm <em>Dọn nhật ký cũ</em>. Đặt 0 để giữ mãi.</p>
+<p>Bộ nhận mail còn ghi thêm nhật ký ra tệp trong thư mục <code>nhat_ky/</code> cạnh tệp chạy, hữu ích khi chưa kết nối được CSDL — chính lúc cần xem nhật ký nhất.</p>
+<hr>
+<h2 id="kt-13-những-quyết-định-thiết-kế-đáng-chú-ý">13. Những quyết định thiết kế đáng chú ý</h2>
+<p><strong>Giao diện của bộ nhận mail là một trang web nhúng.</strong> Thay vì dùng Qt hay wxWidgets (kéo theo hàng chục megabyte thư viện), bộ nhận mail chạy một máy chủ HTTP nhỏ ở <code>127.0.0.1:8899</code> và phục vụ HTML/CSS/JS đã được nhúng thẳng vào tệp nhị phân lúc biên dịch. Người dùng mở trình duyệt là thấy giao diện. Được ba cái lợi: giao diện đẹp và hiện đại mà không tốn dung lượng, mã giao diện dùng chung cách viết với phần web, và có thể điều khiển từ xa qua SSH tunnel khi cần.</p>
+<p>Máy chủ này <strong>chỉ lắng nghe ở <code>127.0.0.1</code></strong>, không lộ ra mạng.</p>
+<p><strong>Chấm điểm tin cậy thay vì so khớp cứng.</strong> Bản đầu tiên chỉ tách chuỗi rồi tin ngay, kết quả là <code>tai lieu khong ro.pdf</code> bị đọc thành mã văn bản <code>lieu</code> và làm bẩn danh mục. Thang điểm cùng ngưỡng 0,55 là cách xử lý gọn cho vấn đề này mà vẫn giữ được sự linh hoạt của danh mục nới lỏng.</p>
+<p><strong>Số phiên bản tự tăng.</strong> Hai tệp <code>VERSION</code> và <code>BUILD</code> ở gốc kho mã là nguồn duy nhất; kịch bản <code>scripts/phien-ban.sh</code> sinh ra <code>cpp/include/phien_ban.h</code> và <code>php/app/phien_ban.php</code> từ đó. Số phiên bản hiện ở chân trang web, trong giao diện bộ nhận mail, và trong tham số <code>?v=</code> của tệp CSS/JS — nên <strong>người dùng không bao giờ phải xoá cache trình duyệt</strong> sau khi nâng cấp.</p>
+<p><strong>Chống trùng trong cùng một phiên.</strong> Ngoài việc so với dữ liệu đã có trong kho, hệ thống còn nhớ các mã băm đã gặp <strong>trong chính phiên đang chạy</strong>, phòng trường hợp hai bản sao của cùng một thư nằm cạnh nhau trong cùng một lần quét.</p>
+<hr>
+<h2 id="kt-14-quy-trình-phát-hành-phiên-bản">14. Quy trình phát hành phiên bản</h2>
+<pre class="ma ma-bash"><code># Xem phiên bản hiện tại
+./scripts/phien-ban.sh doc
+
+# Tăng số vá lỗi và ghi thẳng vào mục "Lịch sử phiên bản" của README
+./scripts/phien-ban.sh bump patch "Sửa lỗi canh lề biểu mẫu" "Thêm tài liệu kỹ thuật"
+
+# Đóng gói cả ba bản: Linux, Windows, web cPanel
+./scripts/dong-goi.sh --khong-bump</code></pre>
+<p>Kết quả nằm trong <code>dist/</code>:</p>
+<div class="bang-bao"><table><thead><tr><th>Tệp</th><th>Nội dung</th></tr></thead><tbody><tr><td><code>mailrouter-linux-x64-vX.Y.Z.tar.gz</code></td><td>Bộ nhận mail cho Linux 64-bit, liên kết tĩnh</td></tr><tr><td><code>mailrouter-windows-x64-vX.Y.Z.zip</code></td><td>Bộ nhận mail cho Windows 64-bit, một tệp <code>.exe</code></td></tr><tr><td><code>web-cpanel-vX.Y.Z.zip</code></td><td>Toàn bộ phần web, giải nén thẳng vào <code>public_html</code></td></tr></tbody></table></div>
+<p>Bản Windows được biên dịch chéo bằng <code>mingw-w64</code> và liên kết tĩnh hoàn toàn, chỉ phụ thuộc <code>KERNEL32</code>, <code>SHELL32</code>, <code>WINHTTP</code>, <code>WS2_32</code> và <code>msvcrt</code> — đều có sẵn trong mọi bản Windows.</p>
+<hr>
+<h2 id="kt-xem-thêm">Xem thêm</h2>
+<div class="bang-bao"><table><thead><tr><th>Tài liệu</th><th>Nội dung</th></tr></thead><tbody><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/HUONG-DAN-SU-DUNG.md">Hướng dẫn sử dụng</a></td><td>Dùng hàng ngày, từng màn hình một</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/KIEN-TRUC.md">Kiến trúc hệ thống</a></td><td>Cấu trúc lớp và mã nguồn</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/HUONG-DAN-WEB-CPANEL.md">Cài đặt web trên cPanel</a></td><td>Từng bước lên hosting</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/HUONG-DAN-BO-NHAN-MAIL.md">Cài đặt bộ nhận mail</a></td><td>Chạy trên máy nhà / VPS</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/GMAIL-OAUTH.md">Lấy Client ID Gmail</a></td><td>Thao tác trên Google Cloud Console</td></tr></tbody></table></div>
+<hr></section>
+<section class="phan" id="phan-II"><div class="phan-bia"><div class="phan-so">PHẦN II</div><h1 class="phan-ten">Hướng dẫn sử dụng</h1><div class="phan-mo-ta">Dùng hàng ngày, đi lần lượt từng màn hình</div><div class="hoa-van"><span></span><span class="giua"></span><span></span></div></div><p class="dan-de">Hệ thống phân luồng Mail công vụ — Phòng GDPT-GDTX, Sở GD&amp;ĐT Đồng Nai</p>
+<p>Tài liệu này hướng dẫn dùng hệ thống hàng ngày, đi lần lượt từng màn hình kèm ảnh minh hoạ. Không cần biết lập trình vẫn theo được.</p>
+<hr>
+<h1 id="hd-phần-a-dành-cho-cán-bộ-xử-lý-văn-bản">Phần A — Dành cho cán bộ xử lý văn bản</h1>
+<h2 id="hd-1-hệ-thống-làm-gì-cho-bạn">1. Hệ thống làm gì cho bạn</h2>
+<p>Các trường gửi báo cáo về hộp thư công vụ của Phòng. Trước đây phải có người mở từng mail, đọc tên tệp, rồi chuyển tay cho đúng cán bộ. Hệ thống này làm thay việc đó: nó đọc tên tệp đính kèm theo quy ước <code>001_001_TAT</code>, tra danh mục, rồi <strong>tự đưa văn bản vào hộp việc của đúng người</strong>.</p>
+<p>Việc của bạn chỉ còn là: đăng nhập, mở hộp việc, xử lý, đánh dấu đã xong.</p>
+<p>Thư gốc trên Gmail <strong>không bị xoá</strong>, nên lúc nào cần đối chiếu vẫn mở hộp thư ra xem được.</p>
+<hr>
+<h2 id="hd-2-đăng-nhập">2. Đăng nhập</h2>
+<p>Mở địa chỉ web của hệ thống, bạn sẽ thấy màn hình đăng nhập:</p>
+<figure class="anh-chup"><img src="../hinh/web-01-dang-nhap.png" alt="Màn hình đăng nhập"><figcaption>Màn hình đăng nhập</figcaption></figure>
+<ul><li><strong>Tên đăng nhập</strong> — do quản trị cấp, thường là mã viết tắt của bạn (ví dụ <code>tat</code>)</li><li><strong>Mật khẩu</strong> — lần đầu quản trị cấp, bạn nên đổi ngay</li><li><strong>Ghi nhớ đăng nhập trên máy này</strong> — chỉ tích khi dùng máy riêng của mình</li></ul>
+<p>Bấm biểu tượng con mắt bên phải ô mật khẩu để xem lại mật khẩu vừa gõ, phòng khi gõ nhầm.</p>
+<blockquote><strong>Lưu ý an toàn:</strong> không tích "Ghi nhớ đăng nhập" trên máy dùng chung. Xong việc nhớ bấm đăng xuất ở góc dưới bên trái.</blockquote>
+<hr>
+<h2 id="hd-3-hộp-việc-của-tôi">3. Hộp việc của tôi</h2>
+<p>Đây là màn hình bạn dùng nhiều nhất. Nó chỉ hiện những văn bản được giao cho <strong>riêng bạn</strong> — không thấy việc của người khác, và người khác cũng không thấy việc của bạn.</p>
+<figure class="anh-chup"><img src="../hinh/web-03-hop-viec.png" alt="Hộp việc của tôi"><figcaption>Hộp việc của tôi</figcaption></figure>
+<p>Mỗi dòng cho biết:</p>
+<div class="bang-bao"><table><thead><tr><th>Cột</th><th>Ý nghĩa</th></tr></thead><tbody><tr><td><strong>Trường</strong></td><td>Trường nào gửi</td></tr><tr><td><strong>Văn bản</strong></td><td>Loại báo cáo / công việc</td></tr><tr><td><strong>Tiêu đề</strong></td><td>Tiêu đề bức thư gốc</td></tr><tr><td><strong>Tệp</strong></td><td>Số tệp đính kèm</td></tr><tr><td><strong>Ngày nhận</strong></td><td>Giờ Việt Nam</td></tr><tr><td><strong>Trạng thái</strong></td><td>Chờ xử lý · Đang xử lý · Đã xử lý</td></tr></tbody></table></div>
+<p>Con số màu cam cạnh chữ <em>"Hộp việc của tôi"</em> ở thanh bên trái là <strong>số việc chưa xử lý</strong>. Nhìn con số đó là biết ngay còn bao nhiêu việc đang chờ.</p>
+<p>Dùng thanh lọc phía trên để tìm nhanh theo trường, theo loại văn bản, theo trạng thái, hoặc theo khoảng ngày.</p>
+<hr>
+<h2 id="hd-4-xem-và-tải-văn-bản">4. Xem và tải văn bản</h2>
+<p>Bấm vào một dòng bất kỳ để mở trang chi tiết:</p>
+<figure class="anh-chup"><img src="../hinh/web-04-chi-tiet-van-ban.png" alt="Chi tiết văn bản"><figcaption>Chi tiết văn bản</figcaption></figure>
+<p>Trang này có đủ mọi thứ về bức thư:</p>
+<ul><li><strong>Thông tin chung</strong> — trường, mã văn bản, người gửi, ngày nhận, người xử lý</li><li><strong>Nội dung thư gốc</strong> — nguyên văn, không bị cắt xén</li><li><strong>Danh sách tệp đính kèm</strong> — mỗi tệp có hai nút:</li><ul class="ds-con"><li><strong>Xem</strong> — mở ngay trong trình duyệt (dùng được với PDF, ảnh, văn bản)</li><li><strong>Tải về</strong> — lưu tệp xuống máy</li></ul></ul>
+<p>Xử lý xong, bấm nút <strong>Đánh dấu đã xử lý</strong>. Muốn ghi lại điều gì cho người sau đọc thì gõ vào ô ghi chú trước khi bấm.</p>
+<blockquote><strong>Nếu thấy nhãn "Bản cập nhật lần 2"</strong> thì nghĩa là trường đã sửa tệp rồi gửi lại. Hệ thống hiển thị bản mới nhất trước, nhưng bản cũ vẫn còn nguyên để bạn đối chiếu khi cần.</blockquote>
+<hr>
+<h2 id="hd-5-đổi-mật-khẩu-và-thông-tin-cá-nhân">5. Đổi mật khẩu và thông tin cá nhân</h2>
+<p>Bấm vào tên bạn ở góc dưới bên trái để vào trang hồ sơ:</p>
+<figure class="anh-chup"><img src="../hinh/web-13-ho-so.png" alt="Hồ sơ cá nhân"><figcaption>Hồ sơ cá nhân</figcaption></figure>
+<p>Ở đây bạn:</p>
+<ul><li>Xem <strong>mã người xử lý</strong> của mình — chính là ba chữ cuối trong tên tệp mà các trường phải gõ</li><li>Xem <strong>bí danh khác</strong> — các cách viết tắt khác mà hệ thống cũng nhận cho bạn</li><li>Sửa họ tên, email, điện thoại, chức vụ</li><li><strong>Đổi mật khẩu</strong> — nên dùng ít nhất 6 ký tự, có cả chữ hoa, chữ thường, số và ký tự đặc biệt</li></ul>
+<hr>
+<h1 id="hd-phần-b-dành-cho-quản-trị">Phần B — Dành cho quản trị</h1>
+<h2 id="hd-6-bảng-điều-khiển">6. Bảng điều khiển</h2>
+<p>Đăng nhập bằng tài khoản quản trị, màn hình đầu tiên là bảng điều khiển:</p>
+<figure class="anh-chup"><img src="../hinh/web-02-bang-dieu-khien.png" alt="Bảng điều khiển"><figcaption>Bảng điều khiển</figcaption></figure>
+<p>Bốn thẻ trên cùng cho biết nhanh: tổng số văn bản, số việc đang chờ xử lý, số việc chờ phân luồng tay, và số trường đã nộp trong kỳ.</p>
+<p>Bên dưới là biểu đồ tròn phân bố theo trạng thái, biểu đồ cột theo từng người xử lý, và danh sách văn bản mới nhận gần nhất.</p>
+<p><strong>Việc nên làm mỗi ngày:</strong> nhìn con số <em>"Chờ phân luồng"</em>. Nếu lớn hơn 0 thì vào xử lý ngay, vì những việc đó chưa được tính vào thống kê nộp báo cáo.</p>
+<hr>
+<h2 id="hd-7-chờ-phân-luồng-tay">7. Chờ phân luồng tay</h2>
+<p>Đây là nơi chứa những bức thư mà hệ thống không đọc được mã — thường vì trường đặt tên tệp không theo quy ước.</p>
+<figure class="anh-chup"><img src="../hinh/web-06-phan-luong-tay.png" alt="Chờ phân luồng tay"><figcaption>Chờ phân luồng tay</figcaption></figure>
+<p>Bấm nút <strong>Phân luồng</strong> ở cuối dòng để mở biểu mẫu. Bạn sẽ thấy nội dung thư, danh sách tệp đính kèm, và ba ô cần điền:</p>
+<div class="bang-bao"><table><thead><tr><th>Ô</th><th>Bắt buộc</th><th>Cách điền</th></tr></thead><tbody><tr><td><strong>Mã trường</strong></td><td>Có</td><td>Gõ mã, hoặc bấm mũi tên chọn trong danh sách</td></tr><tr><td><strong>Mã văn bản</strong></td><td>Không</td><td>Mã lạ sẽ tự được thêm vào danh mục</td></tr><tr><td><strong>Người xử lý</strong></td><td>Có</td><td>Mã viết tắt của cán bộ nhận việc</td></tr></tbody></table></div>
+<p>Có thêm hai lựa chọn hữu ích:</p>
+<ul><li><strong>Nhờ AI đọc giúp</strong> — nếu quản trị đã bật trợ lý AI, bấm nút này để AI đọc thử và điền sẵn vào ba ô. Bạn vẫn kiểm tra lại rồi mới lưu.</li><li><strong>Áp dụng cho tất cả văn bản đang chờ từ cùng người gửi</strong> — tích ô này khi một trường gửi nhiều mail cùng kiểu; bạn chỉ phải điền một lần.</li></ul>
+<p>Bấm <strong>Lưu phân luồng</strong> là xong. Văn bản lập tức xuất hiện trong hộp việc của người được chọn.</p>
+<p>Nếu đó là thư rác hoặc thư không liên quan, bấm <strong>Bỏ qua</strong>.</p>
+<hr>
+<h2 id="hd-8-thống-kê-nộp-báo-cáo">8. Thống kê nộp báo cáo</h2>
+<figure class="anh-chup"><img src="../hinh/web-07-thong-ke.png" alt="Thống kê nộp báo cáo"><figcaption>Thống kê nộp báo cáo</figcaption></figure>
+<p>Chọn loại văn bản cần theo dõi, chọn khoảng thời gian, bấm <strong>Xem</strong>. Hệ thống liệt kê rõ:</p>
+<ul><li><strong>Trường đã nộp</strong> — kèm ngày nộp và người xử lý</li><li><strong>Trường chưa nộp</strong> — danh sách để nhắc</li></ul>
+<p>Bấm <strong>Xuất CSV</strong> để tải danh sách về, mở bằng Excel rồi gửi công văn nhắc nhở.</p>
+<blockquote><strong>Cần nhớ:</strong> trường được tính là "đã nộp" ngay khi văn bản vào hệ thống, không phải đợi cán bộ xử lý xong. Vì vậy hãy dọn sạch hàng chờ phân luồng trước khi chốt số liệu.</blockquote>
+<hr>
+<h2 id="hd-9-quản-lý-danh-mục">9. Quản lý danh mục</h2>
+<p>Hệ thống có ba danh mục, chuyển qua lại bằng ba nút ở đầu trang.</p>
+<h3 id="hd-91-danh-mục-trường">9.1. Danh mục trường</h3>
+<figure class="anh-chup"><img src="../hinh/web-08-danh-muc-truong.png" alt="Danh mục trường"><figcaption>Danh mục trường</figcaption></figure>
+<p>Đây là danh mục <strong>bắt buộc</strong> — không có mã trường trong danh mục thì hệ thống không phân luồng tự động được.</p>
+<div class="bang-bao"><table><thead><tr><th>Trường thông tin</th><th>Ghi chú</th></tr></thead><tbody><tr><td><strong>Mã trường</strong></td><td>Phần đầu trong tên tệp. Nên dùng 3 chữ số: <code>001</code>, <code>002</code>…</td></tr><tr><td><strong>Tên trường</strong></td><td>Tên đầy đủ</td></tr><tr><td>Tên viết tắt</td><td>Hiện gọn trong bảng danh sách</td></tr><tr><td>Cấp học, địa bàn</td><td>Dùng để lọc trong thống kê</td></tr><tr><td><strong>Email của trường</strong></td><td>Rất nên điền — giúp đoán mã trường khi tên tệp thiếu mã</td></tr></tbody></table></div>
+<p>Khi mới triển khai, dùng ô <strong>Nhập danh sách trường hàng loạt</strong> ở cột phải: chép từ Excel dán thẳng vào, mỗi dòng một trường, các cột cách nhau bằng <code>Tab</code>. Thứ tự cột là <em>mã trường; tên trường; cấp học; địa bàn; email</em>. Mã đã tồn tại sẽ được cập nhật chứ không bị nhân đôi.</p>
+<h3 id="hd-92-danh-mục-người-xử-lý">9.2. Danh mục người xử lý</h3>
+<p>Đây vừa là danh mục cán bộ, vừa là nơi tạo tài khoản đăng nhập.</p>
+<div class="bang-bao"><table><thead><tr><th>Trường thông tin</th><th>Ghi chú</th></tr></thead><tbody><tr><td><strong>Mã người xử lý</strong></td><td>Phần cuối trong tên tệp, ví dụ <code>TAT</code></td></tr><tr><td><strong>Bí danh khác</strong></td><td>Các cách viết tắt khác, cách nhau bằng dấu phẩy</td></tr><tr><td><strong>Họ và tên</strong></td><td></td></tr><tr><td><strong>Tên đăng nhập</strong></td><td>Dùng để đăng nhập web</td></tr><tr><td><strong>Mật khẩu</strong></td><td>Để trống khi sửa nghĩa là giữ mật khẩu cũ</td></tr><tr><td><strong>Vai trò</strong></td><td>Người xử lý · Quản trị · Lãnh đạo</td></tr></tbody></table></div>
+<p>Ô <strong>Bí danh khác</strong> rất đáng dùng. Nếu các trường hay gõ nhầm <code>T.A.TUAN</code>, <code>TUAN</code>, <code>TATUAN</code> thay vì <code>TAT</code>, cứ thêm hết vào bí danh — hệ thống sẽ nhận tất.</p>
+<h3 id="hd-93-danh-mục-mã-văn-bản">9.3. Danh mục mã văn bản</h3>
+<figure class="anh-chup"><img src="../hinh/web-09-danh-muc-van-ban.png" alt="Danh mục mã văn bản"><figcaption>Danh mục mã văn bản</figcaption></figure>
+<p>Đây là danh mục <strong>được nới lỏng có chủ ý</strong>. Những dòng có nền vàng và nhãn <em>"Mã tự thêm — cần đặt tên chính thức"</em> là mã mà hệ thống gặp trong thực tế nhưng chưa có trong danh mục.</p>
+<p>Nó vẫn hiện, vẫn được đếm vào thống kê, chỉ chờ bạn bấm <strong>Sửa</strong> rồi đặt tên chính thức.</p>
+<p>Các thiết lập đáng chú ý:</p>
+<ul><li><strong>Kỳ báo cáo</strong> — hàng tháng, hàng quý, theo học kỳ, hàng năm, theo đợt…</li><li><strong>Hạn nộp</strong> — dùng để tô đỏ những trường nộp muộn</li><li><strong>Người xử lý mặc định</strong> — dùng khi tên tệp thiếu phần mã người xử lý</li><li><strong>Đưa vào thống kê nộp / chưa nộp</strong> — chỉ tích với những văn bản mà <strong>mọi trường đều phải nộp</strong></li><li><strong>Phạm vi áp dụng</strong> — <em>Tất cả các trường</em>, hoặc <em>Chỉ một số trường</em> rồi chọn danh sách cụ thể</li></ul>
+<hr>
+<h2 id="hd-10-nhật-ký-hệ-thống">10. Nhật ký hệ thống</h2>
+<figure class="anh-chup"><img src="../hinh/web-10-nhat-ky.png" alt="Nhật ký hệ thống"><figcaption>Nhật ký hệ thống</figcaption></figure>
+<p>Mọi việc hệ thống làm đều được ghi lại: ai đăng nhập lúc nào, bộ nhận mail chạy phiên nào, văn bản nào được phân luồng cho ai, ai sửa danh mục.</p>
+<p>Bốn thẻ trên cùng đếm số dòng theo từng mức: <strong>Thông tin</strong>, <strong>Cảnh báo</strong>, <strong>Lỗi</strong>, <strong>Gỡ lỗi</strong>. Bấm <em>"Chỉ xem mức này"</em> để lọc nhanh.</p>
+<p>Khi có sự cố, cách tra nhanh nhất là bấm vào thẻ <strong>Lỗi</strong> rồi đọc từ trên xuống.</p>
+<p>Bấm <strong>Dọn nhật ký cũ</strong> để xoá các dòng cũ hơn số ngày đã cấu hình trong Cài đặt.</p>
+<hr>
+<h2 id="hd-11-cài-đặt-hệ-thống">11. Cài đặt hệ thống</h2>
+<p>Trang Cài đặt chia thành sáu nhóm.</p>
+<h3 id="hd-111-giao-diện-thương-hiệu">11.1. Giao diện &amp; thương hiệu</h3>
+<p>Đổi tên ứng dụng, tên đơn vị, dòng bản quyền ở chân trang, màu chủ đạo, và đường dẫn logo.</p>
+<p>Mặc định:</p>
+<ul><li>Tên ứng dụng: <em>Hệ thống phân luồng Mail công vụ - Phòng GDPT-GDTX SGDĐT Đồng Nai</em></li><li>Bản quyền: <em>Thiết kế bởi Trương Anh Tuấn</em></li></ul>
+<h3 id="hd-112-quy-tắc-phân-luồng">11.2. Quy tắc phân luồng</h3>
+<ul><li><strong>Tự thêm mã văn bản lạ vào danh mục (nới lỏng)</strong> — nên để bật</li><li><strong>Bắt buộc mã trường phải có trong danh mục</strong> — nên để bật, tránh phân luồng nhầm</li><li><strong>Người xử lý mặc định</strong> — mã của người nhận các mail không xác định được. Để trống nghĩa là đưa vào hàng chờ phân luồng tay</li><li><strong>Ký tự ngăn cách chấp nhận</strong> — mặc định nhận cả <code>_</code>, <code>-</code>, <code>.</code> và khoảng trắng</li></ul>
+<h3 id="hd-113-chống-trùng-lặp">11.3. Chống trùng lặp</h3>
+<figure class="anh-chup"><img src="../hinh/web-12-cai-dat-chong-trung.png" alt="Cài đặt chống trùng lặp"><figcaption>Cài đặt chống trùng lặp</figcaption></figure>
+<ul><li><strong>Tiền tố bỏ qua khi so tiêu đề</strong> — mặc định <code>RE:,FW:,FWD:</code></li><li><strong>Khoảng thời gian so trùng</strong> — chỉ so với thư nhận trong khoảng này, để tránh phải quét toàn bộ lịch sử</li></ul>
+<h3 id="hd-114-trợ-lý-ai">11.4. Trợ lý AI</h3>
+<figure class="anh-chup"><img src="../hinh/web-11-cai-dat-ai.png" alt="Cài đặt trợ lý AI"><figcaption>Cài đặt trợ lý AI</figcaption></figure>
+<p>Xem chi tiết ở <a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/QUY-TRINH-KY-THUAT.md#9-trợ-lý-ai">mục 9 của tài liệu kỹ thuật</a>. Sau khi điền, bấm <strong>Kiểm tra kết nối AI</strong> để thử ngay.</p>
+<h3 id="hd-115-kết-nối-bộ-nhận-mail">11.5. Kết nối bộ nhận mail</h3>
+<p>Nơi lấy <strong>khoá API</strong> để dán vào bộ nhận mail khi chạy ở chế độ <em>Qua API PHP</em>. Cũng đặt được kích thước mỗi khối tải lên — giảm xuống nếu hosting giới hạn <code>post_max_size</code> nhỏ.</p>
+<h3 id="hd-116-nhật-ký">11.6. Nhật ký</h3>
+<p>Chọn mức ghi tối thiểu và số ngày giữ nhật ký. Đặt 0 ngày để giữ mãi.</p>
+<hr>
+<h1 id="hd-phần-c-vận-hành-bộ-nhận-mail">Phần C — Vận hành bộ nhận mail</h1>
+<h2 id="hd-12-khởi-động-bộ-nhận-mail">12. Khởi động bộ nhận mail</h2>
+<p>Bộ nhận mail chạy trên <strong>máy nhà hoặc VPS</strong>, không chạy trên hosting.</p>
+<p><strong>Trên Windows:</strong> giải nén tệp zip, nhấp đúp <code>mailrouter.exe</code>. Trình duyệt tự mở giao diện điều khiển.</p>
+<p class="dan-de">Trên Linux:</p>
+<pre class="ma ma-bash"><code>tar -xzf mailrouter-linux-x64-v1.0.2.tar.gz
+cd mailrouter-linux-x64
+./mailrouter giao-dien</code></pre>
+<p>Rồi mở trình duyệt vào <code>http://127.0.0.1:8899</code>.</p>
+<figure class="anh-chup"><img src="../hinh/bnm-01-tong-quan.png" alt="Bộ nhận mail — Tổng quan"><figcaption>Bộ nhận mail — Tổng quan</figcaption></figure>
+<p>Màn hình Tổng quan cho biết ngay bốn điều: kho lưu trữ đã kết nối chưa, Gmail đã đăng nhập chưa, trợ lý AI bật hay tắt, và dịch vụ tự động có đang chạy không. Chấm tròn màu xanh là tốt, màu xám là chưa bật.</p>
+<p>Bảng <strong>Nhật ký trực tiếp</strong> ở dưới cùng chạy theo thời gian thực — rất tiện để theo dõi khi đang đồng bộ.</p>
+<hr>
+<h2 id="hd-13-kết-nối-máy-chủ">13. Kết nối máy chủ</h2>
+<figure class="anh-chup"><img src="../hinh/bnm-02-ket-noi.png" alt="Bộ nhận mail — Kết nối máy chủ"><figcaption>Bộ nhận mail — Kết nối máy chủ</figcaption></figure>
+<p>Chọn một trong hai cách:</p>
+<p><strong>Cách A — MySQL trực tiếp.</strong> Điền máy chủ, cổng, tên đăng nhập, mật khẩu, tên cơ sở dữ liệu đúng như cPanel cấp. Nhớ vào cPanel → <em>MySQL Databases</em> → <em>Remote MySQL</em> thêm IP máy của bạn vào danh sách cho phép.</p>
+<p><strong>Cách B — Qua API PHP.</strong> Điền địa chỉ web và khoá API lấy từ <em>Cài đặt → Kết nối bộ nhận mail</em> của trang web. Cách này <strong>dễ hơn nhiều</strong> với hosting phổ thông và với đường truyền IP động ở nhà.</p>
+<p>Bấm <strong>Kiểm tra kết nối</strong> để thử trước khi lưu.</p>
+<blockquote><strong>Gặp lỗi <code>Table ... doesn't exist</code>?</strong> Nghĩa là kết nối đã thông nhưng cơ sở dữ liệu còn rỗng. Hãy chạy <code>cai-dat.php</code> trên hosting trước để tạo bảng. Xem <a href="#17-xử-lý-sự-cố-thường-gặp">mục 17</a>.</blockquote>
+<hr>
+<h2 id="hd-14-đăng-nhập-gmail">14. Đăng nhập Gmail</h2>
+<figure class="anh-chup"><img src="../hinh/bnm-03-gmail.png" alt="Bộ nhận mail — Tài khoản Gmail"><figcaption>Bộ nhận mail — Tài khoản Gmail</figcaption></figure>
+<p>Hai cách, chọn cách nào cũng được:</p>
+<p><strong>Cách 1 — Có Client ID.</strong> Dán Client ID và Client Secret lấy từ Google Cloud Console (xem <a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/GMAIL-OAUTH.md">hướng dẫn lấy</a>), bấm <strong>Đăng nhập Google</strong>. Trình duyệt mở trang cấp quyền của Google, bạn chọn hộp thư công vụ và bấm đồng ý. Xong.</p>
+<p><strong>Cách 2 — Đã có sẵn token.</strong> Dán thẳng <code>access_token</code> và <code>refresh_token</code> vào, bấm lưu.</p>
+<h3 id="hd-hết-hạn-có-phải-đăng-nhập-lại-không">Hết hạn có phải đăng nhập lại không?</h3>
+<p><strong>Không</strong>, miễn là có refresh token. Hãy nhìn dòng <strong>Gia hạn</strong> trên màn hình:</p>
+<ul><li>Chữ <strong>xanh</strong> <em>"Tự gia hạn — không cần đăng nhập lại"</em> → yên tâm, hệ thống tự lo</li><li>Chữ <strong>đỏ</strong> <em>"Phải đăng nhập lại (thiếu refresh token)"</em> → nên đăng nhập lại bằng Cách 1 để lấy refresh token</li></ul>
+<p>Access token của Google chỉ sống khoảng một giờ, nhưng hệ thống tự đổi lấy token mới trước khi hết hạn, và lưu lại vào tệp cấu hình. Bạn không phải làm gì cả.</p>
+<hr>
+<h2 id="hd-15-chạy-đồng-bộ-và-hẹn-giờ-tự-động">15. Chạy đồng bộ và hẹn giờ tự động</h2>
+<figure class="anh-chup"><img src="../hinh/bnm-04-phan-luong.png" alt="Bộ nhận mail — Phân luồng &amp; đồng bộ"><figcaption>Bộ nhận mail — Phân luồng &amp; đồng bộ</figcaption></figure>
+<p><strong>Chạy thủ công:</strong> bấm nút <strong>Nhận mail ngay</strong> ở góc trên bên phải. Theo dõi tiến trình ở bảng nhật ký trực tiếp.</p>
+<p><strong>Chạy tự động:</strong> bật <em>Dịch vụ tự động</em> và đặt chu kỳ (ví dụ 15 phút). Bộ nhận mail sẽ tự quét theo chu kỳ đó, chỉ cần để cửa sổ chạy nền.</p>
+<p><strong>Truy vấn Gmail</strong> mặc định là <code>has:attachment newer_than:30d</code> — chỉ lấy thư có tệp đính kèm trong 30 ngày gần nhất. Sửa được nếu cần, dùng đúng cú pháp tìm kiếm của Gmail.</p>
+<p>Kết thúc mỗi phiên, hệ thống báo lại tám con số: mail đã quét, mail mới, bản cập nhật, trùng bị bỏ qua, công việc tạo, tệp đính kèm, chờ phân luồng, và lỗi.</p>
+<h3 id="hd-chạy-nền-như-một-dịch-vụ">Chạy nền như một dịch vụ</h3>
+<p><strong>Trên Linux</strong> — dùng tệp <code>mailrouter.service</code> có sẵn trong gói:</p>
+<pre class="ma ma-bash"><code>sudo cp mailrouter.service /etc/systemd/system/
+sudo systemctl enable --now mailrouter</code></pre>
+<p><strong>Trên Windows</strong> — dùng Task Scheduler, đặt lệnh chạy <code>mailrouter.exe dich-vu</code> lúc khởi động máy.</p>
+<hr>
+<h1 id="hd-phần-d-hướng-dẫn-cho-các-trường">Phần D — Hướng dẫn cho các trường</h1>
+<h2 id="hd-16-cách-đặt-tên-tệp-khi-gửi-báo-cáo">16. Cách đặt tên tệp khi gửi báo cáo</h2>
+<p><em>Phần này nên trích ra gửi kèm công văn hướng dẫn cho các trường.</em></p>
+<figure class="so-do"><img src="../hinh/so-do-ma-tep.svg" alt="Cấu trúc mã trong tên tệp"><figcaption>Cấu trúc mã trong tên tệp</figcaption></figure>
+<p>Khi gửi báo cáo về Phòng, hãy đặt <strong>tên tệp đính kèm</strong> theo mẫu:</p>
+<pre class="ma"><code>&lt;mã trường&gt;_&lt;mã văn bản&gt;_&lt;mã người xử lý&gt;.&lt;đuôi tệp&gt;</code></pre>
+<p>Ví dụ: <code>001_003_TAT.pdf</code> nghĩa là trường <code>001</code> nộp văn bản <code>003</code>, chuyển cho cán bộ <code>TAT</code>.</p>
+<p class="dan-de">Ba điều cần nhớ:</p>
+<ol><li><strong>Mã trường</strong> — tra trong công văn hướng dẫn của Phòng, hoặc hỏi văn thư</li><li><strong>Mã văn bản</strong> — ghi trong công văn yêu cầu báo cáo</li><li><strong>Mã người xử lý</strong> — ghi trong công văn yêu cầu báo cáo</li></ol>
+<p class="dan-de">Được chấp nhận:</p>
+<div class="bang-bao"><table><thead><tr><th>Tên tệp</th><th>Vì sao được</th></tr></thead><tbody><tr><td><code>001_001_TAT.pdf</code></td><td>Chuẩn nhất</td></tr><tr><td><code>001-003-NVA.docx</code></td><td>Dùng dấu gạch ngang cũng được</td></tr><tr><td><code>005 002 LTC.xlsx</code></td><td>Dùng khoảng trắng cũng được</td></tr><tr><td><code>BC_001_BC09_TAT.pdf</code></td><td>Có chữ phía trước vẫn được</td></tr></tbody></table></div>
+<p class="dan-de">Không đọc được — sẽ chậm vì phải chuyển tay:</p>
+<div class="bang-bao"><table><thead><tr><th>Tên tệp</th><th>Vì sao không được</th></tr></thead><tbody><tr><td><code>tai lieu khong ro.pdf</code></td><td>Không có mã nào</td></tr><tr><td><code>Bao cao thang 9.docx</code></td><td>Toàn chữ</td></tr><tr><td><code>scan_0001.pdf</code></td><td>Chỉ có một con số</td></tr><tr><td><code>999_001_TAT.pdf</code></td><td>Mã trường <code>999</code> không có trong danh mục</td></tr></tbody></table></div>
+<p><strong>Nếu không đặt tên tệp được</strong> (ví dụ gửi từ điện thoại), hãy ghi mã vào <strong>tiêu đề thư</strong> — hệ thống cũng đọc được từ đó.</p>
+<p><strong>Gửi nhầm rồi gửi lại có sao không?</strong> Không sao cả. Gửi lại y hệt thì hệ thống nhận ra và bỏ qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nhật, cán bộ sẽ thấy bản mới nhất.</p>
+<hr>
+<h1 id="hd-phần-e">Phần E</h1>
+<h2 id="hd-17-xử-lý-sự-cố-thường-gặp">17. Xử lý sự cố thường gặp</h2>
+<div class="bang-bao"><table><thead><tr><th>Hiện tượng</th><th>Nguyên nhân</th><th>Cách xử lý</th></tr></thead><tbody><tr><td><code>Table '...cau_hinh' doesn't exist</code></td><td>Chưa chạy trình cài đặt, CSDL còn rỗng</td><td>Mở <code>https://tên-miền/cai-dat.php</code> chạy hết 4 bước, rồi <strong>xoá tệp <code>cai-dat.php</code></strong> đi</td></tr><tr><td><code>Access denied for user</code></td><td>Sai tài khoản MySQL, hoặc chưa mở Remote MySQL</td><td>Kiểm tra lại thông tin trong cPanel; hoặc chuyển sang chế độ <em>Qua API PHP</em></td></tr><tr><td>Kết nối MySQL bị từ chối từ máy nhà</td><td>Hosting chặn MySQL từ xa, hoặc IP nhà đã đổi</td><td>Chuyển sang chế độ <em>Qua API PHP</em> — cách này không phụ thuộc IP</td></tr><tr><td>Dòng "Gia hạn" hiện chữ đỏ</td><td>Chỉ có access token, thiếu refresh token</td><td>Đăng nhập lại bằng Client ID để lấy refresh token</td></tr><tr><td>Đồng bộ báo <code>401</code> liên tục</td><td>Token bị thu hồi, hoặc đổi mật khẩu Gmail</td><td>Đăng nhập lại Gmail trong bộ nhận mail</td></tr><tr><td>Nhiều mail vào hàng chờ phân luồng</td><td>Các trường đặt tên tệp sai quy ước</td><td>Gửi lại hướng dẫn ở <a href="#16-cách-đặt-tên-tệp-khi-gửi-báo-cáo">mục 16</a>; cân nhắc bật trợ lý AI</td></tr><tr><td>Tải tệp lớn bị lỗi giữa chừng</td><td><code>post_max_size</code> của hosting nhỏ</td><td>Giảm kích thước khối trong <em>Cài đặt → Kết nối bộ nhận mail</em></td></tr><tr><td>Thống kê thiếu trường</td><td>Còn việc kẹt ở hàng chờ phân luồng</td><td>Dọn hết hàng chờ rồi xem lại</td></tr><tr><td>Giao diện hiển thị sai sau khi nâng cấp</td><td>Trình duyệt còn giữ tệp CSS cũ</td><td>Không cần làm gì — số phiên bản nằm trong đường dẫn CSS nên trình duyệt tự tải mới</td></tr></tbody></table></div>
+<p>Khi không rõ nguyên nhân, vào <strong>Nhật ký hệ thống</strong>, bấm thẻ <strong>Lỗi</strong>, đọc dòng mới nhất.</p>
+<hr>
+<h2 id="hd-18-câu-hỏi-thường-gặp">18. Câu hỏi thường gặp</h2>
+<p><strong>Hệ thống có xoá mail trong hộp thư không?</strong> Không. Hệ thống chỉ xin quyền đọc (<code>gmail.readonly</code>), Google sẽ từ chối mọi lệnh xoá hoặc sửa nhãn. Hộp thư công vụ nguyên vẹn.</p>
+<p><strong>Bộ nhận mail phải bật 24/24 không?</strong> Không bắt buộc. Tắt máy vài ngày rồi bật lại, hệ thống sẽ lấy bù những mail chưa đọc (trong phạm vi truy vấn Gmail — mặc định là 30 ngày gần nhất).</p>
+<p><strong>Một mail kèm nhiều tệp của nhiều trường thì sao?</strong> Hệ thống đọc mã trên <strong>từng tệp</strong>, nên sẽ tạo ra nhiều công việc riêng cho nhiều người xử lý riêng. Đây là tình huống đã được tính tới.</p>
+<p><strong>Cùng một công văn được 12 trường gửi kèm lại thì có tốn 12 lần dung lượng không?</strong> Không. Tệp có nội dung giống hệt nhau chỉ được lưu <strong>một bản</strong> trong cơ sở dữ liệu, dù tên tệp khác nhau hay do trường khác nhau gửi.</p>
+<p><strong>Không bật trợ lý AI thì có dùng được không?</strong> Được đầy đủ. AI chỉ là lớp hỗ trợ thêm cho những mail khó đọc; không bật thì các mail đó vào hàng chờ phân luồng tay để quản trị xử lý.</p>
+<p><strong>Đổi mật khẩu cho người quên mật khẩu thế nào?</strong> Quản trị vào <em>Danh mục → Người xử lý</em>, bấm <strong>Sửa</strong> người đó, gõ mật khẩu mới vào ô Mật khẩu rồi lưu. Để trống ô đó nghĩa là giữ nguyên mật khẩu cũ.</p>
+<p><strong>Có xem được số liệu trên điện thoại không?</strong> Được. Giao diện web tự co giãn theo màn hình, dùng tốt trên điện thoại và máy tính bảng.</p>
+<p><strong>Sao lưu dữ liệu thế nào?</strong> Vào cPanel → <em>phpMyAdmin</em> → chọn cơ sở dữ liệu → <em>Export</em>. Một tệp <code>.sql</code> là đủ <strong>cả dữ liệu lẫn tệp đính kèm</strong>, vì tệp được lưu ngay trong cơ sở dữ liệu.</p>
+<hr>
+<h2 id="hd-xem-thêm">Xem thêm</h2>
+<div class="bang-bao"><table><thead><tr><th>Tài liệu</th><th>Nội dung</th></tr></thead><tbody><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/QUY-TRINH-KY-THUAT.md">Quy trình kỹ thuật</a></td><td>Hệ thống hoạt động thế nào ở mức kỹ thuật</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/HUONG-DAN-WEB-CPANEL.md">Cài đặt web trên cPanel</a></td><td>Từng bước đưa web lên hosting</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/HUONG-DAN-BO-NHAN-MAIL.md">Cài đặt bộ nhận mail</a></td><td>Chạy trên máy nhà / VPS</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/GMAIL-OAUTH.md">Lấy Client ID Gmail</a></td><td>Thao tác trên Google Cloud Console</td></tr><tr><td><a href="https://github.com/tlearnvn/xuly-email-congviec/blob/HEAD/docs/KIEN-TRUC.md">Kiến trúc hệ thống</a></td><td>Dành cho người sửa mã nguồn</td></tr></tbody></table></div>
+<hr></section>
+
+</body>
+</html>

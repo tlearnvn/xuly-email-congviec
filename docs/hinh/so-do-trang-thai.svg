@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 560" width="1120" height="560" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#5a6884"/>
+    </marker>
+    <marker id="ag" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#10a05a"/>
+    </marker>
+    <marker id="ao" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#e08a06"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1120" height="560" fill="#f7f9fd"/>
+  <text x="560" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="#18213a">Vòng đời một công việc</text>
+  <text x="560" y="64" text-anchor="middle" font-size="13" fill="#65708a">Mỗi lần đổi trạng thái đều được ghi lại: ai đổi, lúc mấy giờ</text>
+
+  <!-- Chờ phân luồng -->
+  <rect x="40" y="110" width="230" height="90" rx="12" fill="#fdf3e3" stroke="#e08a06" stroke-width="2"/>
+  <text x="155" y="146" text-anchor="middle" font-size="15" font-weight="700" fill="#8e560b">Chờ phân luồng</text>
+  <text x="155" y="168" text-anchor="middle" font-size="11.5" fill="#8e560b">Máy không đọc được mã</text>
+  <text x="155" y="186" text-anchor="middle" font-size="11" font-family="Consolas, Menlo, monospace" fill="#a4640a">cho_phan_luong</text>
+
+  <!-- Chờ xử lý -->
+  <rect x="360" y="110" width="230" height="90" rx="12" fill="#eef3ff" stroke="#1e5eff" stroke-width="2"/>
+  <text x="475" y="146" text-anchor="middle" font-size="15" font-weight="700" fill="#1443ab">Chờ xử lý</text>
+  <text x="475" y="168" text-anchor="middle" font-size="11.5" fill="#1443ab">Đã nằm trong hộp việc</text>
+  <text x="475" y="186" text-anchor="middle" font-size="11" font-family="Consolas, Menlo, monospace" fill="#1548ba">cho_xu_ly</text>
+
+  <!-- Đang xử lý -->
+  <rect x="680" y="110" width="230" height="90" rx="12" fill="#f2ecfe" stroke="#7748e6" stroke-width="2"/>
+  <text x="795" y="146" text-anchor="middle" font-size="15" font-weight="700" fill="#5b32bd">Đang xử lý</text>
+  <text x="795" y="168" text-anchor="middle" font-size="11.5" fill="#5b32bd">Cán bộ đã mở và nhận việc</text>
+  <text x="795" y="186" text-anchor="middle" font-size="11" font-family="Consolas, Menlo, monospace" fill="#5b32bd">dang_xu_ly</text>
+
+  <!-- Đã xử lý -->
+  <rect x="680" y="300" width="230" height="90" rx="12" fill="#e7f7ee" stroke="#10a05a" stroke-width="2"/>
+  <text x="795" y="336" text-anchor="middle" font-size="15" font-weight="700" fill="#0a6b3c">Đã xử lý</text>
+  <text x="795" y="358" text-anchor="middle" font-size="11.5" fill="#0a6b3c">Xong — đếm vào thống kê</text>
+  <text x="795" y="376" text-anchor="middle" font-size="11" font-family="Consolas, Menlo, monospace" fill="#0a7a43">da_xu_ly</text>
+
+  <!-- Bỏ qua -->
+  <rect x="360" y="300" width="230" height="90" rx="12" fill="#f5f6f9" stroke="#8a94a8" stroke-width="2"/>
+  <text x="475" y="336" text-anchor="middle" font-size="15" font-weight="700" fill="#47536e">Bỏ qua</text>
+  <text x="475" y="358" text-anchor="middle" font-size="11.5" fill="#47536e">Thư rác, thư không liên quan</text>
+  <text x="475" y="376" text-anchor="middle" font-size="11" font-family="Consolas, Menlo, monospace" fill="#5a6884">bo_qua</text>
+
+  <!-- Mũi tên -->
+  <path d="M274,155 L356,155" stroke="#e08a06" stroke-width="2.4" marker-end="url(#ao)"/>
+  <text x="315" y="144" text-anchor="middle" font-size="11" font-weight="700" fill="#8e560b">quản trị</text>
+  <text x="315" y="176" text-anchor="middle" font-size="10.5" fill="#65708a">phân luồng tay</text>
+
+  <path d="M594,155 L676,155" stroke="#1e5eff" stroke-width="2.4" marker-end="url(#a)"/>
+  <text x="635" y="144" text-anchor="middle" font-size="11" font-weight="700" fill="#1443ab">mở việc</text>
+
+  <path d="M795,204 L795,296" stroke="#10a05a" stroke-width="2.4" marker-end="url(#ag)"/>
+  <text x="808" y="254" font-size="11" font-weight="700" fill="#0a6b3c">bấm “Đã xử lý”</text>
+
+  <path d="M475,204 L475,296" stroke="#8a94a8" stroke-width="2.2" stroke-dasharray="6 5" marker-end="url(#a)"/>
+  <text x="488" y="254" font-size="11" font-weight="700" fill="#5a6884">bấm “Bỏ qua”</text>
+
+  <path d="M155,204 L155,345 L356,345" stroke="#8a94a8" stroke-width="2.2" stroke-dasharray="6 5" fill="none" marker-end="url(#a)"/>
+  <text x="255" y="336" text-anchor="middle" font-size="11" fill="#5a6884">bỏ qua ngay từ hàng chờ</text>
+
+  <path d="M910,345 L960,345 L960,90 L560,90 L560,106" stroke="#8a94a8" stroke-width="2" stroke-dasharray="6 5" fill="none" marker-end="url(#a)"/>
+  <text x="760" y="82" text-anchor="middle" font-size="11" fill="#5a6884">quản trị mở lại việc khi cần làm tiếp</text>
+
+  <!-- Bảng bên phải -->
+  <rect x="40" y="430" width="1040" height="106" rx="12" fill="#ffffff" stroke="#e3e8f1"/>
+  <text x="64" y="458" font-size="13.5" font-weight="700" fill="#18213a">Ảnh hưởng tới thống kê nộp báo cáo</text>
+  <text x="64" y="482" font-size="12" fill="#47536e">• Trường được tính là <tspan font-weight="700" fill="#0a6b3c">đã nộp</tspan> ngay khi công việc được tạo — không cần đợi cán bộ xử lý xong.</text>
+  <text x="64" y="504" font-size="12" fill="#47536e">• Công việc ở trạng thái <tspan font-weight="700">Bỏ qua</tspan> không được tính là đã nộp.</text>
+  <text x="64" y="526" font-size="12" fill="#47536e">• Việc còn nằm ở <tspan font-weight="700" fill="#8e560b">Chờ phân luồng</tspan> chưa gắn với trường nào nên cũng chưa vào thống kê — quản trị nên xử lý hàng chờ mỗi ngày.</text>
+</svg>

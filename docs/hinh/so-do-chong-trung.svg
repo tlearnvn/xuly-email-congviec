@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 880" width="1160" height="880" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#5a6884"/>
+    </marker>
+    <marker id="ag" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#10a05a"/>
+    </marker>
+    <marker id="ao" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#e08a06"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1160" height="880" fill="#f7f9fd"/>
+  <text x="580" y="42" text-anchor="middle" font-size="23" font-weight="700" fill="#18213a">Cây quyết định chống trùng lặp</text>
+  <text x="580" y="66" text-anchor="middle" font-size="13" fill="#65708a">Trả lời câu hỏi: bức thư vừa nhận là thư mới, bản gửi lại, hay bản cập nhật?</text>
+
+  <!-- Đầu vào -->
+  <rect x="410" y="94" width="340" height="70" rx="12" fill="#ffffff" stroke="#cfd8e8" stroke-width="2"/>
+  <text x="580" y="122" text-anchor="middle" font-size="14.5" font-weight="700" fill="#18213a">Thư vừa tải về</text>
+  <text x="580" y="146" text-anchor="middle" font-size="12" fill="#5a6884">Đã có tiêu đề, người gửi, nội dung, danh sách tệp</text>
+
+  <!-- Tính băm -->
+  <rect x="330" y="196" width="500" height="118" rx="12" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <text x="580" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="#1443ab">Tính ba mã băm SHA-256</text>
+  <rect x="350" y="234" width="150" height="64" rx="9" fill="#eef3ff" stroke="#dae4fb"/>
+  <text x="425" y="255" text-anchor="middle" font-family="Consolas, Menlo, monospace" font-size="11.5" font-weight="700" fill="#1443ab">hash_noi_dung</text>
+  <text x="425" y="273" text-anchor="middle" font-size="10.5" fill="#5a6884">tiêu đề + người gửi</text>
+  <text x="425" y="288" text-anchor="middle" font-size="10.5" fill="#5a6884">+ nội dung thư</text>
+  <rect x="510" y="234" width="150" height="64" rx="9" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="585" y="255" text-anchor="middle" font-family="Consolas, Menlo, monospace" font-size="11.5" font-weight="700" fill="#8e560b">hash_tep</text>
+  <text x="585" y="273" text-anchor="middle" font-size="10.5" fill="#5a6884">mã từng tệp</text>
+  <text x="585" y="288" text-anchor="middle" font-size="10.5" fill="#5a6884">+ dung lượng tệp</text>
+  <rect x="670" y="234" width="140" height="64" rx="9" fill="#f2ecfe" stroke="#ddd0fa"/>
+  <text x="740" y="255" text-anchor="middle" font-family="Consolas, Menlo, monospace" font-size="11.5" font-weight="700" fill="#5b32bd">hash_tong_hop</text>
+  <text x="740" y="273" text-anchor="middle" font-size="10.5" fill="#5a6884">gộp hai mã</text>
+  <text x="740" y="288" text-anchor="middle" font-size="10.5" fill="#5a6884">bên trái lại</text>
+
+  <!-- Quyết định 1 -->
+  <path d="M580,348 L780,414 L580,480 L380,414 z" fill="#fdf3e3" stroke="#e08a06" stroke-width="2"/>
+  <text x="580" y="408" text-anchor="middle" font-size="13.5" font-weight="700" fill="#8e560b">Trong kho đã có thư nào</text>
+  <text x="580" y="428" text-anchor="middle" font-size="13.5" font-weight="700" fill="#8e560b">cùng hash_noi_dung chưa?</text>
+
+  <!-- Nhánh trái: thư mới -->
+  <rect x="60" y="530" width="300" height="120" rx="12" fill="#ffffff" stroke="#c7ecd8" stroke-width="2"/>
+  <rect x="60" y="530" width="300" height="6" rx="3" fill="#10a05a"/>
+  <text x="210" y="562" text-anchor="middle" font-size="14.5" font-weight="700" fill="#0a6b3c">THƯ MỚI HOÀN TOÀN</text>
+  <text x="80" y="590" font-size="12" fill="#47536e">• Lưu email, tạo công việc mới</text>
+  <text x="80" y="612" font-size="12" fill="#47536e">• Đưa vào hộp việc của người xử lý</text>
+  <text x="80" y="634" font-size="12" fill="#47536e">• Đếm vào thống kê “đã nộp”</text>
+
+  <!-- Quyết định 2 -->
+  <path d="M760,530 L960,596 L760,662 L560,596 z" fill="#fdf3e3" stroke="#e08a06" stroke-width="2"/>
+  <text x="760" y="590" text-anchor="middle" font-size="13.5" font-weight="700" fill="#8e560b">Bộ tệp đính kèm có</text>
+  <text x="760" y="610" text-anchor="middle" font-size="13.5" font-weight="700" fill="#8e560b">giống hệt không?</text>
+
+  <!-- Nhánh: gửi lại y hệt -->
+  <rect x="410" y="712" width="330" height="140" rx="12" fill="#ffffff" stroke="#e3e8f1" stroke-width="2"/>
+  <rect x="410" y="712" width="330" height="6" rx="3" fill="#8a94a8"/>
+  <text x="575" y="744" text-anchor="middle" font-size="14.5" font-weight="700" fill="#47536e">GỬI LẠI Y HỆT</text>
+  <text x="430" y="772" font-size="12" fill="#47536e">• Không tạo công việc mới</text>
+  <text x="430" y="794" font-size="12" fill="#47536e">• Không lưu thêm tệp (đã có sẵn)</text>
+  <text x="430" y="816" font-size="12" fill="#47536e">• Tăng số lần nhận của công việc cũ</text>
+  <text x="430" y="838" font-size="12" fill="#65708a">Trường bấm gửi hai lần cùng một mail</text>
+
+  <!-- Nhánh: bản cập nhật -->
+  <rect x="800" y="712" width="330" height="140" rx="12" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="800" y="712" width="330" height="6" rx="3" fill="#1e5eff"/>
+  <text x="965" y="744" text-anchor="middle" font-size="14.5" font-weight="700" fill="#1443ab">BẢN CẬP NHẬT</text>
+  <text x="820" y="772" font-size="12" fill="#47536e">• Lưu thành phiên bản mới (phiên_bản +1)</text>
+  <text x="820" y="794" font-size="12" fill="#47536e">• Bản cũ vẫn giữ, chỉ hạ cờ “mới nhất”</text>
+  <text x="820" y="816" font-size="12" fill="#47536e">• Người xử lý thấy bản mới nhất trước</text>
+  <text x="820" y="838" font-size="12" fill="#65708a">Trường sửa file rồi gửi lại — rất hay gặp</text>
+
+  <!-- Mũi tên -->
+  <path d="M580,164 L580,192" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+  <path d="M580,314 L580,344" stroke="#5a6884" stroke-width="2.2" marker-end="url(#a)"/>
+
+  <path d="M380,414 L210,414 L210,526" stroke="#10a05a" stroke-width="2.4" fill="none" marker-end="url(#ag)"/>
+  <text x="292" y="404" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0a6b3c">Chưa có</text>
+
+  <path d="M580,480 L580,504 L760,504 L760,526" stroke="#e08a06" stroke-width="2.4" fill="none" marker-end="url(#ao)"/>
+  <text x="672" y="496" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8e560b">Đã có</text>
+
+  <path d="M560,596 L500,596 L500,708" stroke="#8a94a8" stroke-width="2.4" fill="none" marker-end="url(#a)"/>
+  <text x="510" y="586" text-anchor="middle" font-size="12.5" font-weight="700" fill="#5a6884">Giống hệt</text>
+
+  <path d="M960,596 L1030,596 L1030,708" stroke="#1e5eff" stroke-width="2.4" fill="none" marker-end="url(#a)"/>
+  <text x="1010" y="586" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1443ab">Khác</text>
+
+  <!-- Ghi chú kho tệp -->
+  <rect x="60" y="690" width="300" height="162" rx="12" fill="#ffffff" stroke="#e3e8f1"/>
+  <text x="80" y="718" font-size="13.5" font-weight="700" fill="#18213a">Kho tệp lưu theo nội dung</text>
+  <text x="80" y="744" font-size="12" fill="#47536e">Hai tệp có nội dung y hệt nhau — dù</text>
+  <text x="80" y="762" font-size="12" fill="#47536e">tên khác, gửi từ hai trường khác nhau —</text>
+  <text x="80" y="780" font-size="12" fill="#47536e">vẫn chỉ chiếm một chỗ trong CSDL.</text>
+  <rect x="80" y="794" width="260" height="42" rx="8" fill="#e7f7ee" stroke="#c7ecd8"/>
+  <text x="94" y="812" font-size="11.5" font-weight="700" fill="#0a6b3c">so_tham_chieu</text>
+  <text x="94" y="828" font-size="11" fill="#0a6b3c">đếm số công việc đang dùng tệp đó</text>
+</svg>

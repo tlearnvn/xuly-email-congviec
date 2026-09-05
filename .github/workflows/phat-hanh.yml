@@ -1,0 +1,145 @@
+# =====================================================================
+#  Tự động biên dịch và phát hành lên GitHub Releases
+#  Hệ thống phân luồng Mail công vụ - Thiết kế bởi Trương Anh Tuấn
+# ---------------------------------------------------------------------
+#  Chạy khi đẩy một thẻ dạng v1.0.3, hoặc bấm tay trong tab Actions.
+#  Kết quả: một bản phát hành kèm 3 tệp tải về sẵn cho người dùng cuối.
+# =====================================================================
+name: Phát hành
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      thau:
+        description: 'Thẻ phiên bản muốn phát hành (ví dụ v1.0.3)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  dong-goi:
+    name: Biên dịch Linux + Windows và đóng gói web
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cài công cụ biên dịch chéo cho Windows
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64 zip
+
+      - name: Xác định số phiên bản
+        id: pb
+        run: |
+          THE="${GITHUB_REF_NAME}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            THE="${{ github.event.inputs.thau }}"
+          fi
+          echo "the=$THE" >> "$GITHUB_OUTPUT"
+          echo "so=${THE#v}" >> "$GITHUB_OUTPUT"
+          echo "Phát hành phiên bản $THE"
+
+      - name: Đối chiếu thẻ với tệp VERSION
+        run: |
+          TRONG_TEP="$(tr -d ' \t\r\n' < VERSION)"
+          MONG_DOI="${{ steps.pb.outputs.so }}"
+          if [ "$TRONG_TEP" != "$MONG_DOI" ]; then
+            echo "::error::Thẻ $MONG_DOI không khớp tệp VERSION ($TRONG_TEP)."
+            echo "::error::Hãy chạy ./scripts/phien-ban.sh dat $MONG_DOI rồi commit trước khi gắn thẻ."
+            exit 1
+          fi
+
+      - name: Biên dịch và đóng gói
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/dong-goi.sh --khong-bump
+
+      - name: Kiểm tra các gói đã tạo
+        run: |
+          ls -lh dist/
+          test -f "dist/mailrouter-linux-x64-${{ steps.pb.outputs.the }}.tar.gz"
+          test -f "dist/mailrouter-windows-x64-${{ steps.pb.outputs.the }}.zip"
+          test -f "dist/web-cpanel-${{ steps.pb.outputs.the }}.zip"
+
+      - name: Tính mã băm SHA-256 để người tải kiểm chứng
+        run: |
+          cd dist
+          sha256sum *.tar.gz *.zip > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Soạn nội dung bản phát hành
+        run: |
+          SO="${{ steps.pb.outputs.so }}"
+          {
+            echo "## Hệ thống phân luồng Mail công vụ — phiên bản $SO"
+            echo
+            echo "Phòng GDPT-GDTX, Sở GD&ĐT Đồng Nai · Thiết kế bởi Trương Anh Tuấn"
+            echo
+            echo "### Tải về"
+            echo
+            echo "| Tệp | Dùng cho | Cách dùng |"
+            echo "|---|---|---|"
+            echo "| \`mailrouter-windows-x64-v$SO.zip\` | Bộ nhận mail trên Windows 64-bit | Giải nén, nhấp đúp \`mailrouter.exe\` |"
+            echo "| \`mailrouter-linux-x64-v$SO.tar.gz\` | Bộ nhận mail trên Linux 64-bit | Giải nén, chạy \`./mailrouter giao-dien\` |"
+            echo "| \`web-cpanel-v$SO.zip\` | Phần web cho hosting cPanel | Giải nén vào \`public_html\`, mở \`cai-dat.php\` |"
+            echo "| \`SHA256SUMS.txt\` | Mã băm kiểm chứng | \`sha256sum -c SHA256SUMS.txt\` |"
+            echo
+            echo "Bộ nhận mail là **một tệp nhị phân duy nhất**, không cần cài thêm thư viện nào."
+            echo
+            echo "### Tài liệu"
+            echo
+            G="https://github.com/${{ github.repository }}/blob/${{ steps.pb.outputs.the }}"
+            echo "- [Hướng dẫn sử dụng]($G/docs/HUONG-DAN-SU-DUNG.md)"
+            echo "- [Quy trình kỹ thuật]($G/docs/QUY-TRINH-KY-THUAT.md)"
+            echo "- [Cài đặt web trên cPanel]($G/docs/HUONG-DAN-WEB-CPANEL.md)"
+            echo "- [Cài đặt bộ nhận mail]($G/docs/HUONG-DAN-BO-NHAN-MAIL.md)"
+            echo
+            echo "### Thay đổi trong phiên bản này"
+            echo
+          } > ghi-chu-phat-hanh.md
+
+          # Trích đúng đoạn của phiên bản này trong mục "Lịch sử phiên bản" của README
+          awk -v muc="### $SO" '
+            index($0, muc) == 1 { lay = 1; next }
+            lay && /^### / { exit }
+            lay { print }
+          ' README.md >> ghi-chu-phat-hanh.md
+
+          cat ghi-chu-phat-hanh.md
+
+      - name: Tạo bản phát hành
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          THE="${{ steps.pb.outputs.the }}"
+          if gh release view "$THE" > /dev/null 2>&1; then
+            echo "Bản phát hành $THE đã có, cập nhật lại tệp đính kèm."
+            gh release upload "$THE" dist/*.tar.gz dist/*.zip dist/SHA256SUMS.txt --clobber
+            gh release edit "$THE" --notes-file ghi-chu-phat-hanh.md
+          else
+            gh release create "$THE" \
+              --title "Phiên bản ${{ steps.pb.outputs.so }}" \
+              --notes-file ghi-chu-phat-hanh.md \
+              dist/mailrouter-windows-x64-$THE.zip \
+              dist/mailrouter-linux-x64-$THE.tar.gz \
+              dist/web-cpanel-$THE.zip \
+              dist/SHA256SUMS.txt
+          fi
+
+      - name: Giữ lại gói dựng để tải thử ngay trong Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: goi-cai-dat-${{ steps.pb.outputs.the }}
+          path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/SHA256SUMS.txt
+          retention-days: 30

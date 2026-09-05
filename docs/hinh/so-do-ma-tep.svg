@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 640" width="1080" height="640" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#5a6884"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1080" height="640" fill="#f7f9fd"/>
+  <text x="540" y="42" text-anchor="middle" font-size="23" font-weight="700" fill="#18213a">Cấu trúc mã trong tên tệp và tiêu đề thư</text>
+  <text x="540" y="66" text-anchor="middle" font-size="13" fill="#65708a">Ba phần ngăn cách bằng dấu gạch dưới — hệ thống chấp nhận cả gạch ngang, dấu chấm và khoảng trắng</text>
+
+  <!-- Mẫu mã -->
+  <rect x="240" y="100" width="600" height="86" rx="14" fill="#ffffff" stroke="#cfd8e8" stroke-width="2"/>
+  <text x="300" y="157" font-family="Consolas, Menlo, monospace" font-size="42" font-weight="700" fill="#1e5eff">001</text>
+  <text x="386" y="157" font-family="Consolas, Menlo, monospace" font-size="42" font-weight="700" fill="#8a94a8">_</text>
+  <text x="428" y="157" font-family="Consolas, Menlo, monospace" font-size="42" font-weight="700" fill="#e08a06">001</text>
+  <text x="514" y="157" font-family="Consolas, Menlo, monospace" font-size="42" font-weight="700" fill="#8a94a8">_</text>
+  <text x="556" y="157" font-family="Consolas, Menlo, monospace" font-size="42" font-weight="700" fill="#7748e6">TAT</text>
+  <text x="646" y="157" font-family="Consolas, Menlo, monospace" font-size="42" font-weight="700" fill="#8a94a8">.pdf</text>
+
+  <!-- Mũi tên xuống 3 phần -->
+  <path d="M336,190 L336,214 L210,214 L210,238" stroke="#1e5eff" stroke-width="2.2" fill="none" marker-end="url(#a)"/>
+  <path d="M464,190 L464,214 L540,214 L540,238" stroke="#e08a06" stroke-width="2.2" fill="none" marker-end="url(#a)"/>
+  <path d="M596,190 L596,214 L870,214 L870,238" stroke="#7748e6" stroke-width="2.2" fill="none" marker-end="url(#a)"/>
+
+  <!-- Phần 1 -->
+  <rect x="60" y="244" width="300" height="180" rx="12" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="60" y="244" width="300" height="6" rx="3" fill="#1e5eff"/>
+  <text x="80" y="278" font-size="15" font-weight="700" fill="#1443ab">Phần 1 — Mã trường</text>
+  <text x="80" y="304" font-size="12.5" fill="#47536e">Mã của trường gửi báo cáo.</text>
+  <text x="80" y="326" font-size="12.5" fill="#47536e">Lấy từ danh mục trường.</text>
+  <rect x="80" y="342" width="260" height="30" rx="8" fill="#eef3ff" stroke="#dae4fb"/>
+  <text x="94" y="362" font-size="12" fill="#1443ab"><tspan font-weight="700">Bắt buộc</tspan> có trong danh mục</text>
+  <text x="80" y="394" font-size="12" fill="#65708a">Ví dụ: 001 = THPT Chuyên Lương Thế Vinh</text>
+  <text x="80" y="412" font-size="12" fill="#65708a">Không có mã → vào hàng chờ phân luồng tay</text>
+
+  <!-- Phần 2 -->
+  <rect x="390" y="244" width="300" height="180" rx="12" fill="#ffffff" stroke="#f6dfb9" stroke-width="2"/>
+  <rect x="390" y="244" width="300" height="6" rx="3" fill="#e08a06"/>
+  <text x="410" y="278" font-size="15" font-weight="700" fill="#8e560b">Phần 2 — Mã văn bản</text>
+  <text x="410" y="304" font-size="12.5" fill="#47536e">Mã văn bản hoặc công việc</text>
+  <text x="410" y="326" font-size="12.5" fill="#47536e">mà trường đang nộp.</text>
+  <rect x="410" y="342" width="260" height="30" rx="8" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="424" y="362" font-size="12" fill="#8e560b"><tspan font-weight="700">Nới lỏng</tspan> — mã lạ vẫn nhận</text>
+  <text x="410" y="394" font-size="12" fill="#65708a">Mã chưa có trong danh mục sẽ được tự thêm,</text>
+  <text x="410" y="412" font-size="12" fill="#65708a">đánh dấu “cần đặt tên chính thức”.</text>
+
+  <!-- Phần 3 -->
+  <rect x="720" y="244" width="300" height="180" rx="12" fill="#ffffff" stroke="#ddd0fa" stroke-width="2"/>
+  <rect x="720" y="244" width="300" height="6" rx="3" fill="#7748e6"/>
+  <text x="740" y="278" font-size="15" font-weight="700" fill="#5b32bd">Phần 3 — Mã người xử lý</text>
+  <text x="740" y="304" font-size="12.5" fill="#47536e">Chữ viết tắt của cán bộ</text>
+  <text x="740" y="326" font-size="12.5" fill="#47536e">sẽ nhận xử lý văn bản này.</text>
+  <rect x="740" y="342" width="260" height="30" rx="8" fill="#f2ecfe" stroke="#ddd0fa"/>
+  <text x="754" y="362" font-size="12" fill="#5b32bd"><tspan font-weight="700">Bắt buộc</tspan> có trong danh mục</text>
+  <text x="740" y="394" font-size="12" fill="#65708a">Chấp nhận cả bí danh: TAT, T.A.TUAN…</text>
+  <text x="740" y="412" font-size="12" fill="#65708a">Thiếu mã → dùng người xử lý mặc định.</text>
+
+  <!-- Ví dụ hợp lệ / không hợp lệ -->
+  <rect x="60" y="452" width="470" height="164" rx="12" fill="#ffffff" stroke="#c7ecd8" stroke-width="2"/>
+  <text x="84" y="482" font-size="14.5" font-weight="700" fill="#0a6b3c">✓ Hệ thống đọc được</text>
+  <text x="84" y="510" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">001_001_TAT.pdf</text>
+  <text x="290" y="510" font-size="12" fill="#65708a">chuẩn nhất</text>
+  <text x="84" y="534" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">001-003-NVA.docx</text>
+  <text x="290" y="534" font-size="12" fill="#65708a">dấu gạch ngang</text>
+  <text x="84" y="558" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">005 002 LTC.xlsx</text>
+  <text x="290" y="558" font-size="12" fill="#65708a">khoảng trắng</text>
+  <text x="84" y="582" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">BC_001_BC09_TAT.pdf</text>
+  <text x="290" y="582" font-size="12" fill="#65708a">có tiền tố phía trước</text>
+  <text x="84" y="606" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">001_777_PVD.pdf</text>
+  <text x="290" y="606" font-size="12" fill="#65708a">mã 777 lạ — vẫn nhận</text>
+
+  <rect x="550" y="452" width="470" height="164" rx="12" fill="#ffffff" stroke="#f7cfcb" stroke-width="2"/>
+  <text x="574" y="482" font-size="14.5" font-weight="700" fill="#a83026">✗ Không đọc được — chờ phân luồng tay</text>
+  <text x="574" y="510" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">tai lieu khong ro.pdf</text>
+  <text x="806" y="510" font-size="12" fill="#65708a">không có mã</text>
+  <text x="574" y="534" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">Bao cao thang 9.docx</text>
+  <text x="806" y="534" font-size="12" fill="#65708a">toàn chữ</text>
+  <text x="574" y="558" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">scan_0001.pdf</text>
+  <text x="806" y="558" font-size="12" fill="#65708a">chỉ có một số</text>
+  <text x="574" y="582" font-family="Consolas, Menlo, monospace" font-size="13" fill="#18213a">999_001_TAT.pdf</text>
+  <text x="806" y="582" font-size="12" fill="#65708a">mã trường 999 không có</text>
+  <text x="574" y="606" font-size="12" fill="#65708a">Bật trợ lý AI thì máy sẽ thử đọc lần nữa trước khi bỏ vào hàng chờ.</text>
+</svg>

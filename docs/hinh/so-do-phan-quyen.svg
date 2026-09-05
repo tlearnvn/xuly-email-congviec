@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" width="1200" height="700" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1200" height="700" fill="#f7f9fd"/>
+  <text x="600" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="#18213a">Ba vai trò và quyền hạn tương ứng</text>
+  <text x="600" y="64" text-anchor="middle" font-size="13" fill="#65708a">Vai trò được đặt trong Danh mục → Người xử lý</text>
+
+  <!-- Cột vai trò -->
+  <rect x="30" y="92" width="360" height="360" rx="14" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="30" y="92" width="360" height="6" rx="3" fill="#1e5eff"/>
+  <circle cx="90" cy="140" r="22" fill="#eef3ff" stroke="#1e5eff" stroke-width="2"/>
+  <circle cx="90" cy="133" r="7" fill="#1e5eff"/>
+  <path d="M78,152 a12,12 0 0 1 24,0" fill="#1e5eff"/>
+  <text x="126" y="136" font-size="17" font-weight="700" fill="#1443ab">Người xử lý</text>
+  <text x="126" y="157" font-family="Consolas, Menlo, monospace" font-size="11.5" fill="#65708a">vai_tro = nguoi_xu_ly</text>
+  <text x="54" y="196" font-size="12.5" fill="#0a6b3c">✓ Xem hộp việc của riêng mình</text>
+  <text x="54" y="222" font-size="12.5" fill="#0a6b3c">✓ Mở xem, tải tệp đính kèm</text>
+  <text x="54" y="248" font-size="12.5" fill="#0a6b3c">✓ Đánh dấu “đã xử lý”, ghi chú</text>
+  <text x="54" y="274" font-size="12.5" fill="#0a6b3c">✓ Đổi mật khẩu, sửa hồ sơ mình</text>
+  <text x="54" y="306" font-size="12.5" fill="#a83026">✗ Không thấy việc của người khác</text>
+  <text x="54" y="332" font-size="12.5" fill="#a83026">✗ Không sửa danh mục</text>
+  <text x="54" y="358" font-size="12.5" fill="#a83026">✗ Không vào trang Cài đặt</text>
+  <text x="54" y="384" font-size="12.5" fill="#a83026">✗ Không xem nhật ký hệ thống</text>
+  <rect x="54" y="402" width="312" height="34" rx="8" fill="#eef3ff" stroke="#dae4fb"/>
+  <text x="70" y="424" font-size="11.5" fill="#1443ab">Đây là vai trò của phần lớn cán bộ trong phòng.</text>
+
+  <!-- Quản trị -->
+  <rect x="420" y="92" width="360" height="360" rx="14" fill="#ffffff" stroke="#f6dfb9" stroke-width="2"/>
+  <rect x="420" y="92" width="360" height="6" rx="3" fill="#e08a06"/>
+  <circle cx="480" cy="140" r="22" fill="#fdf3e3" stroke="#e08a06" stroke-width="2"/>
+  <circle cx="480" cy="133" r="7" fill="#e08a06"/>
+  <path d="M468,152 a12,12 0 0 1 24,0" fill="#e08a06"/>
+  <text x="516" y="136" font-size="17" font-weight="700" fill="#8e560b">Quản trị</text>
+  <text x="516" y="157" font-family="Consolas, Menlo, monospace" font-size="11.5" fill="#65708a">vai_tro = admin</text>
+  <text x="444" y="196" font-size="12.5" fill="#0a6b3c">✓ Toàn bộ quyền của người xử lý</text>
+  <text x="444" y="222" font-size="12.5" fill="#0a6b3c">✓ Xem &amp; xử lý việc của mọi người</text>
+  <text x="444" y="248" font-size="12.5" fill="#0a6b3c">✓ Phân luồng tay các mail khó đọc</text>
+  <text x="444" y="274" font-size="12.5" fill="#0a6b3c">✓ Thêm/sửa/xoá cả ba danh mục</text>
+  <text x="444" y="300" font-size="12.5" fill="#0a6b3c">✓ Tạo tài khoản, đặt lại mật khẩu</text>
+  <text x="444" y="326" font-size="12.5" fill="#0a6b3c">✓ Sửa mọi mục trong Cài đặt</text>
+  <text x="444" y="352" font-size="12.5" fill="#0a6b3c">✓ Xem và dọn nhật ký hệ thống</text>
+  <text x="444" y="378" font-size="12.5" fill="#0a6b3c">✓ Lấy khoá API cho bộ nhận mail</text>
+  <rect x="444" y="396" width="312" height="40" rx="8" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="460" y="414" font-size="11.5" fill="#8e560b">Nên giữ ít tài khoản quản trị. Tài khoản mặc định là</text>
+  <text x="460" y="430" font-size="11.5" fill="#8e560b"><tspan font-family="Consolas, Menlo, monospace">admin</tspan> — phải đổi mật khẩu ngay lần đăng nhập đầu.</text>
+
+  <!-- Lãnh đạo -->
+  <rect x="810" y="92" width="360" height="360" rx="14" fill="#ffffff" stroke="#ddd0fa" stroke-width="2"/>
+  <rect x="810" y="92" width="360" height="6" rx="3" fill="#7748e6"/>
+  <circle cx="870" cy="140" r="22" fill="#f2ecfe" stroke="#7748e6" stroke-width="2"/>
+  <circle cx="870" cy="133" r="7" fill="#7748e6"/>
+  <path d="M858,152 a12,12 0 0 1 24,0" fill="#7748e6"/>
+  <text x="906" y="136" font-size="17" font-weight="700" fill="#5b32bd">Lãnh đạo</text>
+  <text x="906" y="157" font-family="Consolas, Menlo, monospace" font-size="11.5" fill="#65708a">vai_tro = lanh_dao</text>
+  <text x="834" y="196" font-size="12.5" fill="#0a6b3c">✓ Xem toàn bộ văn bản đã nhận</text>
+  <text x="834" y="222" font-size="12.5" fill="#0a6b3c">✓ Mở xem, tải mọi tệp đính kèm</text>
+  <text x="834" y="248" font-size="12.5" fill="#0a6b3c">✓ Xem bảng điều khiển &amp; thống kê</text>
+  <text x="834" y="274" font-size="12.5" fill="#0a6b3c">✓ Xuất danh sách trường chưa nộp</text>
+  <text x="834" y="306" font-size="12.5" fill="#a83026">✗ Không sửa dữ liệu, không xoá</text>
+  <text x="834" y="332" font-size="12.5" fill="#a83026">✗ Không sửa danh mục</text>
+  <text x="834" y="358" font-size="12.5" fill="#a83026">✗ Không vào trang Cài đặt</text>
+  <rect x="834" y="376" width="312" height="60" rx="8" fill="#f2ecfe" stroke="#ddd0fa"/>
+  <text x="850" y="396" font-size="11.5" fill="#5b32bd">Dành cho lãnh đạo phòng, lãnh đạo Sở cần theo dõi</text>
+  <text x="850" y="412" font-size="11.5" fill="#5b32bd">tiến độ nộp báo cáo mà không cần thao tác gì —</text>
+  <text x="850" y="428" font-size="11.5" fill="#5b32bd">an toàn tuyệt đối, không thể sửa nhầm dữ liệu.</text>
+
+  <!-- Bảng đối chiếu -->
+  <rect x="30" y="480" width="1140" height="192" rx="14" fill="#ffffff" stroke="#e3e8f1"/>
+  <text x="54" y="510" font-size="14" font-weight="700" fill="#18213a">Bảng đối chiếu nhanh</text>
+
+  <rect x="54" y="524" width="1092" height="30" rx="7" fill="#f7f9fd"/>
+  <text x="70" y="544" font-size="12" font-weight="700" fill="#47536e">Trang / chức năng</text>
+  <text x="700" y="544" text-anchor="middle" font-size="12" font-weight="700" fill="#1443ab">Người xử lý</text>
+  <text x="860" y="544" text-anchor="middle" font-size="12" font-weight="700" fill="#8e560b">Quản trị</text>
+  <text x="1020" y="544" text-anchor="middle" font-size="12" font-weight="700" fill="#5b32bd">Lãnh đạo</text>
+
+  <text x="70" y="574" font-size="12" fill="#47536e">Hộp việc của tôi</text>
+  <text x="700" y="574" text-anchor="middle" font-size="13" fill="#10a05a">✓</text>
+  <text x="860" y="574" text-anchor="middle" font-size="13" fill="#10a05a">✓</text>
+  <text x="1020" y="574" text-anchor="middle" font-size="13" fill="#10a05a">✓</text>
+
+  <line x1="54" y1="584" x2="1146" y2="584" stroke="#eef1f7"/>
+  <text x="70" y="604" font-size="12" fill="#47536e">Tất cả văn bản · Thống kê nộp báo cáo</text>
+  <text x="700" y="604" text-anchor="middle" font-size="13" fill="#dc4437">✗</text>
+  <text x="860" y="604" text-anchor="middle" font-size="13" fill="#10a05a">✓</text>
+  <text x="1020" y="604" text-anchor="middle" font-size="13" fill="#10a05a">✓</text>
+
+  <line x1="54" y1="614" x2="1146" y2="614" stroke="#eef1f7"/>
+  <text x="70" y="634" font-size="12" fill="#47536e">Chờ phân luồng tay · Danh mục</text>
+  <text x="700" y="634" text-anchor="middle" font-size="13" fill="#dc4437">✗</text>
+  <text x="860" y="634" text-anchor="middle" font-size="13" fill="#10a05a">✓</text>
+  <text x="1020" y="634" text-anchor="middle" font-size="13" fill="#dc4437">✗</text>
+
+  <line x1="54" y1="644" x2="1146" y2="644" stroke="#eef1f7"/>
+  <text x="70" y="664" font-size="12" fill="#47536e">Nhật ký hệ thống · Cài đặt</text>
+  <text x="700" y="664" text-anchor="middle" font-size="13" fill="#dc4437">✗</text>
+  <text x="860" y="664" text-anchor="middle" font-size="13" fill="#10a05a">✓</text>
+  <text x="1020" y="664" text-anchor="middle" font-size="13" fill="#dc4437">✗</text>
+</svg>

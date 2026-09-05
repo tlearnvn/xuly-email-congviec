@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 720" width="1240" height="720" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="mt" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#5a6884"/>
+    </marker>
+    <marker id="mtx" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#1e5eff"/>
+    </marker>
+    <marker id="mtv" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#e08a06"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1240" height="720" fill="#f7f9fd"/>
+  <text x="620" y="40" text-anchor="middle" font-size="24" font-weight="700" fill="#18213a">Kiến trúc tổng thể hệ thống phân luồng Mail công vụ</text>
+  <text x="620" y="66" text-anchor="middle" font-size="14" fill="#65708a">Phòng GDPT-GDTX — Sở GD&amp;ĐT Đồng Nai</text>
+
+  <!-- ============ 1. Google ============ -->
+  <rect x="26" y="110" width="220" height="200" rx="14" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <path d="M26,124 a14,14 0 0 1 14,-14 h192 a14,14 0 0 1 14,14 v28 h-220 z" fill="#eef3ff"/>
+  <text x="136" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#1443ab">GOOGLE</text>
+  <text x="136" y="182" text-anchor="middle" font-size="15" font-weight="600" fill="#18213a">Hộp thư Gmail công vụ</text>
+  <text x="136" y="207" text-anchor="middle" font-size="12" fill="#65708a">phonggdtrh.sodongnai@…</text>
+  <rect x="46" y="224" width="180" height="30" rx="8" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="136" y="244" text-anchor="middle" font-size="12" fill="#47536e">Gmail API · OAuth 2.0</text>
+  <rect x="46" y="262" width="180" height="30" rx="8" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="136" y="282" text-anchor="middle" font-size="12" fill="#47536e">Quyền: gmail.readonly</text>
+
+  <!-- ============ 2. Bộ nhận mail C++ ============ -->
+  <rect x="326" y="110" width="304" height="470" rx="14" fill="#ffffff" stroke="#cfd8e8" stroke-width="2"/>
+  <path d="M326,124 a14,14 0 0 1 14,-14 h276 a14,14 0 0 1 14,14 v28 h-304 z" fill="#e7f7ee"/>
+  <text x="478" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#0a6b3c">BỘ NHẬN MAIL (C++)</text>
+  <text x="478" y="172" text-anchor="middle" font-size="12" fill="#65708a">Chạy ở máy nhà hoặc VPS · 1 tệp nhị phân</text>
+
+  <rect x="346" y="188" width="264" height="52" rx="9" fill="#eef3ff" stroke="#dae4fb"/>
+  <text x="362" y="209" font-size="13.5" font-weight="600" fill="#1443ab">1 · Đăng nhập &amp; lấy thư</text>
+  <text x="362" y="228" font-size="11.5" fill="#5a6884">OAuth loopback · tự gia hạn token</text>
+
+  <rect x="346" y="248" width="264" height="52" rx="9" fill="#f2ecfe" stroke="#ddd0fa"/>
+  <text x="362" y="269" font-size="13.5" font-weight="600" fill="#5b32bd">2 · Bóc tách MIME</text>
+  <text x="362" y="288" font-size="11.5" fill="#5a6884">Tiêu đề, nội dung, tên tệp đính kèm</text>
+
+  <rect x="346" y="308" width="264" height="52" rx="9" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="362" y="329" font-size="13.5" font-weight="600" fill="#8e560b">3 · Phân luồng</text>
+  <text x="362" y="348" font-size="11.5" fill="#5a6884">Đọc mã 001_001_TAT · chấm điểm tin cậy</text>
+
+  <rect x="346" y="368" width="264" height="52" rx="9" fill="#fdeeed" stroke="#f7cfcb"/>
+  <text x="362" y="389" font-size="13.5" font-weight="600" fill="#a83026">4 · Trợ lý AI (khi khó đọc)</text>
+  <text x="362" y="408" font-size="11.5" fill="#5a6884">OpenAI compatible · tuỳ chỉnh URL, model</text>
+
+  <rect x="346" y="428" width="264" height="52" rx="9" fill="#e7f7ee" stroke="#c7ecd8"/>
+  <text x="362" y="449" font-size="13.5" font-weight="600" fill="#0a6b3c">5 · Chống trùng &amp; lưu kho</text>
+  <text x="362" y="468" font-size="11.5" fill="#5a6884">3 lớp băm SHA-256 · gộp tệp trùng</text>
+
+  <rect x="346" y="490" width="264" height="70" rx="9" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="362" y="511" font-size="13.5" font-weight="600" fill="#47536e">Giao diện điều khiển</text>
+  <text x="362" y="530" font-size="11.5" fill="#5a6884">Máy chủ web nhúng 127.0.0.1:8899</text>
+  <text x="362" y="548" font-size="11.5" fill="#5a6884">Không cần cài thêm phần mềm nào</text>
+
+  <!-- ============ 3. MySQL ============ -->
+  <rect x="740" y="110" width="222" height="240" rx="14" fill="#ffffff" stroke="#cfd8e8" stroke-width="2"/>
+  <path d="M740,124 a14,14 0 0 1 14,-14 h194 a14,14 0 0 1 14,14 v28 h-222 z" fill="#fdf3e3"/>
+  <text x="851" y="138" text-anchor="middle" font-size="15" font-weight="700" fill="#8e560b">MÁY CHỦ MySQL</text>
+  <text x="851" y="172" text-anchor="middle" font-size="12" fill="#65708a">15 bảng · utf8mb4 · giờ GMT+7</text>
+  <rect x="760" y="186" width="182" height="28" rx="8" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="851" y="205" text-anchor="middle" font-size="11.5" fill="#47536e">Danh mục · Email · Công việc</text>
+  <rect x="760" y="220" width="182" height="28" rx="8" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="851" y="239" text-anchor="middle" font-size="11.5" fill="#47536e">tep_du_lieu (BLOB, gộp trùng)</text>
+  <rect x="760" y="254" width="182" height="28" rx="8" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="851" y="273" text-anchor="middle" font-size="11.5" fill="#47536e">Nhật ký đầy đủ</text>
+  <rect x="760" y="288" width="182" height="44" rx="8" fill="#e7f7ee" stroke="#c7ecd8"/>
+  <text x="851" y="306" text-anchor="middle" font-size="12" font-weight="600" fill="#0a6b3c">Mail gốc KHÔNG bị xoá</text>
+  <text x="851" y="323" text-anchor="middle" font-size="11" fill="#0a6b3c">chỉ đọc, không đụng hộp thư</text>
+
+  <!-- ============ 4. Web PHP ============ -->
+  <rect x="740" y="380" width="222" height="200" rx="14" fill="#ffffff" stroke="#cfd8e8" stroke-width="2"/>
+  <path d="M740,394 a14,14 0 0 1 14,-14 h194 a14,14 0 0 1 14,14 v28 h-222 z" fill="#eef3ff"/>
+  <text x="851" y="408" text-anchor="middle" font-size="15" font-weight="700" fill="#1443ab">WEB PHP (cPanel)</text>
+  <text x="851" y="442" text-anchor="middle" font-size="12" fill="#65708a">PHP 7.4 – 8.4 · không cần composer</text>
+  <rect x="760" y="456" width="182" height="26" rx="8" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="851" y="474" text-anchor="middle" font-size="11.5" fill="#47536e">Hộp việc · Xem &amp; tải tệp</text>
+  <rect x="760" y="488" width="182" height="26" rx="8" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="851" y="506" text-anchor="middle" font-size="11.5" fill="#47536e">Dashboard thống kê</text>
+  <rect x="760" y="520" width="182" height="26" rx="8" fill="#f7f9fd" stroke="#e3e8f1"/>
+  <text x="851" y="538" text-anchor="middle" font-size="11.5" fill="#47536e">Danh mục · Phân luồng tay</text>
+  <rect x="760" y="552" width="182" height="26" rx="8" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="851" y="570" text-anchor="middle" font-size="11.5" fill="#8e560b">api/ingest.php (chế độ API)</text>
+
+  <!-- ============ 5. Người dùng ============ -->
+  <rect x="1030" y="150" width="184" height="118" rx="14" fill="#ffffff" stroke="#cfd8e8" stroke-width="2"/>
+  <circle cx="1122" cy="190" r="19" fill="#eef3ff" stroke="#1e5eff" stroke-width="2"/>
+  <circle cx="1122" cy="184" r="6" fill="#1e5eff"/>
+  <path d="M1112,201 a10,10 0 0 1 20,0" fill="#1e5eff"/>
+  <text x="1122" y="231" text-anchor="middle" font-size="14" font-weight="600" fill="#18213a">Người xử lý</text>
+  <text x="1122" y="251" text-anchor="middle" font-size="11.5" fill="#65708a">Tài khoản riêng từng người</text>
+
+  <rect x="1030" y="300" width="184" height="118" rx="14" fill="#ffffff" stroke="#cfd8e8" stroke-width="2"/>
+  <circle cx="1122" cy="340" r="19" fill="#fdf3e3" stroke="#e08a06" stroke-width="2"/>
+  <circle cx="1122" cy="334" r="6" fill="#e08a06"/>
+  <path d="M1112,351 a10,10 0 0 1 20,0" fill="#e08a06"/>
+  <text x="1122" y="381" text-anchor="middle" font-size="14" font-weight="600" fill="#18213a">Quản trị</text>
+  <text x="1122" y="401" text-anchor="middle" font-size="11.5" fill="#65708a">Danh mục · phân luồng tay</text>
+
+  <rect x="1030" y="450" width="184" height="118" rx="14" fill="#ffffff" stroke="#cfd8e8" stroke-width="2"/>
+  <circle cx="1122" cy="490" r="19" fill="#f2ecfe" stroke="#7748e6" stroke-width="2"/>
+  <circle cx="1122" cy="484" r="6" fill="#7748e6"/>
+  <path d="M1112,501 a10,10 0 0 1 20,0" fill="#7748e6"/>
+  <text x="1122" y="531" text-anchor="middle" font-size="14" font-weight="600" fill="#18213a">Lãnh đạo</text>
+  <text x="1122" y="551" text-anchor="middle" font-size="11.5" fill="#65708a">Chỉ xem &amp; theo dõi</text>
+
+  <!-- ============ Mũi tên ============ -->
+  <path d="M250,210 L320,210" stroke="#1e5eff" stroke-width="2.4" fill="none" marker-end="url(#mtx)"/>
+  <text x="285" y="200" text-anchor="middle" font-size="11" font-weight="600" fill="#1443ab">HTTPS</text>
+
+  <path d="M632,220 L736,220" stroke="#1e5eff" stroke-width="2.4" fill="none" marker-end="url(#mtx)"/>
+  <rect x="642" y="207" width="76" height="26" rx="13" fill="#eef3ff" stroke="#1e5eff" stroke-width="1.6"/>
+  <text x="680" y="225" text-anchor="middle" font-size="12" font-weight="700" fill="#1443ab">Cách A</text>
+  <text x="680" y="252" text-anchor="middle" font-size="10.5" fill="#5a6884">MySQL trực tiếp</text>
+
+  <path d="M632,500 L736,500" stroke="#e08a06" stroke-width="2.4" fill="none" marker-end="url(#mtv)"/>
+  <rect x="642" y="487" width="76" height="26" rx="13" fill="#fdf3e3" stroke="#e08a06" stroke-width="1.6"/>
+  <text x="680" y="505" text-anchor="middle" font-size="12" font-weight="700" fill="#8e560b">Cách B</text>
+  <text x="680" y="532" text-anchor="middle" font-size="10.5" fill="#5a6884">qua API PHP</text>
+
+  <path d="M842,356 L842,374" stroke="#5a6884" stroke-width="2.2" fill="none" marker-end="url(#mt)"/>
+  <path d="M862,374 L862,356" stroke="#5a6884" stroke-width="2.2" fill="none" marker-end="url(#mt)"/>
+
+  <path d="M966,470 L1000,470 L1000,209 L1026,209" stroke="#5a6884" stroke-width="2" fill="none" marker-end="url(#mt)"/>
+  <path d="M1000,359 L1026,359" stroke="#5a6884" stroke-width="2" fill="none" marker-end="url(#mt)"/>
+  <path d="M1000,509 L1026,509" stroke="#5a6884" stroke-width="2" fill="none" marker-end="url(#mt)"/>
+
+  <!-- Chú thích -->
+  <rect x="26" y="600" width="1188" height="94" rx="12" fill="#ffffff" stroke="#e3e8f1"/>
+  <text x="48" y="628" font-size="13" font-weight="700" fill="#18213a">Hai cách đưa dữ liệu về máy chủ — chọn một</text>
+  <text x="48" y="654" font-size="12.5" fill="#47536e"><tspan font-weight="700" fill="#1443ab">Cách A</tspan> — bộ nhận mail nối thẳng tới MySQL: nhanh nhất, dùng khi hosting bật "Remote MySQL" và máy chạy có IP tĩnh.</text>
+  <text x="48" y="678" font-size="12.5" fill="#47536e"><tspan font-weight="700" fill="#8e560b">Cách B</tspan> — bộ nhận mail đẩy dữ liệu qua <tspan font-family="Consolas, Menlo, monospace">api/ingest.php</tspan> bằng HTTPS: dùng khi hosting chặn MySQL từ xa hoặc IP nhà đổi liên tục.</text>
+</svg>

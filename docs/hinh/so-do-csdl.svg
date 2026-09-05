@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 900" width="1280" height="900" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <path d="M0,0 L9,3.5 L0,7 z" fill="#8a94a8"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1280" height="900" fill="#f7f9fd"/>
+  <text x="640" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="#18213a">Sơ đồ cơ sở dữ liệu — 15 bảng</text>
+  <text x="640" y="64" text-anchor="middle" font-size="13" fill="#65708a">Bảng chữ đậm là bảng chính · mũi tên chỉ chiều tham chiếu khoá ngoại</text>
+
+  <!-- ================= NHÓM DANH MỤC ================= -->
+  <rect x="30" y="92" width="330" height="392" rx="14" fill="#eef3ff" stroke="#dae4fb" stroke-width="2"/>
+  <text x="195" y="118" text-anchor="middle" font-size="14" font-weight="700" fill="#1443ab">NHÓM DANH MỤC</text>
+
+  <rect x="52" y="132" width="286" height="96" rx="10" fill="#ffffff" stroke="#1e5eff" stroke-width="2"/>
+  <rect x="52" y="132" width="286" height="26" rx="10" fill="#1e5eff"/>
+  <rect x="52" y="148" width="286" height="10" fill="#1e5eff"/>
+  <text x="66" y="150" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">truong</text>
+  <text x="326" y="150" text-anchor="end" font-size="10.5" fill="#cfe0ff">danh mục trường</text>
+  <text x="66" y="176" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · ma_truong · ten_truong</text>
+  <text x="66" y="194" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">ten_viet_tat · cap_hoc · dia_ban</text>
+  <text x="66" y="212" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">email · trang_thai · thu_tu</text>
+
+  <rect x="52" y="242" width="286" height="96" rx="10" fill="#ffffff" stroke="#1e5eff" stroke-width="2"/>
+  <rect x="52" y="242" width="286" height="26" rx="10" fill="#1e5eff"/>
+  <rect x="52" y="258" width="286" height="10" fill="#1e5eff"/>
+  <text x="66" y="260" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">nguoi_xu_ly</text>
+  <text x="326" y="260" text-anchor="end" font-size="10.5" fill="#cfe0ff">cán bộ &amp; tài khoản</text>
+  <text x="66" y="286" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · ma_nguoi_xu_ly · ho_ten</text>
+  <text x="66" y="304" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">ten_dang_nhap · mat_khau</text>
+  <text x="66" y="322" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">vai_tro · chuc_vu · trang_thai</text>
+
+  <rect x="52" y="352" width="286" height="58" rx="10" fill="#ffffff" stroke="#93b4ff" stroke-width="1.6"/>
+  <text x="66" y="374" font-family="Consolas, Menlo, monospace" font-size="12" font-weight="700" fill="#1443ab">bi_danh_nguoi_xu_ly</text>
+  <text x="66" y="396" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id_nguoi_xu_ly · bi_danh</text>
+
+  <rect x="52" y="420" width="286" height="50" rx="10" fill="#ffffff" stroke="#93b4ff" stroke-width="1.6"/>
+  <text x="66" y="442" font-family="Consolas, Menlo, monospace" font-size="12" font-weight="700" fill="#1443ab">van_ban_truong</text>
+  <text x="66" y="462" font-size="10.5" fill="#5a6884">văn bản chỉ áp dụng cho một số trường</text>
+
+  <!-- ================= NHÓM VĂN BẢN ================= -->
+  <rect x="30" y="500" width="330" height="150" rx="14" fill="#fdf3e3" stroke="#f6dfb9" stroke-width="2"/>
+  <text x="195" y="526" text-anchor="middle" font-size="14" font-weight="700" fill="#8e560b">DANH MỤC VĂN BẢN</text>
+  <rect x="52" y="540" width="286" height="96" rx="10" fill="#ffffff" stroke="#e08a06" stroke-width="2"/>
+  <rect x="52" y="540" width="286" height="26" rx="10" fill="#e08a06"/>
+  <rect x="52" y="556" width="286" height="10" fill="#e08a06"/>
+  <text x="66" y="558" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">van_ban</text>
+  <text x="326" y="558" text-anchor="end" font-size="10.5" fill="#ffeccb">danh mục nới lỏng</text>
+  <text x="66" y="584" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · ma_van_ban · ten_van_ban</text>
+  <text x="66" y="602" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">loai · ky_bao_cao · han_nop</text>
+  <text x="66" y="620" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">bat_buoc_nop · tu_dong_them</text>
+
+  <!-- ================= NHÓM DỮ LIỆU ================= -->
+  <rect x="420" y="92" width="360" height="558" rx="14" fill="#e7f7ee" stroke="#c7ecd8" stroke-width="2"/>
+  <text x="600" y="118" text-anchor="middle" font-size="14" font-weight="700" fill="#0a6b3c">NHÓM DỮ LIỆU NGHIỆP VỤ</text>
+
+  <rect x="442" y="132" width="316" height="106" rx="10" fill="#ffffff" stroke="#10a05a" stroke-width="2"/>
+  <rect x="442" y="132" width="316" height="26" rx="10" fill="#10a05a"/>
+  <rect x="442" y="148" width="316" height="10" fill="#10a05a"/>
+  <text x="456" y="150" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">email</text>
+  <text x="746" y="150" text-anchor="end" font-size="10.5" fill="#cdf0de">một dòng = một bức thư</text>
+  <text x="456" y="176" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · ma_gmail · tieu_de · nguoi_gui</text>
+  <text x="456" y="194" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">noi_dung · ngay_nhan · so_tep</text>
+  <text x="456" y="212" font-family="Consolas, Menlo, monospace" font-size="11" fill="#dc4437">hash_noi_dung · hash_tep</text>
+  <text x="456" y="230" font-family="Consolas, Menlo, monospace" font-size="11" fill="#dc4437">hash_tong_hop · so_lan_nhan</text>
+
+  <rect x="442" y="252" width="316" height="124" rx="10" fill="#ffffff" stroke="#10a05a" stroke-width="2"/>
+  <rect x="442" y="252" width="316" height="26" rx="10" fill="#10a05a"/>
+  <rect x="442" y="268" width="316" height="10" fill="#10a05a"/>
+  <text x="456" y="270" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">cong_viec</text>
+  <text x="746" y="270" text-anchor="end" font-size="10.5" fill="#cdf0de">việc cần xử lý</text>
+  <text x="456" y="296" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · id_email · id_truong</text>
+  <text x="456" y="314" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id_van_ban · id_nguoi_xu_ly</text>
+  <text x="456" y="332" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">trang_thai · do_tin_cay · nguon_ma</text>
+  <text x="456" y="350" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">phien_ban · la_ban_moi_nhat</text>
+  <text x="456" y="368" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">ghi_chu_ai · ngay_xu_ly</text>
+
+  <rect x="442" y="390" width="316" height="86" rx="10" fill="#ffffff" stroke="#10a05a" stroke-width="2"/>
+  <rect x="442" y="390" width="316" height="26" rx="10" fill="#10a05a"/>
+  <rect x="442" y="406" width="316" height="10" fill="#10a05a"/>
+  <text x="456" y="408" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">tep_dinh_kem</text>
+  <text x="746" y="408" text-anchor="end" font-size="10.5" fill="#cdf0de">tên tệp của từng thư</text>
+  <text x="456" y="434" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · id_email · ten_tep · kieu_mime</text>
+  <text x="456" y="452" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">dung_luong · id_tep_du_lieu</text>
+  <text x="456" y="470" font-size="10.5" fill="#5a6884">nhiều tệp có thể trỏ về cùng một khối dữ liệu</text>
+
+  <rect x="442" y="490" width="316" height="98" rx="10" fill="#ffffff" stroke="#10a05a" stroke-width="2.6"/>
+  <rect x="442" y="490" width="316" height="26" rx="10" fill="#0a7a43"/>
+  <rect x="442" y="506" width="316" height="10" fill="#0a7a43"/>
+  <text x="456" y="508" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">tep_du_lieu</text>
+  <text x="746" y="508" text-anchor="end" font-size="10.5" fill="#cdf0de">kho BLOB, lưu theo nội dung</text>
+  <text x="456" y="534" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · hash_tep (UNIQUE) · dung_luong</text>
+  <text x="456" y="552" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">noi_dung LONGBLOB</text>
+  <text x="456" y="570" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">so_tham_chieu · ngay_tao</text>
+
+  <rect x="442" y="602" width="316" height="36" rx="10" fill="#ffffff" stroke="#8fd5b0" stroke-width="1.6"/>
+  <text x="456" y="625" font-family="Consolas, Menlo, monospace" font-size="12" font-weight="700" fill="#0a6b3c">cong_viec_tep</text>
+  <text x="746" y="625" text-anchor="end" font-size="10.5" fill="#5a6884">nối việc ↔ tệp</text>
+
+  <!-- ================= NHÓM VẬN HÀNH ================= -->
+  <rect x="840" y="92" width="410" height="558" rx="14" fill="#f2ecfe" stroke="#ddd0fa" stroke-width="2"/>
+  <text x="1045" y="118" text-anchor="middle" font-size="14" font-weight="700" fill="#5b32bd">NHÓM VẬN HÀNH</text>
+
+  <rect x="862" y="132" width="366" height="86" rx="10" fill="#ffffff" stroke="#7748e6" stroke-width="2"/>
+  <rect x="862" y="132" width="366" height="26" rx="10" fill="#7748e6"/>
+  <rect x="862" y="148" width="366" height="10" fill="#7748e6"/>
+  <text x="876" y="150" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">cau_hinh</text>
+  <text x="1216" y="150" text-anchor="end" font-size="10.5" fill="#e2d6ff">39 khoá cài đặt</text>
+  <text x="876" y="176" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">khoa · gia_tri · nhom · mo_ta</text>
+  <text x="876" y="196" font-size="11" fill="#5a6884">Tên ứng dụng, bản quyền, ngưỡng tin cậy,</text>
+  <text x="876" y="212" font-size="11" fill="#5a6884">thiết lập AI, quy tắc chống trùng…</text>
+
+  <rect x="862" y="232" width="366" height="86" rx="10" fill="#ffffff" stroke="#7748e6" stroke-width="2"/>
+  <rect x="862" y="232" width="366" height="26" rx="10" fill="#7748e6"/>
+  <rect x="862" y="248" width="366" height="10" fill="#7748e6"/>
+  <text x="876" y="250" font-family="Consolas, Menlo, monospace" font-size="12.5" font-weight="700" fill="#ffffff">nhat_ky</text>
+  <text x="1216" y="250" text-anchor="end" font-size="10.5" fill="#e2d6ff">ghi mọi việc đã làm</text>
+  <text x="876" y="276" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">id · thoi_gian · muc · nguon</text>
+  <text x="876" y="294" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">hanh_dong · noi_dung · dia_chi_ip</text>
+  <text x="876" y="312" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">doi_tuong · id_doi_tuong · id_nguoi</text>
+
+  <rect x="862" y="332" width="366" height="66" rx="10" fill="#ffffff" stroke="#a98cf0" stroke-width="1.6"/>
+  <text x="876" y="354" font-family="Consolas, Menlo, monospace" font-size="12" font-weight="700" fill="#5b32bd">phien_dong_bo</text>
+  <text x="876" y="374" font-size="11" fill="#5a6884">Mỗi lần bấm “Đồng bộ”: bắt đầu, kết thúc,</text>
+  <text x="876" y="390" font-size="11" fill="#5a6884">số thư đọc, số việc tạo, số lỗi.</text>
+
+  <rect x="862" y="412" width="366" height="58" rx="10" fill="#ffffff" stroke="#a98cf0" stroke-width="1.6"/>
+  <text x="876" y="434" font-family="Consolas, Menlo, monospace" font-size="12" font-weight="700" fill="#5b32bd">tai_len_tam</text>
+  <text x="876" y="456" font-size="11" fill="#5a6884">Khối tạm khi tải tệp lớn qua API PHP.</text>
+
+  <rect x="862" y="484" width="366" height="58" rx="10" fill="#ffffff" stroke="#a98cf0" stroke-width="1.6"/>
+  <text x="876" y="506" font-family="Consolas, Menlo, monospace" font-size="12" font-weight="700" fill="#5b32bd">phien_ghi_nho</text>
+  <text x="876" y="528" font-size="11" fill="#5a6884">Cookie “ghi nhớ đăng nhập trên máy này”.</text>
+
+  <rect x="862" y="556" width="366" height="82" rx="10" fill="#ffffff" stroke="#e3e8f1" stroke-width="1.6"/>
+  <text x="876" y="578" font-size="12.5" font-weight="700" fill="#18213a">Quy ước chung của mọi bảng</text>
+  <text x="876" y="600" font-size="11" fill="#5a6884">• Bảng mã utf8mb4 — tiếng Việt có dấu đầy đủ</text>
+  <text x="876" y="618" font-size="11" fill="#5a6884">• Mốc thời gian lưu theo giờ Việt Nam (GMT+7)</text>
+  <text x="876" y="632" font-size="11" fill="#5a6884">• Chạy được trên MySQL 5.7+ và MariaDB 10.3+</text>
+
+  <!-- ================= Quan hệ ================= -->
+  <path d="M340,180 L400,180 L400,176 L438,176" stroke="#8a94a8" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <path d="M340,300 L392,300 L392,314 L438,314" stroke="#8a94a8" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <path d="M340,588 L392,588 L392,332 L438,332" stroke="#8a94a8" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <path d="M600,238 L600,248" stroke="#8a94a8" stroke-width="1.8" marker-end="url(#a)"/>
+  <path d="M600,376 L600,386" stroke="#8a94a8" stroke-width="1.8" marker-end="url(#a)"/>
+  <path d="M600,476 L600,486" stroke="#8a94a8" stroke-width="1.8" marker-end="url(#a)"/>
+  <path d="M600,588 L600,598" stroke="#8a94a8" stroke-width="1.8" marker-end="url(#a)"/>
+
+  <!-- ================= Chú thích dưới ================= -->
+  <rect x="30" y="672" width="1220" height="200" rx="14" fill="#ffffff" stroke="#e3e8f1"/>
+  <text x="54" y="702" font-size="14" font-weight="700" fill="#18213a">Ba mối quan hệ quan trọng nhất</text>
+
+  <rect x="54" y="716" width="380" height="140" rx="10" fill="#eef3ff" stroke="#dae4fb"/>
+  <text x="74" y="742" font-size="12.5" font-weight="700" fill="#1443ab">1 · Một thư sinh ra một hoặc nhiều việc</text>
+  <text x="74" y="766" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">email 1 —— n cong_viec</text>
+  <text x="74" y="790" font-size="11.5" fill="#5a6884">Một mail kèm ba tệp của ba trường khác nhau</text>
+  <text x="74" y="808" font-size="11.5" fill="#5a6884">sẽ sinh ra ba việc riêng, ba người xử lý riêng.</text>
+  <text x="74" y="834" font-size="11.5" fill="#5a6884">Việc nào cũng trỏ ngược về đúng bức thư gốc.</text>
+
+  <rect x="450" y="716" width="380" height="140" rx="10" fill="#e7f7ee" stroke="#c7ecd8"/>
+  <text x="470" y="742" font-size="12.5" font-weight="700" fill="#0a6b3c">2 · Tệp giống nhau chỉ lưu một bản</text>
+  <text x="470" y="766" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">tep_dinh_kem n —— 1 tep_du_lieu</text>
+  <text x="470" y="790" font-size="11.5" fill="#5a6884">Khoá <tspan font-family="Consolas, Menlo, monospace">hash_tep</tspan> là UNIQUE. Tệp mới trùng nội</text>
+  <text x="470" y="808" font-size="11.5" fill="#5a6884">dung chỉ làm <tspan font-family="Consolas, Menlo, monospace">so_tham_chieu</tspan> tăng thêm 1.</text>
+  <text x="470" y="834" font-size="11.5" fill="#5a6884">Tiết kiệm rất nhiều dung lượng hosting.</text>
+
+  <rect x="846" y="716" width="380" height="140" rx="10" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="866" y="742" font-size="12.5" font-weight="700" fill="#8e560b">3 · Danh mục văn bản được nới lỏng</text>
+  <text x="866" y="766" font-family="Consolas, Menlo, monospace" font-size="11" fill="#18213a">cong_viec.id_van_ban → van_ban.id</text>
+  <text x="866" y="790" font-size="11.5" fill="#5a6884">Gặp mã lạ, hệ thống tự tạo dòng mới với cờ</text>
+  <text x="866" y="808" font-size="11.5" fill="#5a6884"><tspan font-family="Consolas, Menlo, monospace">tu_dong_them = 1</tspan> để việc vẫn hiện và vẫn</text>
+  <text x="866" y="834" font-size="11.5" fill="#5a6884">được đếm; quản trị đặt tên chính thức sau.</text>
+</svg>

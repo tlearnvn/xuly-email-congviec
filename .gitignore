@@ -26,3 +26,6 @@ Thumbs.db
 *~
 .idea/
 .vscode/
+
+# Gói Node cài tạm khi dựng PDF
+node_modules/

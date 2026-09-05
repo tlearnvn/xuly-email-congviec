@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" width="1200" height="760" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#5a6884"/>
+    </marker>
+    <marker id="ab" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#1e5eff"/>
+    </marker>
+    <marker id="ao" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#e08a06"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="760" fill="#f7f9fd"/>
+  <text x="600" y="40" text-anchor="middle" font-size="23" font-weight="700" fill="#18213a">Hai cách triển khai — chọn một cách phù hợp với hosting</text>
+
+  <!-- ============ CÁCH A ============ -->
+  <rect x="30" y="70" width="1140" height="300" rx="14" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
+  <rect x="30" y="70" width="1140" height="6" rx="3" fill="#1e5eff"/>
+  <rect x="52" y="90" width="112" height="28" rx="14" fill="#eef3ff" stroke="#1e5eff" stroke-width="1.6"/>
+  <text x="108" y="109" text-anchor="middle" font-size="13" font-weight="700" fill="#1443ab">CÁCH A</text>
+  <text x="180" y="109" font-size="15" font-weight="700" fill="#18213a">Nối thẳng MySQL</text>
+  <text x="352" y="109" font-size="12.5" fill="#65708a">— nhanh nhất, ít bước nhất. Cần hosting bật “Remote MySQL” và máy chạy có IP tĩnh.</text>
+
+  <rect x="60" y="140" width="220" height="120" rx="12" fill="#f7f9fd" stroke="#cfd8e8" stroke-width="1.8"/>
+  <rect x="80" y="162" width="180" height="52" rx="8" fill="#e7f7ee" stroke="#c7ecd8"/>
+  <text x="170" y="184" text-anchor="middle" font-size="13" font-weight="700" fill="#0a6b3c">mailrouter.exe</text>
+  <text x="170" y="203" text-anchor="middle" font-size="11" fill="#0a6b3c">bộ nhận mail (C++)</text>
+  <text x="170" y="238" text-anchor="middle" font-size="12" font-weight="600" fill="#47536e">Máy nhà hoặc VPS</text>
+
+  <rect x="470" y="140" width="220" height="120" rx="12" fill="#f7f9fd" stroke="#cfd8e8" stroke-width="1.8"/>
+  <rect x="490" y="162" width="180" height="52" rx="8" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="580" y="184" text-anchor="middle" font-size="13" font-weight="700" fill="#8e560b">MySQL</text>
+  <text x="580" y="203" text-anchor="middle" font-size="11" fill="#8e560b">cổng 3306</text>
+  <text x="580" y="238" text-anchor="middle" font-size="12" font-weight="600" fill="#47536e">Máy chủ cPanel</text>
+
+  <rect x="880" y="140" width="220" height="120" rx="12" fill="#f7f9fd" stroke="#cfd8e8" stroke-width="1.8"/>
+  <rect x="900" y="162" width="180" height="52" rx="8" fill="#eef3ff" stroke="#dae4fb"/>
+  <text x="990" y="184" text-anchor="middle" font-size="13" font-weight="700" fill="#1443ab">Web PHP</text>
+  <text x="990" y="203" text-anchor="middle" font-size="11" fill="#1443ab">public_html</text>
+  <text x="990" y="238" text-anchor="middle" font-size="12" font-weight="600" fill="#47536e">Cùng máy chủ cPanel</text>
+
+  <path d="M284,200 L462,200" stroke="#1e5eff" stroke-width="2.6" marker-end="url(#ab)"/>
+  <text x="373" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="#1443ab">TCP 3306</text>
+  <text x="373" y="220" text-anchor="middle" font-size="11" fill="#65708a">phải mở Remote MySQL</text>
+  <path d="M694,200 L872,200" stroke="#5a6884" stroke-width="2.4" marker-end="url(#a)"/>
+  <text x="783" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="#47536e">nội bộ máy chủ</text>
+
+  <rect x="60" y="286" width="1080" height="66" rx="10" fill="#eef3ff" stroke="#dae4fb"/>
+  <text x="80" y="310" font-size="12.5" font-weight="700" fill="#1443ab">Cần chuẩn bị</text>
+  <text x="80" y="334" font-size="12" fill="#47536e">cPanel → MySQL Databases → Remote MySQL → thêm IP của máy chạy bộ nhận mail. Nếu IP nhà thay đổi thì phải cập nhật lại, nên chỉ hợp với VPS hoặc đường truyền IP tĩnh.</text>
+
+  <!-- ============ CÁCH B ============ -->
+  <rect x="30" y="392" width="1140" height="300" rx="14" fill="#ffffff" stroke="#f6dfb9" stroke-width="2"/>
+  <rect x="30" y="392" width="1140" height="6" rx="3" fill="#e08a06"/>
+  <rect x="52" y="412" width="112" height="28" rx="14" fill="#fdf3e3" stroke="#e08a06" stroke-width="1.6"/>
+  <text x="108" y="431" text-anchor="middle" font-size="13" font-weight="700" fill="#8e560b">CÁCH B</text>
+  <text x="180" y="431" font-size="15" font-weight="700" fill="#18213a">Đẩy qua API PHP</text>
+  <text x="356" y="431" font-size="12.5" fill="#65708a">— khuyên dùng cho hosting phổ thông. Chỉ cần HTTPS ra ngoài, không cần mở cổng nào.</text>
+
+  <rect x="60" y="462" width="220" height="120" rx="12" fill="#f7f9fd" stroke="#cfd8e8" stroke-width="1.8"/>
+  <rect x="80" y="484" width="180" height="52" rx="8" fill="#e7f7ee" stroke="#c7ecd8"/>
+  <text x="170" y="506" text-anchor="middle" font-size="13" font-weight="700" fill="#0a6b3c">mailrouter.exe</text>
+  <text x="170" y="525" text-anchor="middle" font-size="11" fill="#0a6b3c">bộ nhận mail (C++)</text>
+  <text x="170" y="560" text-anchor="middle" font-size="12" font-weight="600" fill="#47536e">Máy nhà — IP nào cũng được</text>
+
+  <rect x="470" y="462" width="220" height="120" rx="12" fill="#f7f9fd" stroke="#cfd8e8" stroke-width="1.8"/>
+  <rect x="490" y="484" width="180" height="52" rx="8" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="580" y="506" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8e560b">api/ingest.php</text>
+  <text x="580" y="525" text-anchor="middle" font-size="11" fill="#8e560b">bảo vệ bằng khoá API</text>
+  <text x="580" y="560" text-anchor="middle" font-size="12" font-weight="600" fill="#47536e">Máy chủ cPanel</text>
+
+  <rect x="880" y="462" width="220" height="120" rx="12" fill="#f7f9fd" stroke="#cfd8e8" stroke-width="1.8"/>
+  <rect x="900" y="484" width="180" height="52" rx="8" fill="#eef3ff" stroke="#dae4fb"/>
+  <text x="990" y="506" text-anchor="middle" font-size="13" font-weight="700" fill="#1443ab">MySQL + Web PHP</text>
+  <text x="990" y="525" text-anchor="middle" font-size="11" fill="#1443ab">localhost</text>
+  <text x="990" y="560" text-anchor="middle" font-size="12" font-weight="600" fill="#47536e">Không lộ ra Internet</text>
+
+  <path d="M284,522 L462,522" stroke="#e08a06" stroke-width="2.6" marker-end="url(#ao)"/>
+  <text x="373" y="510" text-anchor="middle" font-size="12" font-weight="700" fill="#8e560b">HTTPS 443</text>
+  <text x="373" y="542" text-anchor="middle" font-size="11" fill="#65708a">tệp lớn chia thành nhiều khối</text>
+  <path d="M694,522 L872,522" stroke="#5a6884" stroke-width="2.4" marker-end="url(#a)"/>
+  <text x="783" y="510" text-anchor="middle" font-size="12" font-weight="700" fill="#47536e">nội bộ máy chủ</text>
+
+  <rect x="60" y="608" width="1080" height="66" rx="10" fill="#fdf3e3" stroke="#f6dfb9"/>
+  <text x="80" y="632" font-size="12.5" font-weight="700" fill="#8e560b">Cần chuẩn bị</text>
+  <text x="80" y="656" font-size="12" fill="#47536e">Vào web → Cài đặt → Kết nối bộ nhận mail, sao chép khoá API, dán vào ô “Qua API PHP” của bộ nhận mail. Mỗi khối tải lên đều được kiểm tra lại bằng SHA-256 nên không sợ hỏng tệp giữa chừng.</text>
+
+  <text x="600" y="726" text-anchor="middle" font-size="12.5" fill="#65708a">Cả hai cách đều cho ra dữ liệu giống hệt nhau. Đổi cách bất cứ lúc nào, không phải nhập lại dữ liệu cũ.</text>
+</svg>
