@@ -13,6 +13,9 @@
  *
  *  Chỉ định trình duyệt bằng biến môi trường CHROME nếu cần:
  *      CHROME=/usr/bin/chromium node scripts/tao-pdf.js
+ *
+ *  Gói playwright-core cài ở nơi khác thì trỏ bằng NODE_PATH:
+ *      NODE_PATH=/duong/dan/node_modules node scripts/tao-pdf.js
  * ===================================================================== */
 'use strict';
 
@@ -47,7 +50,7 @@ function neo(tieu_de) {
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
     .toLowerCase()
     .trim()
-    .replace(/[^\p{L}\p{N} \-]/gu, '')
+    .replace(/[^\p{L}\p{N} _\-]/gu, '')   // GitHub giữ lại dấu gạch dưới
     .replace(/ +/g, '-');
 }
 

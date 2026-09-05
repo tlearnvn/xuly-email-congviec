@@ -106,12 +106,16 @@ jobs:
             echo
           } > ghi-chu-phat-hanh.md
 
-          # Trích đúng đoạn của phiên bản này trong mục "Lịch sử phiên bản" của README
+          # Trích đúng đoạn của phiên bản này trong mục "Lịch sử phiên bản" của README.
+          # Trang phát hành không hiểu đường dẫn tương đối nên phải đổi sang tuyệt đối.
           awk -v muc="### $SO" '
             index($0, muc) == 1 { lay = 1; next }
             lay && /^### / { exit }
             lay { print }
-          ' README.md >> ghi-chu-phat-hanh.md
+          ' README.md \
+            | sed -e '/^$/d' \
+                  -e "s#](\(docs/\|scripts/\|sql/\|php/\|cpp/\|\.github/\)#](https://github.com/${{ github.repository }}/blob/${{ steps.pb.outputs.the }}/\1#g" \
+            >> ghi-chu-phat-hanh.md
 
           cat ghi-chu-phat-hanh.md
 
