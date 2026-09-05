@@ -130,6 +130,15 @@ trước khi xét truy vấn, còn thiếu `in:spam` thì Thùng rác cũng bị
 
 Id trùng giữa hai lượt được loại bỏ, nên thư không bị xử lý hai lần.
 
+**Chia hạn mức giữa hai lượt.** Thiết lập *Số mail mỗi lần quét* là hạn mức chung. Hộp thư
+chính được ưu tiên lấy trước; hộp Thư rác dùng **phần còn thừa**, nhưng không bao giờ dưới
+**một phần năm** hạn mức (tối thiểu 5 thư). Cách chia này tránh hai cực:
+
+- Cho lượt hai một hạn mức đầy đủ nữa thì một buổi nhiều thư rác sẽ nuốt **gấp đôi** số thư
+  quản trị đặt, kéo theo tải cả tệp đính kèm của chúng;
+- Chỉ cho lượt hai phần thừa thì hộp thư chính đông là hộp Thư rác **bị bỏ quên mãi mãi** —
+  đúng cái lỗi đang cần sửa.
+
 **Thùng rác thì luôn bị bỏ qua.** Ngoài việc giới hạn bằng `in:spam`, hệ thống còn kiểm tra
 nhãn `TRASH` trên từng thư trước khi xử lý — thư người dùng đã chủ động xoá thì không lôi lại.
 

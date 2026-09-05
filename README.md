@@ -246,6 +246,7 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 - **Sửa lỗi bỏ sót thư:** Gmail API mặc định giấu hẳn thư trong hộp Thư rác, nên báo cáo bị Google xếp nhầm vào đó sẽ **không bao giờ được nhận** và thống kê báo "chưa nộp" oan cho trường. Nay mỗi phiên quét hai lượt — hộp thư chính rồi hộp Thư rác (`includeSpamTrash=true` kèm `in:spam`).
 - **Thùng rác luôn bỏ qua:** thư người dùng đã chủ động xoá thì không lôi lại, kiểm tra bằng nhãn `TRASH` trên từng thư.
 - **Đánh dấu nguồn:** thêm cột `email.tu_spam`; web hiện huy hiệu vàng "Hộp Thư rác" ở trang chi tiết và phân luồng tay; nhật ký ghi cảnh báo kèm địa chỉ người gửi; phiên đồng bộ đếm riêng số thư vớt được.
+- **Chia hạn mức:** hộp Thư rác dùng phần còn thừa của *Số mail mỗi lần quét*, tối thiểu một phần năm hạn mức — không nuốt gấp đôi hạn mức, cũng không bị hộp thư chính đông làm cho đói.
 - **Thiết lập mới** `gmail.quet_spam` (mặc định bật) cùng ô đánh dấu trong mục *Phân luồng & đồng bộ* của bộ nhận mail.
 - **Nâng cấp CSDL:** thêm `php/nang-cap.php` và `sql/03_nang_cap.sql` — chạy được nhiều lần, chỉ thêm cột và thiết lập mới, không đụng dữ liệu cũ. Bộ nhận mail tự phát hiện CSDL thiếu cột và chỉ rõ cách nâng cấp thay vì báo lỗi SQL khó hiểu.
 

@@ -227,9 +227,19 @@ bool Gmail::danhSachMail(const std::string& truyVan, int soLuong, bool gomSpam,
 
     // Lượt hai: hộp Thư rác. Trường gửi báo cáo hay bị Google xếp nhầm vào đây;
     // bỏ qua thì thống kê sẽ báo "chưa nộp" oan cho trường.
+    //
+    // Hạn mức lượt hai = phần còn thừa của hạn mức chung, nhưng không bao giờ
+    // dưới một mức sàn. Cho hẳn thêm một hạn mức đầy đủ thì buổi nhiều thư rác
+    // sẽ nuốt gấp đôi số mail người dùng đặt; ngược lại chỉ lấy phần thừa thì
+    // hộp thư chính đông là hộp Thư rác bị bỏ quên mãi mãi - đúng cái lỗi đang sửa.
     if (gomSpam) {
+        int san = soLuong / 5;
+        if (san < 5) san = 5;
+        int conLai = soLuong - (int)ids.size();
+        if (conLai < san) conLai = san;
+
         std::string loiSpam;
-        if (!quetMotLuot(truyVan, soLuong, true, daCo, ids, loiSpam)) {
+        if (!quetMotLuot(truyVan, conLai, true, daCo, ids, loiSpam)) {
             // Hộp thư chính đã quét xong, không để lỗi ở Spam làm hỏng cả phiên
             if (canhBao) *canhBao = "Không quét được hộp Thư rác: " + loiSpam;
         }
