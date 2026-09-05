@@ -167,8 +167,12 @@ không theo quy ước.
 
 ![Chờ phân luồng tay](hinh/web-06-phan-luong-tay.png)
 
-Bấm nút **Phân luồng** ở cuối dòng để mở biểu mẫu. Bạn sẽ thấy nội dung thư, danh sách tệp
-đính kèm, và ba ô cần điền:
+Bấm nút **Phân luồng** ở cuối dòng để mở biểu mẫu:
+
+![Biểu mẫu phân luồng tay](hinh/web-06b-phan-luong-bieu-mau.png)
+
+Bên trái là nội dung thư và danh sách tệp đính kèm để bạn xem trước khi quyết định; bên phải là
+ba ô cần điền:
 
 | Ô | Bắt buộc | Cách điền |
 |---|---|---|
