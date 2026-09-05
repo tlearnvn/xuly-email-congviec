@@ -106,6 +106,14 @@ bool KhoMySql::ketNoi(std::string& loi) {
     if (!db_.ketNoi(ts_, loi)) return false;
     NK.tin("csdl", "Đã kết nối MySQL " + ts_.may_chu + ":" + std::to_string(ts_.cong) +
                    "/" + ts_.co_so_du_lieu + " (" + db_.phienBanMayChu() + ")");
+
+    // Kết nối được nhưng cơ sở dữ liệu chưa có bảng -> báo rõ để người dùng biết
+    // phải chạy trình cài đặt của phần web trước, thay vì hiện lỗi SQL khó hiểu.
+    if (!kiemTraDaCaiDat(loi)) {
+        db_.dong();
+        return false;
+    }
+
     // Đọc tham số chống trùng từ bảng cấu hình
     std::map<std::string, std::string> ch;
     std::string l2;
@@ -114,6 +122,46 @@ bool KhoMySql::ketNoi(std::string& loi) {
         if (ch.count("trung.tao_ban_moi_khi_tep_khac")) taoBanMoiKhiTepKhac_ = toBool(ch["trung.tao_ban_moi_khi_tep_khac"], true);
     }
     return true;
+}
+
+// Kiểm tra cơ sở dữ liệu đã được cài đặt (đủ các bảng chính) hay chưa
+bool KhoMySql::kiemTraDaCaiDat(std::string& loi) {
+    static const char* BANG_CHINH[] = {
+        "cau_hinh", "truong", "nguoi_xu_ly", "van_ban",
+        "email", "tep_du_lieu", "tep_dinh_kem", "cong_viec", nullptr
+    };
+
+    MySqlKetQua kq;
+    std::string l2;
+    if (!db_.truyVan("SELECT TABLE_NAME FROM information_schema.TABLES "
+                     "WHERE TABLE_SCHEMA = DATABASE()", kq, l2)) {
+        // Không đọc được information_schema thì bỏ qua bước kiểm tra này
+        return true;
+    }
+
+    std::vector<std::string> thieu;
+    for (int i = 0; BANG_CHINH[i]; i++) {
+        bool co = false;
+        for (const auto& d : kq.dong) {
+            if (toLower(d[0]) == BANG_CHINH[i]) { co = true; break; }
+        }
+        if (!co) thieu.push_back(BANG_CHINH[i]);
+    }
+    if (thieu.empty()) return true;
+
+    if (thieu.size() == sizeof(BANG_CHINH) / sizeof(BANG_CHINH[0]) - 1) {
+        loi = "Kết nối MySQL thành công nhưng cơ sở dữ liệu '" + ts_.co_so_du_lieu +
+              "' đang TRỐNG (chưa có bảng nào).\n"
+              "Hãy cài đặt phần web trước: mở https://<tên-miền>/cai-dat.php và làm theo 4 bước, "
+              "hoặc dùng phpMyAdmin nạp lần lượt sql/01_schema.sql và sql/02_du_lieu_mau.sql. "
+              "Cài xong quay lại đây bấm 'Lưu & kết nối'.";
+    } else {
+        loi = "Cơ sở dữ liệu '" + ts_.co_so_du_lieu + "' thiếu " + std::to_string(thieu.size()) +
+              " bảng: " + join(thieu, ", ") + ".\n"
+              "Hãy nạp lại tệp sql/01_schema.sql bằng phpMyAdmin để bổ sung các bảng còn thiếu.";
+    }
+    NK.loi("csdl", loi);
+    return false;
 }
 
 void KhoMySql::dong() { db_.dong(); }

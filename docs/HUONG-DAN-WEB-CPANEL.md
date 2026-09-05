@@ -167,6 +167,7 @@ Cách này nhanh hơn chế độ API nhưng cần mở cổng:
 |-----------|--------------------------|
 | Trắng trang, không báo gì | Mở `cau-hinh.php`, đổi `'go_loi' => true` để xem lỗi chi tiết. Nhớ đổi lại `false` sau khi sửa xong. |
 | *Không kết nối được cơ sở dữ liệu* | Sai thông tin trong `cau-hinh.php`. Kiểm tra lại tên CSDL/người dùng — cPanel luôn thêm tiền tố `taikhoan_`. |
+| Bộ nhận mail báo *cơ sở dữ liệu đang TRỐNG* | Chưa chạy `cai-dat.php`, hoặc chạy chưa xong. Vào phpMyAdmin kiểm tra CSDL phải có **15 bảng**; nếu trống thì nạp `sql/01_schema.sql` rồi `sql/02_du_lieu_mau.sql` bằng tab *Import*. |
 | Bộ nhận mail báo *Khoá API không hợp lệ* | Khoá trong bộ nhận mail khác khoá trên web. Vào *Cài đặt → Kết nối bộ nhận mail* chép lại. |
 | Tải tệp lớn bị lỗi giữa chừng | Giảm *Kích thước mỗi khối tải lên* xuống 256 KB hoặc 128 KB trong *Cài đặt → Kết nối bộ nhận mail*. |
 | Tiếng Việt hiển thị thành dấu hỏi | Cơ sở dữ liệu không phải `utf8mb4`. Chạy lại `sql/01_schema.sql` trên CSDL trống. |

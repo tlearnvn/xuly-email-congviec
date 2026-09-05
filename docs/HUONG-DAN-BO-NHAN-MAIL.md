@@ -282,6 +282,7 @@ chuẩn hoá). *Bộ tệp* được so bằng SHA-256 của danh sách `mã bă
 |-----------|-----------|
 | *Không tìm thấy thư viện libcurl* | `sudo apt install libcurl4` (Debian/Ubuntu) |
 | *Không mở được cổng 8899* | Cổng đang bận. Chạy `mailrouter -p 9100`, hoặc để chương trình tự chọn cổng trống |
+| *Cơ sở dữ liệu … đang TRỐNG* hoặc *Table … doesn't exist* | Kết nối MySQL đã thông nhưng chưa cài phần web. Mở `https://<tên-miền>/cai-dat.php` chạy trình cài đặt trước, hoặc dùng phpMyAdmin nạp `sql/01_schema.sql` rồi `sql/02_du_lieu_mau.sql`, sau đó quay lại bấm *Lưu & kết nối* |
 | *Chưa có refresh token* | Đăng nhập lại bằng Client ID/Secret ở mục Tài khoản Gmail |
 | *Câu lệnh dài … vượt max_allowed_packet* | Giảm `kich_thuoc_khoi_kb` trong `[mysql]` xuống 128 hoặc 64 |
 | *Tài khoản dùng caching_sha2_password…* | Chạy trên máy chủ MySQL: `ALTER USER 'user'@'%' IDENTIFIED WITH mysql_native_password BY '<mật khẩu>';` hoặc chuyển sang chế độ API |
