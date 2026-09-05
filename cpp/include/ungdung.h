@@ -64,6 +64,7 @@ public:
 
     // Áp dụng thông tin OAuth mới
     void luuToken(const TokenGmail& t);
+    void luuTokenNeuDoi();
     std::string diaChiChuyenHuong() const;
     void datCongGiaoDien(int cong) { congGiaoDien_ = cong; }
 

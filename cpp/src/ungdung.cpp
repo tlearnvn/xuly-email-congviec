@@ -106,6 +106,18 @@ void UngDung::luuToken(const TokenGmail& t) {
     ghiCauHinh();
 }
 
+// Sau khi access token được tự gia hạn, ghi lại vào tệp cấu hình để lần khởi
+// động sau không phải gọi gia hạn thêm một lần nữa. Chỉ ghi khi có thay đổi.
+void UngDung::luuTokenNeuDoi() {
+    const TokenGmail& t = gmail_.token();
+    if (t.access_token.empty()) return;
+    if (t.access_token == ch_.chuoi("gmail.access_token") &&
+        (long long)t.het_han == ch_.nguyen("gmail.token_het_han", 0)) return;
+    luuToken(t);
+    NK.go("gmail", "Đã lưu access token mới vào tệp cấu hình (hiệu lực đến " +
+                   dinhDangGioVN(t.het_han) + ")");
+}
+
 std::string UngDung::diaChiChuyenHuong() const {
     int c = congGiaoDien_ > 0 ? congGiaoDien_ : (int)ch_.nguyen("ung_dung.cong_giao_dien", 8899);
     return "http://127.0.0.1:" + std::to_string(c) + "/oauth/callback";
@@ -402,6 +414,7 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
     }
 
     if (!gmail_.damBaoToken(loi)) { datTienTrinh("loi", 0, 0, loi); return false; }
+    luuTokenNeuDoi();
 
     std::string hopThu = gmail_.token().dia_chi;
     if (hopThu.empty()) {
@@ -455,6 +468,7 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
         }
     }
 
+    luuTokenNeuDoi();
     tk.ket_thuc = nowEpoch();
     char buf[400];
     std::snprintf(buf, sizeof(buf),

@@ -104,10 +104,24 @@
     eG.querySelector('.cham').className = 'cham ' + (gOk ? 'ok' : (g.da_dang_nhap ? 'canh' : 'loi'));
     eG.querySelector('.tt-gia-tri').textContent = g.hop_thu || (g.da_dang_nhap ? 'Đã đăng nhập' : 'Chưa đăng nhập');
     eG.querySelector('.tt-mo-ta').textContent = g.da_dang_nhap
-      ? (g.con_han ? ('Token còn hiệu lực đến ' + (g.het_han || '—')) : 'Token đã hết hạn, sẽ tự gia hạn khi chạy')
+      ? (g.co_refresh
+          ? ('Tự động gia hạn, không cần đăng nhập lại' + (g.het_han ? ' · token hiện tại đến ' + g.het_han : ''))
+          : 'CHƯA CÓ refresh token — sẽ phải đăng nhập lại khi token hết hạn')
       : 'Vào mục "Tài khoản Gmail" để đăng nhập';
     $('#gmail-hop-thu').textContent = g.hop_thu || 'Chưa đăng nhập';
     $('#gmail-han').textContent = g.da_dang_nhap ? (g.het_han || 'Không rõ') : '—';
+
+    const eGh = $('#gmail-gia-han');
+    if (!g.da_dang_nhap) {
+      eGh.textContent = '—';
+      eGh.style.color = '';
+    } else if (g.co_refresh) {
+      eGh.textContent = 'Tự gia hạn — không cần đăng nhập lại';
+      eGh.style.color = 'var(--luc)';
+    } else {
+      eGh.textContent = 'Phải đăng nhập lại (thiếu refresh token)';
+      eGh.style.color = 'var(--do)';
+    }
 
     // AI
     const a = s.ai || {};

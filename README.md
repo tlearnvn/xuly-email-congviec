@@ -179,6 +179,11 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.0.2 — 05/09/2026
+
+- **Giao diện:** mục *Tài khoản Gmail* hiển thị rõ token có tự gia hạn được hay không, để biết ngay có phải đăng nhập lại khi hết hạn hay không.
+- **Cải thiện:** access token sau khi được tự gia hạn sẽ ghi lại vào `mailrouter.ini`, lần khởi động sau không phải gọi gia hạn thừa và hiển thị đúng hạn hiệu lực.
+
 ### 1.0.1 — 05/09/2026
 
 - **Sửa:** bộ nhận mail kiểm tra cơ sở dữ liệu ngay sau khi kết nối. Nếu CSDL còn trống hoặc thiếu
