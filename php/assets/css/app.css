@@ -186,26 +186,42 @@ table.bang .giua{text-align:center;}
 .hh-nhat{font-weight:500;font-size:.71rem;}
 
 /* =========================== Biểu mẫu =========================== */
-.luoi-truong{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.85rem;}
-.truong{display:flex;flex-direction:column;gap:.3rem;font-size:.795rem;font-weight:560;color:#47536e;}
-.truong.rong{grid-column:1/-1;}
-input[type=text],input[type=password],input[type=email],input[type=number],input[type=date],
-input[type=search],select,textarea{
-  font:inherit;font-size:.875rem;padding:.52rem .7rem;border:1px solid var(--vien);border-radius:9px;
-  background:#fbfcfe;color:var(--chu);width:100%;transition:border-color .15s,box-shadow .15s;
+.luoi-truong{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.85rem;align-items:start;}
+.truong{display:block;font-size:.795rem;font-weight:560;color:#47536e;line-height:1.4;}
+.truong.het-hang{grid-column:1/-1;}
+/* "input:not([type])" bắt luôn các ô <input list="..."> không ghi type,
+   nếu thiếu thì chúng rơi về khung mặc định của trình duyệt (viền vuông, lệch cỡ). */
+input:not([type]),input[type=text],input[type=password],input[type=email],input[type=number],
+input[type=date],input[type=search],select,textarea{
+  font:inherit;font-size:.875rem;font-weight:400;padding:.52rem .7rem;border:1px solid var(--vien);
+  border-radius:9px;background:#fbfcfe;color:var(--chu);width:100%;
+  transition:border-color .15s,box-shadow .15s;
 }
-textarea{min-height:90px;resize:vertical;line-height:1.5;}
+/* Mọi ô nhập một dòng cùng cao 38px để các ô cạnh nhau luôn thẳng hàng;
+   riêng ô chọn ngày Chrome vẽ cao hơn vài pixel nên phải ép về cùng chiều cao. */
+input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]),
+select:not([multiple]){height:38px;}
+textarea{min-height:90px;height:auto;resize:vertical;line-height:1.5;}
 input:focus,select:focus,textarea:focus{outline:0;border-color:var(--xanh);background:#fff;
   box-shadow:0 0 0 3px rgba(30,94,255,.12);}
-input::placeholder,textarea::placeholder{color:#a7b1c5;}
+input::placeholder,textarea::placeholder{color:#a7b1c5;font-weight:400;}
 input:disabled,select:disabled{background:#f2f4f8;color:var(--chu-nhat);}
 .goi-y{font-size:.75rem;color:var(--chu-nhat);font-weight:400;line-height:1.45;}
+
+/* Nhãn nằm gọn trên một dòng (kể cả dấu * bắt buộc), ô nhập luôn xuống dòng kế
+   tiếp => các ô cạnh nhau trong lưới luôn thẳng hàng, không bị lệch nhau.
+   Đặt sau khối trên để thắng về thứ tự khi cùng độ ưu tiên. */
+.truong>input:not([type=hidden]),.truong>select,.truong>textarea,.truong>.mk-hop,.truong>div{
+  display:block;width:100%;margin-top:.3rem;font-weight:400;}
+.truong>input+.goi-y,.truong>select+.goi-y,.truong>textarea+.goi-y,
+.truong>.mk-hop+.goi-y,.truong>div+.goi-y{display:block;margin-top:.3rem;}
 .chuyen{display:inline-flex;align-items:center;gap:.45rem;font-size:.85rem;cursor:pointer;color:#414d68;font-weight:500;}
 .chuyen input{width:16px;height:16px;accent-color:var(--xanh);cursor:pointer;flex:0 0 16px;}
 
 .thanh-loc{display:flex;gap:.55rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem;}
 .thanh-loc .truong{min-width:150px;flex:0 1 auto;}
 .thanh-loc .truong.dai{flex:1 1 240px;}
+.thanh-loc .nut{height:38px;padding-top:0;padding-bottom:0;}
 
 /* =========================== Thông báo =========================== */
 .nhan{padding:.72rem 1rem;border-radius:10px;font-size:.86rem;margin-bottom:1rem;border:1px solid;}

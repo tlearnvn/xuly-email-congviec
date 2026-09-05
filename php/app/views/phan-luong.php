@@ -84,12 +84,13 @@
                    value="<?= Util::h($dangChon['ma_van_ban']) ?>" placeholder="001">
             <span class="goi-y">Mã lạ sẽ tự được thêm vào danh mục</span>
           </label>
-          <label class="truong rong">
+          <label class="truong">
             Người xử lý <span style="color:#dc4437">*</span>
             <input list="ds-nguoi" name="ma_nguoi_xu_ly" id="ma_nguoi_xu_ly"
                    value="<?= Util::h($dangChon['ma_nguoi_xu_ly']) ?>" placeholder="TAT" required>
+            <span class="goi-y">Mã viết tắt của người nhận xử lý</span>
           </label>
-          <label class="truong rong">
+          <label class="truong het-hang">
             Ghi chú
             <input type="text" name="ghi_chu" placeholder="Lý do phân luồng, hướng dẫn xử lý…">
           </label>
