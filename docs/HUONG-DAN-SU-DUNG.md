@@ -426,6 +426,10 @@ trong **Thùng rác** thì hệ thống luôn bỏ qua, vì đó là thư ai đ�
 Thư vớt được từ Thư rác hiện huy hiệu vàng **"Hộp Thư rác"** ở trang chi tiết và trang phân
 luồng tay, và được đếm riêng trong kết quả mỗi phiên.
 
+> **Lưu ý khi đặt điều kiện lọc:** nếu bạn lọc theo nhãn tự đặt (ví dụ `label:baocao`) thì
+> phần quét Thư rác gần như không tìm được gì, vì Gmail không gắn nhãn của bạn cho thư đã bị
+> xếp vào Thư rác. Nên lọc theo `has:attachment` hoặc theo người gửi thì hơn.
+
 Kết thúc mỗi phiên, hệ thống báo lại tám con số: mail đã quét, mail mới, bản cập nhật, trùng
 bị bỏ qua, công việc tạo, tệp đính kèm, chờ phân luồng, và lỗi.
 

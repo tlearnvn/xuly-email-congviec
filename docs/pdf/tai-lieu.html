@@ -216,7 +216,7 @@ figcaption{
   <h1>Hệ thống phân luồng<br>Mail công vụ</h1>
   <div class="bia-gach"></div>
   <div class="bia-phu">Tài liệu quy trình kỹ thuật<br>và hướng dẫn sử dụng</div>
-  <div class="bia-the">Phiên bản 1.2.0 · build 8 · 05/09/2026</div>
+  <div class="bia-the">Phiên bản 1.2.1 · build 9 · 05/09/2026</div>
   <div class="bia-chan">Thiết kế bởi <strong>Trương Anh Tuấn</strong></div>
 </div>
 
@@ -263,6 +263,7 @@ figcaption{
 <p><strong>Chia hạn mức giữa hai lượt.</strong> Thiết lập <em>Số mail mỗi lần quét</em> là hạn mức chung. Hộp thư chính được ưu tiên lấy trước; hộp Thư rác dùng <strong>phần còn thừa</strong>, nhưng không bao giờ dưới <strong>một phần năm</strong> hạn mức (tối thiểu 5 thư). Cách chia này tránh hai cực:</p>
 <ul><li>Cho lượt hai một hạn mức đầy đủ nữa thì một buổi nhiều thư rác sẽ nuốt <strong>gấp đôi</strong> số thư quản trị đặt, kéo theo tải cả tệp đính kèm của chúng;</li><li>Chỉ cho lượt hai phần thừa thì hộp thư chính đông là hộp Thư rác <strong>bị bỏ quên mãi mãi</strong> — đúng cái lỗi đang cần sửa.</li></ul>
 <p><strong>Thùng rác thì luôn bị bỏ qua.</strong> Ngoài việc giới hạn bằng <code>in:spam</code>, hệ thống còn kiểm tra nhãn <code>TRASH</code> trên từng thư trước khi xử lý — thư người dùng đã chủ động xoá thì không lôi lại.</p>
+<blockquote><strong>Một hạn chế cần biết:</strong> lượt hai dùng lại đúng truy vấn mà quản trị đặt, chỉ thêm <code>in:spam</code>. Nếu truy vấn có điều kiện theo nhãn tự đặt — ví dụ <code>label:baocao</code> — thì lượt hai gần như không ra kết quả, vì Gmail thường không gắn nhãn người dùng cho thư nằm trong Thư rác. Muốn vớt được thư rác thì nên dùng truy vấn theo nội dung hoặc người gửi (<code>has:attachment</code>, <code>from:@thpt.edu.vn</code>) thay vì theo nhãn.</blockquote>
 <p>Thư vớt được từ Thư rác vẫn đi qua đúng quy trình như mọi thư khác, chỉ khác ba điểm:</p>
 <ul><li>Cột <code>email.tu_spam</code> được đặt bằng 1;</li><li>Web hiện huy hiệu vàng <strong>"Hộp Thư rác"</strong> ở trang chi tiết và trang phân luồng tay;</li><li>Nhật ký ghi một dòng cảnh báo kèm địa chỉ người gửi, và phiên đồng bộ đếm riêng <em>"vớt từ Thư rác"</em> để quản trị biết mà xử lý gốc.</li></ul>
 <p>Tắt được bằng thiết lập <code>gmail.quet_spam</code>, nhưng <strong>mặc định là bật</strong> vì bỏ sót báo cáo tai hại hơn nhiều so với việc thỉnh thoảng nhận nhầm một thư rác thật.</p>
@@ -529,6 +530,7 @@ cd mailrouter-linux-x64
 <p><strong>Truy vấn Gmail</strong> mặc định là <code>has:attachment newer_than:30d</code> — chỉ lấy thư có tệp đính kèm trong 30 ngày gần nhất. Sửa được nếu cần, dùng đúng cú pháp tìm kiếm của Gmail.</p>
 <p><strong>Quét cả hộp Thư rác (Spam)</strong> — nên để bật. Google hay xếp nhầm báo cáo của các trường vào Thư rác; tắt mục này là bỏ sót, và thống kê sẽ báo <em>"chưa nộp"</em> oan cho trường đã gửi. Thư trong <strong>Thùng rác</strong> thì hệ thống luôn bỏ qua, vì đó là thư ai đó đã chủ động xoá.</p>
 <p>Thư vớt được từ Thư rác hiện huy hiệu vàng <strong>"Hộp Thư rác"</strong> ở trang chi tiết và trang phân luồng tay, và được đếm riêng trong kết quả mỗi phiên.</p>
+<blockquote><strong>Lưu ý khi đặt điều kiện lọc:</strong> nếu bạn lọc theo nhãn tự đặt (ví dụ <code>label:baocao</code>) thì phần quét Thư rác gần như không tìm được gì, vì Gmail không gắn nhãn của bạn cho thư đã bị xếp vào Thư rác. Nên lọc theo <code>has:attachment</code> hoặc theo người gửi thì hơn.</blockquote>
 <p>Kết thúc mỗi phiên, hệ thống báo lại tám con số: mail đã quét, mail mới, bản cập nhật, trùng bị bỏ qua, công việc tạo, tệp đính kèm, chờ phân luồng, và lỗi.</p>
 <h3 id="hd-chạy-nền-như-một-dịch-vụ">Chạy nền như một dịch vụ</h3>
 <p><strong>Trên Linux</strong> — dùng tệp <code>mailrouter.service</code> có sẵn trong gói:</p>

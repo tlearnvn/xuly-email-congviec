@@ -241,12 +241,16 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.2.1 — 05/09/2026
+
+- **Chia hạn mức quét:** hộp Thư rác dùng phần còn thừa của *Số mail mỗi lần quét*, nhưng không bao giờ dưới một phần năm hạn mức. Bản 1.2.0 cấp cho lượt quét Thư rác một hạn mức đầy đủ nữa nên một buổi nhiều thư rác có tệp đính kèm sẽ nuốt gấp đôi số mail đã đặt.
+- **Tài liệu:** nói rõ hạn chế — nếu điều kiện lọc dùng nhãn tự đặt (`label:...`) thì lượt quét Thư rác gần như không ra kết quả, vì Gmail không gắn nhãn người dùng cho thư đã bị xếp vào Thư rác. Nên lọc theo `has:attachment` hoặc theo người gửi.
+
 ### 1.2.0 — 05/09/2026
 
 - **Sửa lỗi bỏ sót thư:** Gmail API mặc định giấu hẳn thư trong hộp Thư rác, nên báo cáo bị Google xếp nhầm vào đó sẽ **không bao giờ được nhận** và thống kê báo "chưa nộp" oan cho trường. Nay mỗi phiên quét hai lượt — hộp thư chính rồi hộp Thư rác (`includeSpamTrash=true` kèm `in:spam`).
 - **Thùng rác luôn bỏ qua:** thư người dùng đã chủ động xoá thì không lôi lại, kiểm tra bằng nhãn `TRASH` trên từng thư.
 - **Đánh dấu nguồn:** thêm cột `email.tu_spam`; web hiện huy hiệu vàng "Hộp Thư rác" ở trang chi tiết và phân luồng tay; nhật ký ghi cảnh báo kèm địa chỉ người gửi; phiên đồng bộ đếm riêng số thư vớt được.
-- **Chia hạn mức:** hộp Thư rác dùng phần còn thừa của *Số mail mỗi lần quét*, tối thiểu một phần năm hạn mức — không nuốt gấp đôi hạn mức, cũng không bị hộp thư chính đông làm cho đói.
 - **Thiết lập mới** `gmail.quet_spam` (mặc định bật) cùng ô đánh dấu trong mục *Phân luồng & đồng bộ* của bộ nhận mail.
 - **Nâng cấp CSDL:** thêm `php/nang-cap.php` và `sql/03_nang_cap.sql` — chạy được nhiều lần, chỉ thêm cột và thiết lập mới, không đụng dữ liệu cũ. Bộ nhận mail tự phát hiện CSDL thiếu cột và chỉ rõ cách nâng cấp thay vì báo lỗi SQL khó hiểu.
 

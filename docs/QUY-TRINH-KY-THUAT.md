@@ -142,6 +142,12 @@ chính được ưu tiên lấy trước; hộp Thư rác dùng **phần còn th
 **Thùng rác thì luôn bị bỏ qua.** Ngoài việc giới hạn bằng `in:spam`, hệ thống còn kiểm tra
 nhãn `TRASH` trên từng thư trước khi xử lý — thư người dùng đã chủ động xoá thì không lôi lại.
 
+> **Một hạn chế cần biết:** lượt hai dùng lại đúng truy vấn mà quản trị đặt, chỉ thêm
+> `in:spam`. Nếu truy vấn có điều kiện theo nhãn tự đặt — ví dụ `label:baocao` — thì lượt
+> hai gần như không ra kết quả, vì Gmail thường không gắn nhãn người dùng cho thư nằm trong
+> Thư rác. Muốn vớt được thư rác thì nên dùng truy vấn theo nội dung hoặc người gửi
+> (`has:attachment`, `from:@thpt.edu.vn`) thay vì theo nhãn.
+
 Thư vớt được từ Thư rác vẫn đi qua đúng quy trình như mọi thư khác, chỉ khác ba điểm:
 
 - Cột `email.tu_spam` được đặt bằng 1;
