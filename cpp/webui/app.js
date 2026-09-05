@@ -44,7 +44,12 @@
   function dat(id, gt) {
     const e = document.getElementById(id);
     if (!e) return;
-    if (e.type === 'checkbox') e.checked = (gt === true || gt === '1' || gt === 1 || gt === 'true');
+    // Khoá chưa có trong tệp cấu hình thì giữ nguyên mặc định khai trong HTML,
+    // đừng tự tắt ô đánh dấu đi.
+    if (e.type === 'checkbox') {
+      if (gt === undefined || gt === null || gt === '') return;
+      e.checked = (gt === true || gt === '1' || gt === 1 || gt === 'true');
+    }
     else if (gt !== undefined && gt !== null) e.value = gt;
   }
   function lay(id) {
@@ -195,7 +200,7 @@
     'mysql.timeout', 'mysql.kich_thuoc_khoi_kb',
     'api.url', 'api.khoa', 'api.timeout', 'api.kich_thuoc_khoi_kb',
     'gmail.client_id', 'gmail.client_secret', 'gmail.access_token', 'gmail.refresh_token',
-    'gmail.truy_van', 'gmail.so_mail_moi_lan',
+    'gmail.truy_van', 'gmail.so_mail_moi_lan', 'gmail.quet_spam',
     'ai.bat', 'ai.url', 'ai.api_key', 'ai.model', 'ai.max_tokens', 'ai.timeout',
     'ai.temperature', 'ai.nguong_tin_cay',
     'ung_dung.chu_ky_phut', 'ung_dung.dung_luong_tep_toi_da_mb'
@@ -363,7 +368,8 @@
   // --- Phân luồng ---
   $('#nut-luu-phan-luong').addEventListener('click', (ev) =>
     chay(ev.currentTarget, () => luuCauHinh(['gmail.truy_van', 'gmail.so_mail_moi_lan',
-      'ung_dung.chu_ky_phut', 'ung_dung.dung_luong_tep_toi_da_mb']), 'Đã lưu thiết lập'));
+      'gmail.quet_spam', 'ung_dung.chu_ky_phut',
+      'ung_dung.dung_luong_tep_toi_da_mb']), 'Đã lưu thiết lập'));
 
   async function chayDongBo(nut) {
     const than = {};

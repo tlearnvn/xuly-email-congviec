@@ -109,6 +109,47 @@ Truy vấn Gmail mặc định là `has:attachment newer_than:30d` — chỉ l�
 trong vòng 30 ngày. Quản trị đổi được trong mục *Phân luồng & đồng bộ* của bộ nhận mail.
 Việc giới hạn 30 ngày giúp phiên đồng bộ đầu tiên không phải tải về toàn bộ lịch sử hộp thư.
 
+### 3.1. Thư bị Google xếp vào hộp Thư rác
+
+Đây là tình huống dễ mất dữ liệu nhất mà lại khó phát hiện: trường **có gửi**, nhưng Google
+xếp thư vào Thư rác, cán bộ không thấy, và thống kê báo trường đó *"chưa nộp"*.
+
+Nguyên nhân thường gặp: hàng chục trường gửi thư nội dung gần giống nhau trong cùng một buổi,
+tệp đính kèm nặng, hoặc trường gửi từ hộp thư miễn phí chưa cấu hình SPF/DKIM.
+
+Gmail API mặc định **giấu hẳn** thư trong Thư rác và Thùng rác: gọi `messages.list` bình
+thường sẽ không thấy chúng, kể cả khi truy vấn khớp. Vì vậy bộ nhận mail quét **hai lượt**:
+
+| Lượt | Tham số gọi API | Lấy gì |
+|---|---|---|
+| 1 | `q=<truy vấn>` | Thư trong hộp thư chính |
+| 2 | `includeSpamTrash=true` và `q=<truy vấn> in:spam` | Chỉ thư trong hộp Thư rác |
+
+Phải có **cả hai** tham số ở lượt hai: thiếu `includeSpamTrash` thì Gmail lọc bỏ thư rác
+trước khi xét truy vấn, còn thiếu `in:spam` thì Thùng rác cũng bị kéo vào.
+
+Id trùng giữa hai lượt được loại bỏ, nên thư không bị xử lý hai lần.
+
+**Thùng rác thì luôn bị bỏ qua.** Ngoài việc giới hạn bằng `in:spam`, hệ thống còn kiểm tra
+nhãn `TRASH` trên từng thư trước khi xử lý — thư người dùng đã chủ động xoá thì không lôi lại.
+
+Thư vớt được từ Thư rác vẫn đi qua đúng quy trình như mọi thư khác, chỉ khác ba điểm:
+
+- Cột `email.tu_spam` được đặt bằng 1;
+- Web hiện huy hiệu vàng **"Hộp Thư rác"** ở trang chi tiết và trang phân luồng tay;
+- Nhật ký ghi một dòng cảnh báo kèm địa chỉ người gửi, và phiên đồng bộ đếm riêng
+  *"vớt từ Thư rác"* để quản trị biết mà xử lý gốc.
+
+Tắt được bằng thiết lập `gmail.quet_spam`, nhưng **mặc định là bật** vì bỏ sót báo cáo tai
+hại hơn nhiều so với việc thỉnh thoảng nhận nhầm một thư rác thật.
+
+> **Cách xử lý tận gốc:** vớt thư khỏi Thư rác chỉ là chữa cháy. Nên vào Gmail →
+> *Cài đặt → Bộ lọc và địa chỉ bị chặn → Tạo bộ lọc mới*, điền tên miền của các trường
+> (ví dụ `@thpt.edu.vn`) rồi tích **"Không bao giờ chuyển vào Thư rác"**. Với Google
+> Workspace, quản trị viên làm ở *Admin console → Apps → Gmail → Spam, Phishing and
+> Malware → Allowlist*. Hệ thống chỉ có quyền đọc (`gmail.readonly`) nên không thể tự
+> gỡ nhãn Thư rác giúp.
+
 ---
 
 ## 4. Thuật toán phân luồng và điểm tin cậy

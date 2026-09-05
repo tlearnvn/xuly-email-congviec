@@ -147,7 +147,7 @@ bool KhoMySql::kiemTraDaCaiDat(std::string& loi) {
         }
         if (!co) thieu.push_back(BANG_CHINH[i]);
     }
-    if (thieu.empty()) return true;
+    if (thieu.empty()) return kiemTraCotMoi(loi);
 
     if (thieu.size() == sizeof(BANG_CHINH) / sizeof(BANG_CHINH[0]) - 1) {
         loi = "Kết nối MySQL thành công nhưng cơ sở dữ liệu '" + ts_.co_so_du_lieu +
@@ -160,6 +160,44 @@ bool KhoMySql::kiemTraDaCaiDat(std::string& loi) {
               " bảng: " + join(thieu, ", ") + ".\n"
               "Hãy nạp lại tệp sql/01_schema.sql bằng phpMyAdmin để bổ sung các bảng còn thiếu.";
     }
+    NK.loi("csdl", loi);
+    return false;
+}
+
+// Bảng đủ nhưng cơ sở dữ liệu tạo từ phiên bản cũ có thể thiếu cột mới thêm.
+// Ghi thẳng vào cột không tồn tại sẽ hỏng cả phiên đồng bộ nên chặn ngay từ đầu.
+bool KhoMySql::kiemTraCotMoi(std::string& loi) {
+    struct CotCan { const char* bang; const char* cot; const char* tu_ban; };
+    static const CotCan CAN[] = {
+        { "email", "tu_spam", "1.2.0" },
+        { nullptr, nullptr, nullptr }
+    };
+
+    MySqlKetQua kq;
+    std::string l2;
+    if (!db_.truyVan("SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.COLUMNS "
+                     "WHERE TABLE_SCHEMA = DATABASE()", kq, l2)) {
+        return true;   // không đọc được thì bỏ qua, để lỗi thật nổi lên lúc ghi
+    }
+
+    std::vector<std::string> thieu;
+    for (int i = 0; CAN[i].bang; i++) {
+        bool co = false;
+        for (const auto& d : kq.dong) {
+            if (d.o.size() >= 2 && toLower(d[0]) == CAN[i].bang && toLower(d[1]) == CAN[i].cot) {
+                co = true; break;
+            }
+        }
+        if (!co) thieu.push_back(std::string(CAN[i].bang) + "." + CAN[i].cot +
+                                 " (thêm từ bản " + CAN[i].tu_ban + ")");
+    }
+    if (thieu.empty()) return true;
+
+    loi = "Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu " + std::to_string(thieu.size()) +
+          " cột: " + join(thieu, ", ") + ".\n"
+          "Hãy mở https://<tên-miền>/nang-cap.php một lần để bổ sung, "
+          "hoặc nạp tệp sql/03_nang_cap.sql bằng phpMyAdmin. "
+          "Dữ liệu cũ được giữ nguyên, không mất gì.";
     NK.loi("csdl", loi);
     return false;
 }
@@ -432,7 +470,7 @@ bool KhoMySql::luuEmail(const BanGhiEmail& em, const std::vector<NhomCongViec>& 
         "tieu_de_chuan, nguoi_gui, ten_nguoi_gui, nguoi_nhan, ngay_gui, ngay_nhan, doan_trich, "
         "noi_dung_text, noi_dung_html, so_tep, tong_dung_luong, hash_noi_dung, hash_tep, hash_tong_hop, "
         "trang_thai, id_email_goc, phien_ban, ly_do_trung, nguon_phan_luong, do_tin_cay, ghi_chu_ai, "
-        "ngay_tao, ngay_cap_nhat) VALUES (" +
+        "tu_spam, ngay_tao, ngay_cap_nhat) VALUES (" +
         MySql::nhay(em.gmail_id) + "," +
         MySql::nhay(em.thread_id) + "," +
         MySql::nhay(catUtf8(em.message_id_header, 190)) + "," +
@@ -457,7 +495,8 @@ bool KhoMySql::luuEmail(const BanGhiEmail& em, const std::vector<NhomCongViec>& 
         MySql::nhay(catUtf8(kq.thong_diep, 490)) + "," +
         MySql::nhay(em.nguon_phan_luong) + "," +
         std::to_string(em.do_tin_cay) + "," +
-        MySql::nhay(catUtf8(em.ghi_chu_ai, 4000)) + ",NOW(),NOW())";
+        MySql::nhay(catUtf8(em.ghi_chu_ai, 4000)) + "," +
+        (em.tuSpam() ? "1" : "0") + ",NOW(),NOW())";
     if (!db_.thucThi(sql, l2)) return huyBo("Lỗi ghi email: " + l2);
     kq.id_email = db_.idChenCuoi();
 
@@ -799,6 +838,7 @@ bool KhoApi::luuEmail(const BanGhiEmail& em, const std::vector<NhomCongViec>& nh
     j.dat("nguon_phan_luong", em.nguon_phan_luong);
     j.dat("do_tin_cay", em.do_tin_cay);
     j.dat("ghi_chu_ai", em.ghi_chu_ai);
+    j.dat("tu_spam", em.tuSpam() ? 1LL : 0LL);
 
     Json ts = Json::mang();
     for (const auto& t : em.tep) {

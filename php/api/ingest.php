@@ -151,6 +151,7 @@ try {
                 'nguon_phan_luong'  => (string)($yc['nguon_phan_luong'] ?? ''),
                 'do_tin_cay'        => (float)($yc['do_tin_cay'] ?? 0),
                 'ghi_chu_ai'        => (string)($yc['ghi_chu_ai'] ?? ''),
+                'tu_spam'           => !empty($yc['tu_spam']) ? 1 : 0,
             ];
             $tep = is_array($yc['tep'] ?? null) ? $yc['tep'] : [];
             $cv  = is_array($yc['cong_viec'] ?? null) ? $yc['cong_viec'] : [];

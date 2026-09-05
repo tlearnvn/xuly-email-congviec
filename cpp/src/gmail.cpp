@@ -175,18 +175,29 @@ bool Gmail::hoSo(std::string& diaChi, long long& tongMail, std::string& loi) {
     return true;
 }
 
-bool Gmail::danhSachMail(const std::string& truyVan, int soLuong,
-                         std::vector<std::string>& ids, std::string& loi) {
-    ids.clear();
+// Quét một lượt danh sách thư. Trả về số id đã thêm vào "ids".
+// Bỏ qua id đã có trong "daCo" để hai lượt (hộp thư chính + Spam) không trùng nhau.
+bool Gmail::quetMotLuot(const std::string& truyVan, int soLuong, bool trongSpam,
+                        std::set<std::string>& daCo,
+                        std::vector<std::string>& ids, std::string& loi) {
     std::string pageToken;
     int conLai = soLuong > 0 ? soLuong : 50;
     int soVong = 0;
+    int daThem = 0;
 
     while (conLai > 0 && soVong < 40) {
         soVong++;
         int lay = std::min(conLai, 100);
         std::string url = std::string(API_GOC) + "/messages?maxResults=" + std::to_string(lay);
-        if (!truyVan.empty()) url += "&q=" + urlEncode(truyVan);
+
+        // Gmail API mặc định includeSpamTrash=false nên thư trong Spam bị giấu hẳn.
+        // Muốn thấy phải bật cờ này, VÀ thêm "in:spam" để không kéo luôn Thùng rác.
+        std::string q = truyVan;
+        if (trongSpam) {
+            url += "&includeSpamTrash=true";
+            q = q.empty() ? "in:spam" : (q + " in:spam");
+        }
+        if (!q.empty()) url += "&q=" + urlEncode(q);
         if (!pageToken.empty()) url += "&pageToken=" + urlEncode(pageToken);
 
         Json j;
@@ -195,11 +206,33 @@ bool Gmail::danhSachMail(const std::string& truyVan, int soLuong,
         if (ms.soPhanTu() == 0) break;
         for (size_t i = 0; i < ms.soPhanTu(); i++) {
             std::string id = ms[i].lay("id").chuoi();
-            if (!id.empty()) ids.push_back(id);
+            if (id.empty() || !daCo.insert(id).second) continue;
+            ids.push_back(id);
+            daThem++;
         }
-        conLai = soLuong - (int)ids.size();
+        conLai = soLuong - daThem;
         pageToken = j.lay("nextPageToken").chuoi();
         if (pageToken.empty()) break;
+    }
+    return true;
+}
+
+bool Gmail::danhSachMail(const std::string& truyVan, int soLuong, bool gomSpam,
+                         std::vector<std::string>& ids, std::string& loi,
+                         std::string* canhBao) {
+    ids.clear();
+    std::set<std::string> daCo;
+
+    if (!quetMotLuot(truyVan, soLuong, false, daCo, ids, loi)) return false;
+
+    // Lượt hai: hộp Thư rác. Trường gửi báo cáo hay bị Google xếp nhầm vào đây;
+    // bỏ qua thì thống kê sẽ báo "chưa nộp" oan cho trường.
+    if (gomSpam) {
+        std::string loiSpam;
+        if (!quetMotLuot(truyVan, soLuong, true, daCo, ids, loiSpam)) {
+            // Hộp thư chính đã quét xong, không để lỗi ở Spam làm hỏng cả phiên
+            if (canhBao) *canhBao = "Không quét được hộp Thư rác: " + loiSpam;
+        }
     }
     return true;
 }
@@ -452,6 +485,14 @@ void Gmail::phanTichMail(const Json& j, BanGhiEmail& em) {
     em.gmail_id = j.lay("id").chuoi();
     em.thread_id = j.lay("threadId").chuoi();
     em.doan_trich = locUtf8(j.lay("snippet").chuoi());
+
+    // Nhãn của Gmail - dùng để biết thư nằm ở hộp thư chính hay hộp Thư rác
+    em.nhan_gmail.clear();
+    const Json& nhan = j.lay("labelIds");
+    for (size_t i = 0; i < nhan.soPhanTu(); i++) {
+        std::string n = nhan[i].chuoi();
+        if (!n.empty()) em.nhan_gmail.push_back(n);
+    }
 
     const Json& payload = j.lay("payload");
     const Json& headers = payload.lay("headers");

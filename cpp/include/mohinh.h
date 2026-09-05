@@ -109,6 +109,14 @@ struct BanGhiEmail {
     std::string noi_dung_text;
     std::string noi_dung_html;
     std::vector<TepDinhKem> tep;
+    std::vector<std::string> nhan_gmail;         // labelIds: INBOX, SPAM, TRASH…
+
+    bool coNhan(const char* n) const {
+        for (const auto& x : nhan_gmail) if (x == n) return true;
+        return false;
+    }
+    bool tuSpam() const    { return coNhan("SPAM"); }
+    bool trongThung() const { return coNhan("TRASH"); }
 
     std::string hash_noi_dung;
     std::string hash_tep;
@@ -174,6 +182,7 @@ struct ThongKePhien {
     int so_tep = 0;
     int so_dung_ai = 0;
     int so_cho_phan_luong = 0;
+    int so_mail_spam = 0;              // vớt được từ hộp Thư rác
     int so_loi = 0;
     int64_t bat_dau = 0;
     int64_t ket_thuc = 0;

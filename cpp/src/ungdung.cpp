@@ -43,6 +43,7 @@ bool UngDung::khoiTao(const std::string& tepCauHinh, std::string& loi) {
         ch_.dat("gmail.hop_thu", "");
         ch_.dat("gmail.truy_van", "");
         ch_.dat("gmail.so_mail_moi_lan", "");
+        ch_.dat("gmail.quet_spam", "1");
         ch_.dat("ai.bat", "");
         ch_.dat("ai.url", "");
         ch_.dat("ai.api_key", "");
@@ -334,9 +335,22 @@ bool UngDung::xuLyMotMail(const std::string& id, ThongKePhien& tk, std::string& 
     Gmail::phanTichMail(j, em);
     em.hop_thu = gmail_.token().dia_chi.empty() ? ch_.chuoi("gmail.hop_thu") : gmail_.token().dia_chi;
 
-    NK.tin("mail", "Đang xử lý: [" + dinhDangGioVN(em.ngay_gui, "%d/%m/%Y %H:%M") + "] " +
+    // Thư đã bị người dùng xoá thì không lôi lại, dù cờ includeSpamTrash có bật
+    if (em.trongThung()) {
+        NK.go("mail", "Bỏ qua mail nằm trong Thùng rác: " + id);
+        return true;
+    }
+
+    NK.tin("mail", std::string(em.tuSpam() ? "[THƯ RÁC] Đang xử lý: " : "Đang xử lý: ") +
+                   "[" + dinhDangGioVN(em.ngay_gui, "%d/%m/%Y %H:%M") + "] " +
                    catUtf8(em.tieu_de, 150) + " - " + em.nguoi_gui +
                    " (" + std::to_string(em.tep.size()) + " tệp)");
+    if (em.tuSpam()) {
+        tk.so_mail_spam++;
+        NK.canhBao("spam", "Vớt được từ hộp Thư rác: " + catUtf8(em.tieu_de, 120) +
+                           " - " + em.nguoi_gui + ". Nên thêm địa chỉ này vào bộ lọc "
+                           "\"không bao giờ cho vào Thư rác\" của Gmail.");
+    }
 
     taiTepDinhKem(em, tk);
     tinhHash(em);
@@ -434,13 +448,19 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
         : (int)toLL(ch_.uuTien("gmail.so_mail_moi_lan", "gmail.so_mail_moi_lan", "50"), 50);
     if (soLuong <= 0) soLuong = 50;
 
+    // Google hay xếp nhầm báo cáo của các trường vào hộp Thư rác. Bỏ qua thì
+    // thống kê báo "chưa nộp" oan, nên mặc định quét luôn cả hộp đó.
+    bool quetSpam = toBool(ch_.uuTien("gmail.quet_spam", "gmail.quet_spam", "1"), true);
+
     kho_->moPhien(tk, hopThu, truyVan, loi);
     NK.tin("dong_bo", "Bắt đầu phiên đồng bộ - hộp thư: " + (hopThu.empty() ? "(chưa rõ)" : hopThu) +
-                      " | điều kiện: " + truyVan + " | tối đa " + std::to_string(soLuong) + " mail");
+                      " | điều kiện: " + truyVan + " | tối đa " + std::to_string(soLuong) + " mail" +
+                      (quetSpam ? " | có quét hộp Thư rác" : " | bỏ qua hộp Thư rác"));
 
     datTienTrinh("liet_ke", 0, 0, "Đang lấy danh sách mail...");
     std::vector<std::string> ids;
-    if (!gmail_.danhSachMail(truyVan, soLuong, ids, loi)) {
+    std::string canhBaoSpam;
+    if (!gmail_.danhSachMail(truyVan, soLuong, quetSpam, ids, loi, &canhBaoSpam)) {
         tk.thong_diep = loi;
         tk.so_loi++;
         std::string l2;
@@ -449,6 +469,7 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
         NK.loi("dong_bo", "Không lấy được danh sách mail: " + loi);
         return false;
     }
+    if (!canhBaoSpam.empty()) NK.canhBao("dong_bo", canhBaoSpam);
     tk.so_mail_quet = (int)ids.size();
     NK.tin("dong_bo", "Tìm thấy " + std::to_string(ids.size()) + " mail phù hợp");
 
@@ -473,9 +494,9 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
     char buf[400];
     std::snprintf(buf, sizeof(buf),
         "Hoàn tất: quét %d mail, mới %d, bản mới %d, trùng %d, công việc %d, tệp %d, "
-        "chờ phân luồng %d, dùng AI %d, lỗi %d (%.1f giây)",
+        "chờ phân luồng %d, dùng AI %d, vớt từ Thư rác %d, lỗi %d (%.1f giây)",
         tk.so_mail_quet, tk.so_mail_moi, tk.so_mail_ban_moi, tk.so_mail_trung, tk.so_cong_viec,
-        tk.so_tep, tk.so_cho_phan_luong, tk.so_dung_ai, tk.so_loi,
+        tk.so_tep, tk.so_cho_phan_luong, tk.so_dung_ai, tk.so_mail_spam, tk.so_loi,
         (double)(tk.ket_thuc - tk.bat_dau));
     tk.thong_diep = buf;
     NK.tin("dong_bo", tk.thong_diep);
@@ -601,6 +622,7 @@ Json UngDung::trangThai() {
     ph.dat("so_tep", (long long)phienCuoi_.so_tep);
     ph.dat("so_dung_ai", (long long)phienCuoi_.so_dung_ai);
     ph.dat("so_cho_phan_luong", (long long)phienCuoi_.so_cho_phan_luong);
+    ph.dat("so_mail_spam", (long long)phienCuoi_.so_mail_spam);
     ph.dat("so_loi", (long long)phienCuoi_.so_loi);
     ph.dat("thong_diep", phienCuoi_.thong_diep);
     j.dat("phien_cuoi", ph);

@@ -17,8 +17,9 @@
   <!-- ===== Bước 1 ===== -->
   <rect x="110" y="92" width="380" height="66" rx="11" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
   <rect x="110" y="92" width="6" height="66" rx="3" fill="#1e5eff"/>
-  <text x="132" y="118" font-size="14.5" font-weight="700" fill="#1443ab">1 · Lấy danh sách thư mới</text>
-  <text x="132" y="141" font-size="12" fill="#5a6884">Gmail API · chạy theo lịch hoặc bấm nút “Đồng bộ ngay”</text>
+  <text x="132" y="114" font-size="14.5" font-weight="700" fill="#1443ab">1 · Lấy danh sách thư mới</text>
+  <text x="132" y="134" font-size="12" fill="#5a6884">Quét 2 lượt: hộp thư chính, rồi hộp Thư rác</text>
+  <text x="132" y="151" font-size="12" fill="#5a6884">Thùng rác luôn bỏ qua</text>
 
   <!-- ===== Bước 2 ===== -->
   <rect x="110" y="178" width="380" height="66" rx="11" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>

@@ -21,7 +21,7 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 | Tài liệu | Nội dung |
 |---|---|
-| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 45 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 47 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
 | [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
 | [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
 | [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
@@ -241,10 +241,18 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.2.0 — 05/09/2026
+
+- **Sửa lỗi bỏ sót thư:** Gmail API mặc định giấu hẳn thư trong hộp Thư rác, nên báo cáo bị Google xếp nhầm vào đó sẽ **không bao giờ được nhận** và thống kê báo "chưa nộp" oan cho trường. Nay mỗi phiên quét hai lượt — hộp thư chính rồi hộp Thư rác (`includeSpamTrash=true` kèm `in:spam`).
+- **Thùng rác luôn bỏ qua:** thư người dùng đã chủ động xoá thì không lôi lại, kiểm tra bằng nhãn `TRASH` trên từng thư.
+- **Đánh dấu nguồn:** thêm cột `email.tu_spam`; web hiện huy hiệu vàng "Hộp Thư rác" ở trang chi tiết và phân luồng tay; nhật ký ghi cảnh báo kèm địa chỉ người gửi; phiên đồng bộ đếm riêng số thư vớt được.
+- **Thiết lập mới** `gmail.quet_spam` (mặc định bật) cùng ô đánh dấu trong mục *Phân luồng & đồng bộ* của bộ nhận mail.
+- **Nâng cấp CSDL:** thêm `php/nang-cap.php` và `sql/03_nang_cap.sql` — chạy được nhiều lần, chỉ thêm cột và thiết lập mới, không đụng dữ liệu cũ. Bộ nhận mail tự phát hiện CSDL thiếu cột và chỉ rõ cách nâng cấp thay vì báo lỗi SQL khó hiểu.
+
 ### 1.1.0 — 05/09/2026
 
 - **Tài liệu:** thêm bộ tài liệu đầy đủ — [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) và [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md), kèm 8 sơ đồ SVG và 20 ảnh chụp màn hình.
-- **Tài liệu:** xuất bản [bản PDF trọn bộ 45 trang](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf) tông vàng mệnh Kim, dựng bằng `scripts/tao-pdf.js`.
+- **Tài liệu:** xuất bản [bản PDF trọn bộ 47 trang](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf) tông vàng mệnh Kim, dựng bằng `scripts/tao-pdf.js`.
 - **Phát hành:** thêm workflow `.github/workflows/phat-hanh.yml` — đẩy thẻ `vX.Y.Z` là GitHub tự biên dịch Windows + Linux, đóng gói web và tạo bản phát hành kèm tệp tải về.
 - **Sửa lỗi giao diện:** các ô nhập trong biểu mẫu bị lệch nhau (rõ nhất ở trang *Chờ phân luồng tay*). Nguyên nhân: `.truong` dùng `display:flex` khiến dấu `*` bắt buộc rớt xuống dòng riêng; lớp `.truong.rong` trùng tên với `.rong` của khung báo trống; các ô `<input list=…>` không ghi `type` nên rơi về khung mặc định của trình duyệt.
 - **Sửa lỗi giao diện:** mọi ô nhập một dòng nay cùng cao 38px nên thanh lọc ở các trang Nhật ký, Thống kê, Tất cả văn bản đều thẳng hàng.

@@ -15,6 +15,12 @@
         <dd><?= Util::h($dangChon['ten_nguoi_gui']) ?>
           <div class="chu-nho chu-mo"><?= Util::h($dangChon['nguoi_gui']) ?></div></dd>
         <dt>Ngày gửi</dt><dd><?= Util::h(Util::ngay($dangChon['ngay_gui'])) ?></dd>
+        <?php if (!empty($dangChon['tu_spam'])): ?>
+          <dt>Nơi nhận</dt>
+          <dd><span class="hh hh-vang">Hộp Thư rác</span>
+            <div class="chu-nho chu-mo">Google xếp nhầm. Nên thêm địa chỉ người gửi vào bộ lọc
+              “không bao giờ cho vào Thư rác” của Gmail.</div></dd>
+        <?php endif; ?>
         <dt>Mã đọc được</dt><dd><span class="ma-ho-so"><?= Util::h($dangChon['ma_ho_so'] ?: '—') ?></span></dd>
         <dt>Lý do</dt><dd class="chu-nho"><?= Util::h($dangChon['ghi_chu'] ?: 'Không đọc được mã từ tên tệp và tiêu đề.') ?></dd>
       </dl>

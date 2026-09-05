@@ -419,6 +419,13 @@ quét theo chu kỳ đó, chỉ cần để cửa sổ chạy nền.
 **Truy vấn Gmail** mặc định là `has:attachment newer_than:30d` — chỉ lấy thư có tệp đính kèm
 trong 30 ngày gần nhất. Sửa được nếu cần, dùng đúng cú pháp tìm kiếm của Gmail.
 
+**Quét cả hộp Thư rác (Spam)** — nên để bật. Google hay xếp nhầm báo cáo của các trường vào
+Thư rác; tắt mục này là bỏ sót, và thống kê sẽ báo *"chưa nộp"* oan cho trường đã gửi. Thư
+trong **Thùng rác** thì hệ thống luôn bỏ qua, vì đó là thư ai đó đã chủ động xoá.
+
+Thư vớt được từ Thư rác hiện huy hiệu vàng **"Hộp Thư rác"** ở trang chi tiết và trang phân
+luồng tay, và được đếm riêng trong kết quả mỗi phiên.
+
 Kết thúc mỗi phiên, hệ thống báo lại tám con số: mail đã quét, mail mới, bản cập nhật, trùng
 bị bỏ qua, công việc tạo, tệp đính kèm, chờ phân luồng, và lỗi.
 
@@ -491,6 +498,8 @@ qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nh�
 | Hiện tượng | Nguyên nhân | Cách xử lý |
 |---|---|---|
 | `Table '...cau_hinh' doesn't exist` | Chưa chạy trình cài đặt, CSDL còn rỗng | Mở `https://tên-miền/cai-dat.php` chạy hết 4 bước, rồi **xoá tệp `cai-dat.php`** đi |
+| `Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu … cột` | Nâng cấp mã nguồn nhưng chưa nâng cấp CSDL | Mở `https://tên-miền/nang-cap.php`, bấm **Nâng cấp ngay**, rồi **xoá tệp `nang-cap.php`** đi. Dữ liệu cũ giữ nguyên |
+| Trường khẳng định đã gửi mà hệ thống không thấy | Thư rơi vào Thư rác, hoặc mục *Quét cả hộp Thư rác* đang tắt | Bật lại mục đó trong *Phân luồng & đồng bộ*, chạy đồng bộ lại; sau đó tạo bộ lọc Gmail “không bao giờ chuyển vào Thư rác” cho tên miền các trường |
 | `Access denied for user` | Sai tài khoản MySQL, hoặc chưa mở Remote MySQL | Kiểm tra lại thông tin trong cPanel; hoặc chuyển sang chế độ *Qua API PHP* |
 | Kết nối MySQL bị từ chối từ máy nhà | Hosting chặn MySQL từ xa, hoặc IP nhà đã đổi | Chuyển sang chế độ *Qua API PHP* — cách này không phụ thuộc IP |
 | Dòng "Gia hạn" hiện chữ đỏ | Chỉ có access token, thiếu refresh token | Đăng nhập lại bằng Client ID để lấy refresh token |
@@ -509,6 +518,19 @@ Khi không rõ nguyên nhân, vào **Nhật ký hệ thống**, bấm thẻ **L�
 **Hệ thống có xoá mail trong hộp thư không?**
 Không. Hệ thống chỉ xin quyền đọc (`gmail.readonly`), Google sẽ từ chối mọi lệnh xoá hoặc
 sửa nhãn. Hộp thư công vụ nguyên vẹn.
+
+**Trường có gửi mà thư rơi vào Thư rác thì sao?**
+Hệ thống **vẫn lấy được**. Mỗi phiên đồng bộ quét hai lượt: hộp thư chính rồi tới hộp Thư
+rác. Thư vớt được hiện huy hiệu vàng *"Hộp Thư rác"* để bạn biết.
+
+Nhưng nên xử lý tận gốc, đừng để lặp lại: vào Gmail → *Cài đặt → Bộ lọc và địa chỉ bị chặn
+→ Tạo bộ lọc mới*, ô **Từ** điền tên miền của các trường (ví dụ `@thpt.edu.vn`), bấm *Tạo bộ
+lọc*, rồi tích **“Không bao giờ chuyển vào Thư rác”**. Dùng Google Workspace thì quản trị
+viên làm một lần cho cả cơ quan ở *Admin console → Apps → Gmail → Spam, Phishing and Malware
+→ Allowlist*.
+
+**Thư đã xoá vào Thùng rác có bị lấy lại không?**
+Không. Thùng rác luôn được bỏ qua — đã chủ động xoá thì hệ thống tôn trọng quyết định đó.
 
 **Bộ nhận mail phải bật 24/24 không?**
 Không bắt buộc. Tắt máy vài ngày rồi bật lại, hệ thống sẽ lấy bù những mail chưa đọc (trong

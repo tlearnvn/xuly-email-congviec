@@ -79,6 +79,7 @@ private:
     bool luuBlob(const TepDinhKem& t, long long& idTepDuLieu, bool& daCo, std::string& loi);
     bool timTrung(const BanGhiEmail& em, KetQuaLuu& kq, std::string& loi);
     bool kiemTraDaCaiDat(std::string& loi);
+    bool kiemTraCotMoi(std::string& loi);      // CSDL cũ có thể thiếu cột mới thêm
 };
 
 // ---------------------------------------------------------------------

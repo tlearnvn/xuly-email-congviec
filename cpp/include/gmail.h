@@ -7,6 +7,7 @@
 #include "json.h"
 #include "util.h"
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -44,8 +45,12 @@ public:
 
     // ------------------------- Gmail API -----------------------------
     bool hoSo(std::string& diaChi, long long& tongMail, std::string& loi);
-    bool danhSachMail(const std::string& truyVan, int soLuong,
-                      std::vector<std::string>& ids, std::string& loi);
+    // gomSpam = true: quét thêm một lượt trong hộp Thư rác (Spam).
+    // Gmail API mặc định giấu hẳn thư trong Spam và Thùng rác, phải xin riêng.
+    // Lỗi riêng ở lượt Spam ghi vào canhBao chứ không làm hỏng cả phiên.
+    bool danhSachMail(const std::string& truyVan, int soLuong, bool gomSpam,
+                      std::vector<std::string>& ids, std::string& loi,
+                      std::string* canhBao = nullptr);
     bool layMail(const std::string& id, Json& ra, std::string& loi);
     bool layTepDinhKem(const std::string& idMail, const std::string& idTep,
                        std::string& duLieu, std::string& loi);
@@ -65,6 +70,10 @@ private:
 
     std::vector<std::string> tieuDeXacThuc() const;
     bool goiApi(const std::string& url, Json& ra, std::string& loi);
+    // Một lượt quét (hộp thư chính hoặc hộp Spam), bỏ qua id đã gặp ở lượt trước
+    bool quetMotLuot(const std::string& truyVan, int soLuong, bool trongSpam,
+                     std::set<std::string>& daCo,
+                     std::vector<std::string>& ids, std::string& loi);
 };
 
 } // namespace mr

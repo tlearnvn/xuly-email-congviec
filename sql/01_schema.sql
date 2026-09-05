@@ -179,6 +179,7 @@ CREATE TABLE IF NOT EXISTS `email` (
                                     NOT NULL DEFAULT 'khong_xac_dinh',
   `do_tin_cay`        DECIMAL(5,2)  NOT NULL DEFAULT 0,
   `ghi_chu_ai`        TEXT          NULL,
+  `tu_spam`           TINYINT(1)    NOT NULL DEFAULT 0,  -- vớt được từ hộp Thư rác của Gmail
   `tieu_de_goc_raw`   TEXT          NULL,
   `ngay_tao`          DATETIME      NULL,
   `ngay_cap_nhat`     DATETIME      NULL,
@@ -189,7 +190,8 @@ CREATE TABLE IF NOT EXISTS `email` (
   KEY `idx_email_tt` (`trang_thai`),
   KEY `idx_email_ngay` (`ngay_gui`),
   KEY `idx_email_goc` (`id_email_goc`),
-  KEY `idx_email_nguoigui` (`nguoi_gui`)
+  KEY `idx_email_nguoigui` (`nguoi_gui`),
+  KEY `idx_email_spam` (`tu_spam`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- =====================================================================

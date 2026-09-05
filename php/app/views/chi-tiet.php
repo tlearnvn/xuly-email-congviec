@@ -47,6 +47,11 @@
           <?php endif; ?>
         </dd>
         <dt>Ngày nhận</dt><dd><?= Util::h(Util::ngay($cv['ngay_nhan'], 'd/m/Y H:i')) ?> <span class="chu-nho chu-mo">(giờ Việt Nam)</span></dd>
+        <?php if (!empty($email['tu_spam'])): ?>
+          <dt>Nơi nhận</dt>
+          <dd><span class="hh hh-vang">Hộp Thư rác</span>
+            <span class="chu-nho chu-mo">Google xếp nhầm — thư vẫn được nhận đủ</span></dd>
+        <?php endif; ?>
         <dt>Hạn xử lý</dt>
         <dd><?= $cv['han_xu_ly'] ? Util::h(Util::ngayNgan($cv['han_xu_ly'])) : '—' ?></dd>
         <?php if ($cv['ngay_xu_ly']): ?>

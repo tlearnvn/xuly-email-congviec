@@ -291,6 +291,7 @@ class LuuMail
                 'nguon_phan_luong'  => self::nguon((string)($em['nguon_phan_luong'] ?? '')),
                 'do_tin_cay'        => (float)($em['do_tin_cay'] ?? 0),
                 'ghi_chu_ai'        => mb_substr((string)($em['ghi_chu_ai'] ?? ''), 0, 4000),
+                'tu_spam'           => !empty($em['tu_spam']) ? 1 : 0,
                 'ngay_tao'          => date('Y-m-d H:i:s'),
                 'ngay_cap_nhat'     => date('Y-m-d H:i:s'),
             ]);
