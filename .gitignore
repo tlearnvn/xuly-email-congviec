@@ -28,4 +28,4 @@ Thumbs.db
 .vscode/
 
 # Gói Node cài tạm khi dựng PDF
-node_modules/
+node_modules
