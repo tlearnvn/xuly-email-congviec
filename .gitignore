@@ -1,0 +1,28 @@
+# Thư mục biên dịch
+cpp/build/
+cpp/build-win/
+cpp/build-*/
+
+# Cấu hình cục bộ (chứa mật khẩu, không đưa lên kho mã)
+php/cau-hinh.php
+cpp/mailrouter.ini
+mailrouter.ini
+
+# Nhật ký
+nhat_ky/
+*.log
+
+# Gói nén phát hành (sinh ra khi chạy scripts/dong-goi.sh).
+# Riêng các thư mục dist/mailrouter-* và dist/web-cpanel được đưa lên kho
+# để người dùng tải về chạy ngay, không cần tự biên dịch.
+dist/*.tar.gz
+dist/web-cpanel/
+dist/*.zip
+
+# Tệp tạm của hệ điều hành / trình soạn thảo
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/

@@ -1,0 +1,74 @@
+# =====================================================================
+#  HỆ THỐNG PHÂN LUỒNG MAIL CÔNG VỤ
+#  Thiết kế bởi Trương Anh Tuấn
+#  Tệp cấu hình Apache cho hosting cPanel
+# =====================================================================
+
+# Trang mặc định
+DirectoryIndex index.php
+
+# ---------------------------------------------------------------------
+#  Chặn truy cập trực tiếp các tệp nhạy cảm
+# ---------------------------------------------------------------------
+<FilesMatch "^(cau-hinh\.php|cau-hinh\.mau\.php|phien_ban\.php)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<FilesMatch "\.(sql|ini|log|md|sh|bak|old|json)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# ---------------------------------------------------------------------
+#  Không cho liệt kê thư mục
+# ---------------------------------------------------------------------
+Options -Indexes
+
+# ---------------------------------------------------------------------
+#  Bảng mã và tiêu đề bảo mật
+# ---------------------------------------------------------------------
+AddDefaultCharset UTF-8
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "same-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# ---------------------------------------------------------------------
+#  Nén và bộ nhớ đệm cho tài nguyên tĩnh
+# ---------------------------------------------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript
+    AddOutputFilterByType DEFLATE application/javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+</IfModule>
+
+# ---------------------------------------------------------------------
+#  Giới hạn tải lên cho API tiếp nhận (nếu hosting cho phép ghi đè)
+# ---------------------------------------------------------------------
+<IfModule mod_php.c>
+    php_value post_max_size 32M
+    php_value upload_max_filesize 32M
+    php_value memory_limit 256M
+    php_value max_execution_time 300
+    php_value date.timezone "Asia/Ho_Chi_Minh"
+</IfModule>

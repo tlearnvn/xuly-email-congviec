@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bộ nhận mail - Hệ thống phân luồng Mail công vụ</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%A8%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<div class="ung-dung">
+
+  <!-- ================= THANH BÊN ================= -->
+  <aside class="ben">
+    <div class="hieu">
+      <div class="hieu-bieu-tuong">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h13A2.5 2.5 0 0 1 21 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5z"/>
+          <path d="m3.5 7 8.5 6 8.5-6"/>
+        </svg>
+      </div>
+      <div class="hieu-chu">
+        <strong id="ten-ngan">Phân luồng Mail công vụ</strong>
+        <span id="ten-don-vi">Phòng GDPT-GDTX - Sở GD&amp;ĐT Đồng Nai</span>
+      </div>
+    </div>
+
+    <nav class="dieu-huong">
+      <button class="muc dang-chon" data-trang="tong-quan">
+        <svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span>Tổng quan</span>
+      </button>
+      <button class="muc" data-trang="ket-noi">
+        <svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><span>Kết nối máy chủ</span>
+      </button>
+      <button class="muc" data-trang="gmail">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg><span>Tài khoản Gmail</span>
+      </button>
+      <button class="muc" data-trang="phan-luong">
+        <svg viewBox="0 0 24 24"><path d="M4 6h6l4 6h6"/><path d="M4 18h6l2-3"/><circle cx="19" cy="12" r="2"/><circle cx="19" cy="18" r="2"/><path d="M14 18h3"/></svg><span>Phân luồng &amp; đồng bộ</span>
+      </button>
+      <button class="muc" data-trang="ai">
+        <svg viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="12" rx="3"/><path d="M12 4v3M9 12h.01M15 12h.01M9.5 16h5"/></svg><span>Trợ lý AI</span>
+      </button>
+      <button class="muc" data-trang="nhat-ky">
+        <svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg><span>Nhật ký</span>
+      </button>
+    </nav>
+
+    <div class="ben-chan">
+      <div class="ben-trang-thai">
+        <span class="cham" id="cham-tong"></span>
+        <span id="ben-tt">Đang khởi động…</span>
+      </div>
+      <small id="ban-quyen">Thiết kế bởi Trương Anh Tuấn</small>
+    </div>
+  </aside>
+
+  <!-- ================= NỘI DUNG ================= -->
+  <main class="chinh">
+    <header class="dinh">
+      <div>
+        <h1 id="ten-ung-dung">Hệ thống phân luồng Mail công vụ</h1>
+        <p class="phu"><span id="dong-ho">--:--:--</span> · Giờ Việt Nam (GMT+7) · Máy <span id="ten-may">…</span></p>
+      </div>
+      <div class="dinh-nut">
+        <button class="nut phu-nut" id="nut-lam-moi" title="Làm mới trạng thái">
+          <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>
+          Làm mới
+        </button>
+        <button class="nut chinh-nut" id="nut-dong-bo">
+          <svg viewBox="0 0 24 24"><path d="M12 3v10"/><path d="m8 9 4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          Nhận mail ngay
+        </button>
+      </div>
+    </header>
+
+    <!-- ---------- TỔNG QUAN ---------- -->
+    <section class="trang hien" id="trang-tong-quan">
+      <div class="the-luoi">
+        <article class="the tt-the" id="tt-kho">
+          <div class="tt-dau"><span class="cham"></span><h3>Kho lưu trữ</h3></div>
+          <p class="tt-gia-tri">—</p>
+          <p class="tt-mo-ta">—</p>
+        </article>
+        <article class="the tt-the" id="tt-gmail">
+          <div class="tt-dau"><span class="cham"></span><h3>Tài khoản Gmail</h3></div>
+          <p class="tt-gia-tri">—</p>
+          <p class="tt-mo-ta">—</p>
+        </article>
+        <article class="the tt-the" id="tt-ai">
+          <div class="tt-dau"><span class="cham"></span><h3>Trợ lý AI</h3></div>
+          <p class="tt-gia-tri">—</p>
+          <p class="tt-mo-ta">—</p>
+        </article>
+        <article class="the tt-the" id="tt-dich-vu">
+          <div class="tt-dau"><span class="cham"></span><h3>Dịch vụ tự động</h3></div>
+          <p class="tt-gia-tri">—</p>
+          <p class="tt-mo-ta">—</p>
+        </article>
+      </div>
+
+      <div class="the" id="the-tien-trinh" hidden>
+        <div class="tien-trinh-dau">
+          <strong id="tt-buoc">Đang xử lý…</strong>
+          <span id="tt-so">0/0</span>
+        </div>
+        <div class="thanh"><div class="thanh-trong" id="thanh-trong"></div></div>
+        <p class="phu" id="tt-thong-diep"></p>
+        <button class="nut nho canh-bao-nut" id="nut-dung">Dừng lại</button>
+      </div>
+
+      <div class="hai-cot">
+        <div class="the">
+          <h2>Kết quả phiên gần nhất</h2>
+          <div class="so-lieu" id="so-lieu-phien">
+            <div class="o"><b>0</b><span>Mail đã quét</span></div>
+            <div class="o xanh"><b>0</b><span>Mail mới</span></div>
+            <div class="o tim"><b>0</b><span>Bản cập nhật</span></div>
+            <div class="o xam"><b>0</b><span>Trùng, bỏ qua</span></div>
+            <div class="o"><b>0</b><span>Công việc tạo</span></div>
+            <div class="o"><b>0</b><span>Tệp đính kèm</span></div>
+            <div class="o vang"><b>0</b><span>Chờ phân luồng</span></div>
+            <div class="o do"><b>0</b><span>Lỗi</span></div>
+          </div>
+          <p class="phu" id="phien-thong-diep">Chưa có phiên nào được chạy.</p>
+        </div>
+
+        <div class="the">
+          <h2>Danh mục đang dùng</h2>
+          <ul class="danh-sach-gon" id="ds-danh-muc">
+            <li><span>Trường</span><b>—</b></li>
+            <li><span>Người xử lý</span><b>—</b></li>
+            <li><span>Mã văn bản</span><b>—</b></li>
+          </ul>
+          <p class="phu">Danh mục được nạp từ máy chủ. Sửa danh mục trên trang web quản trị,
+             sau đó bấm <em>Kết nối lại</em> để cập nhật.</p>
+          <button class="nut phu-nut nho" id="nut-nap-danh-muc">Nạp lại danh mục</button>
+        </div>
+      </div>
+
+      <div class="the">
+        <h2>Nhật ký trực tiếp</h2>
+        <div class="bang-dieu-khien-log">
+          <label class="chuyen"><input type="checkbox" id="tu-cuon" checked><span>Tự cuộn</span></label>
+          <button class="nut phu-nut nho" id="nut-xoa-log">Xoá màn hình</button>
+        </div>
+        <div class="man-hinh-log" id="log-nho"></div>
+      </div>
+    </section>
+
+    <!-- ---------- KẾT NỐI ---------- -->
+    <section class="trang" id="trang-ket-noi">
+      <div class="the">
+        <h2>Nơi lưu dữ liệu</h2>
+        <p class="phu">Chọn cách bộ nhận mail đẩy dữ liệu về máy chủ. Nếu hosting cPanel
+           không cho phép kết nối MySQL từ xa, hãy dùng chế độ API.</p>
+
+        <div class="chon-che-do">
+          <label class="the-chon">
+            <input type="radio" name="che_do" value="mysql">
+            <div>
+              <strong>MySQL trực tiếp</strong>
+              <span>Kết nối thẳng tới máy chủ MySQL/MariaDB (cần mở Remote MySQL cho IP của máy này).</span>
+            </div>
+          </label>
+          <label class="the-chon">
+            <input type="radio" name="che_do" value="api">
+            <div>
+              <strong>Qua API PHP (HTTPS)</strong>
+              <span>Gửi dữ liệu tới tệp <code>api/ingest.php</code> trên hosting. Không cần mở cổng MySQL.</span>
+            </div>
+          </label>
+        </div>
+
+        <div id="khoi-mysql" class="khoi-cau-hinh">
+          <h3>Thông số MySQL</h3>
+          <div class="luoi-truong">
+            <label>Máy chủ<input type="text" id="mysql_may_chu" placeholder="vd: 103.x.x.x hoặc mysql.tenmien.vn"></label>
+            <label>Cổng<input type="number" id="mysql_cong" value="3306"></label>
+            <label>Người dùng<input type="text" id="mysql_nguoi_dung" placeholder="cpaneluser_mail"></label>
+            <label>Mật khẩu<input type="password" id="mysql_mat_khau"></label>
+            <label>Cơ sở dữ liệu<input type="text" id="mysql_co_so_du_lieu" placeholder="cpaneluser_phanluong"></label>
+            <label>Thời gian chờ (giây)<input type="number" id="mysql_timeout" value="30"></label>
+            <label>Kích thước khối ghi (KB)<input type="number" id="mysql_kich_thuoc_khoi_kb" value="256"></label>
+          </div>
+        </div>
+
+        <div id="khoi-api" class="khoi-cau-hinh">
+          <h3>Thông số API</h3>
+          <div class="luoi-truong">
+            <label class="rong">Địa chỉ API<input type="text" id="api_url" placeholder="https://tenmien.vn/phanluong/api/ingest.php"></label>
+            <label class="rong">Khoá API<input type="password" id="api_khoa" placeholder="Lấy trong Cài đặt của trang web quản trị"></label>
+            <label>Thời gian chờ (giây)<input type="number" id="api_timeout" value="120"></label>
+            <label>Kích thước khối tải (KB)<input type="number" id="api_kich_thuoc_khoi_kb" value="512"></label>
+          </div>
+        </div>
+
+        <div class="hang-nut">
+          <button class="nut chinh-nut" id="nut-luu-ket-noi">Lưu &amp; kết nối</button>
+          <button class="nut phu-nut" id="nut-kiem-tra-ket-noi">Kiểm tra kết nối</button>
+        </div>
+        <div class="thong-bao" id="tb-ket-noi" hidden></div>
+      </div>
+    </section>
+
+    <!-- ---------- GMAIL ---------- -->
+    <section class="trang" id="trang-gmail">
+      <div class="the">
+        <h2>Đăng nhập hộp thư Gmail</h2>
+        <p class="phu">Hệ thống chỉ <strong>đọc</strong> thư (quyền <code>gmail.readonly</code>) và
+           <strong>không bao giờ xoá</strong> thư trên máy chủ Gmail.</p>
+
+        <div class="hop-tt" id="hop-gmail">
+          <div>
+            <span class="nhan-nho">Hộp thư đang dùng</span>
+            <strong id="gmail-hop-thu">Chưa đăng nhập</strong>
+          </div>
+          <div>
+            <span class="nhan-nho">Hiệu lực token</span>
+            <strong id="gmail-han">—</strong>
+          </div>
+          <button class="nut canh-bao-nut nho" id="nut-thoat-gmail">Đăng xuất</button>
+        </div>
+
+        <h3>Cách 1 — Đăng nhập từ đầu bằng Client ID / Client Secret</h3>
+        <div class="luoi-truong">
+          <label class="rong">Client ID<input type="text" id="gmail_client_id" placeholder="xxxxxxxx.apps.googleusercontent.com"></label>
+          <label class="rong">Client Secret<input type="password" id="gmail_client_secret" placeholder="GOCSPX-..."></label>
+        </div>
+        <p class="phu">Trong Google Cloud Console, tạo OAuth Client dạng <em>Desktop app</em> hoặc
+           <em>Web application</em> với địa chỉ chuyển hướng: <code id="uri-chuyen-huong">http://127.0.0.1:8899/oauth/callback</code></p>
+        <div class="hang-nut">
+          <button class="nut chinh-nut" id="nut-dang-nhap-google">Đăng nhập bằng Google</button>
+          <button class="nut phu-nut" id="nut-luu-ung-dung">Chỉ lưu Client ID/Secret</button>
+        </div>
+
+        <h3>Cách 2 — Đã có sẵn Access token / Refresh token</h3>
+        <div class="luoi-truong">
+          <label class="rong">Access token<input type="password" id="gmail_access_token" placeholder="ya29..."></label>
+          <label class="rong">Refresh token<input type="password" id="gmail_refresh_token" placeholder="1//0g..."></label>
+        </div>
+        <p class="phu">Có refresh token kèm Client ID/Secret thì hệ thống tự gia hạn access token khi hết hạn.</p>
+        <div class="hang-nut">
+          <button class="nut chinh-nut" id="nut-luu-token">Lưu token</button>
+          <button class="nut phu-nut" id="nut-kiem-tra-gmail">Kiểm tra hộp thư</button>
+        </div>
+        <div class="thong-bao" id="tb-gmail" hidden></div>
+      </div>
+    </section>
+
+    <!-- ---------- PHÂN LUỒNG ---------- -->
+    <section class="trang" id="trang-phan-luong">
+      <div class="the">
+        <h2>Điều kiện lấy thư</h2>
+        <div class="luoi-truong">
+          <label class="rong">Điều kiện tìm kiếm của Gmail
+            <input type="text" id="gmail_truy_van" placeholder="has:attachment newer_than:30d">
+          </label>
+          <label>Số mail mỗi lần quét<input type="number" id="gmail_so_mail_moi_lan" value="50"></label>
+          <label>Chu kỳ tự động (phút)<input type="number" id="ung_dung_chu_ky_phut" value="15"></label>
+          <label>Dung lượng tệp tối đa (MB)<input type="number" id="ung_dung_dung_luong_tep_toi_da_mb" value="25"></label>
+        </div>
+        <p class="phu">Ví dụ điều kiện: <code>has:attachment newer_than:7d</code>,
+           <code>from:@thpt.edu.vn has:attachment</code>, <code>label:baocao is:unread</code>.</p>
+        <div class="hang-nut">
+          <button class="nut chinh-nut" id="nut-luu-phan-luong">Lưu thiết lập</button>
+        </div>
+      </div>
+
+      <div class="the">
+        <h2>Chạy nhận mail</h2>
+        <div class="luoi-truong">
+          <label>Giới hạn số mail lần này<input type="number" id="gioi-han-lan-nay" placeholder="Để trống = theo thiết lập"></label>
+          <label class="rong">Điều kiện riêng cho lần này<input type="text" id="truy-van-lan-nay" placeholder="Để trống = theo thiết lập"></label>
+        </div>
+        <div class="hang-nut">
+          <button class="nut chinh-nut" id="nut-chay-ngay">Nhận mail ngay</button>
+          <button class="nut phu-nut" id="nut-bat-dich-vu">Bật dịch vụ tự động</button>
+          <button class="nut canh-bao-nut" id="nut-tat-dich-vu" hidden>Tắt dịch vụ tự động</button>
+        </div>
+        <div class="thong-bao" id="tb-phan-luong" hidden></div>
+      </div>
+
+      <div class="the">
+        <h2>Quy tắc đặt tên tệp</h2>
+        <div class="vi-du-ma">
+          <div class="ma-mau">
+            <span class="ma-phan p1">001<em>mã trường</em></span>
+            <span class="ma-cach">_</span>
+            <span class="ma-phan p2">001<em>mã văn bản / công việc</em></span>
+            <span class="ma-cach">_</span>
+            <span class="ma-phan p3">TAT<em>mã người xử lý</em></span>
+          </div>
+        </div>
+        <ul class="danh-sach-cham">
+          <li>Đọc mã từ <strong>tên tệp đính kèm</strong> trước, sau đó tới <strong>tiêu đề thư</strong>.</li>
+          <li>Chấp nhận dấu phân cách <code>_</code>, <code>-</code>, <code>.</code>, khoảng trắng — ví dụ <code>001-001-TAT Bao cao thang 9.pdf</code>.</li>
+          <li><strong>Mã trường</strong> và <strong>mã người xử lý</strong> phải có trong danh mục.</li>
+          <li><strong>Mã văn bản</strong> nới lỏng: mã lạ vẫn nhận và được tự thêm vào danh mục để thống kê.</li>
+          <li>Không đọc được mã → nhờ AI (nếu bật) → vẫn không được thì đưa vào hàng chờ để quản trị phân luồng tay.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ---------- AI ---------- -->
+    <section class="trang" id="trang-ai">
+      <div class="the">
+        <h2>Trợ lý AI (tương thích OpenAI)</h2>
+        <p class="phu">Dùng khi tên tệp và tiêu đề không đọc được mã. Hệ thống gửi tiêu đề, người gửi,
+           tên tệp và trích đoạn nội dung kèm danh mục để AI đề xuất mã.</p>
+
+        <label class="chuyen lon"><input type="checkbox" id="ai_bat"><span>Bật hỗ trợ AI</span></label>
+
+        <div class="luoi-truong">
+          <label class="rong">Địa chỉ API
+            <input type="text" id="ai_url" placeholder="https://api.openai.com/v1">
+          </label>
+          <label class="rong">API Key<input type="password" id="ai_api_key" placeholder="sk-..."></label>
+          <label>Model<input type="text" id="ai_model" placeholder="gpt-4o-mini"></label>
+          <label>Max tokens (≤ 64000)<input type="number" id="ai_max_tokens" value="4096" min="1" max="64000"></label>
+          <label>Thời gian chờ (≤ 300 giây)<input type="number" id="ai_timeout" value="60" min="1" max="300"></label>
+          <label>Temperature<input type="number" id="ai_temperature" value="0.1" step="0.1" min="0" max="2"></label>
+          <label>Ngưỡng tin cậy (0–1)<input type="number" id="ai_nguong_tin_cay" value="0.6" step="0.05" min="0" max="1"></label>
+        </div>
+        <p class="phu">Tương thích mọi dịch vụ theo chuẩn OpenAI: OpenAI, Azure OpenAI, Groq, Together,
+           OpenRouter, Ollama (<code>http://localhost:11434/v1</code>), LM Studio…</p>
+        <div class="hang-nut">
+          <button class="nut chinh-nut" id="nut-luu-ai">Lưu thiết lập AI</button>
+          <button class="nut phu-nut" id="nut-kiem-tra-ai">Kiểm tra kết nối AI</button>
+        </div>
+        <div class="thong-bao" id="tb-ai" hidden></div>
+      </div>
+    </section>
+
+    <!-- ---------- NHẬT KÝ ---------- -->
+    <section class="trang" id="trang-nhat-ky">
+      <div class="the">
+        <h2>Nhật ký hệ thống</h2>
+        <div class="bang-dieu-khien-log">
+          <select id="loc-muc">
+            <option value="">Tất cả mức</option>
+            <option value="debug">Gỡ lỗi</option>
+            <option value="info">Thông tin</option>
+            <option value="canh_bao">Cảnh báo</option>
+            <option value="loi">Lỗi</option>
+          </select>
+          <input type="text" id="loc-tu-khoa" placeholder="Lọc theo từ khoá…">
+          <label class="chuyen"><input type="checkbox" id="tu-cuon-2" checked><span>Tự cuộn</span></label>
+          <button class="nut phu-nut nho" id="nut-xoa-log-2">Xoá màn hình</button>
+        </div>
+        <div class="man-hinh-log lon" id="log-day"></div>
+        <p class="phu">Nhật ký cũng được ghi ra tệp trong thư mục <code>nhat_ky</code> cạnh chương trình
+           và đẩy lên bảng <code>nhat_ky</code> của cơ sở dữ liệu.</p>
+      </div>
+    </section>
+
+    <footer class="chan">
+      <span id="chan-ban-quyen">Thiết kế bởi Trương Anh Tuấn</span>
+      <span id="chan-phien-ban">MailRouter 1.0</span>
+    </footer>
+  </main>
+</div>
+
+<div class="khay-thong-bao" id="khay"></div>
+
+<script src="/app.js"></script>
+</body>
+</html>

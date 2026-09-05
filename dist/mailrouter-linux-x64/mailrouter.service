@@ -1,0 +1,36 @@
+# =====================================================================
+#  Dịch vụ systemd cho bộ nhận mail (Linux)
+#  Hệ thống phân luồng Mail công vụ - Thiết kế bởi Trương Anh Tuấn
+# ---------------------------------------------------------------------
+#  Cài đặt:
+#     sudo cp mailrouter.service /etc/systemd/system/
+#     sudo nano /etc/systemd/system/mailrouter.service   (sửa User và WorkingDirectory)
+#     sudo systemctl daemon-reload
+#     sudo systemctl enable --now mailrouter
+#     sudo systemctl status mailrouter
+#     journalctl -u mailrouter -f          # xem nhật ký trực tiếp
+# =====================================================================
+[Unit]
+Description=Bo nhan mail - He thong phan luong Mail cong vu
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mailrouter
+Group=mailrouter
+WorkingDirectory=/opt/mailrouter
+ExecStart=/opt/mailrouter/mailrouter dich-vu --khong-mau
+Restart=on-failure
+RestartSec=30
+Environment=TZ=Asia/Ho_Chi_Minh
+
+# Tăng cường an toàn
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/mailrouter
+
+[Install]
+WantedBy=multi-user.target

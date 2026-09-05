@@ -1,0 +1,9 @@
+# =====================================================================
+#  Lịch chạy bộ nhận mail bằng cron (Linux)
+#  Hệ thống phân luồng Mail công vụ - Thiết kế bởi Trương Anh Tuấn
+# ---------------------------------------------------------------------
+#  Cài đặt:  crontab -e   rồi dán dòng dưới đây (sửa lại đường dẫn)
+# =====================================================================
+
+# Quét mail 15 phút một lần, ghi nhật ký ra tệp
+*/15 * * * * cd /opt/mailrouter && TZ=Asia/Ho_Chi_Minh ./mailrouter nhan --khong-mau >> /opt/mailrouter/nhat_ky/cron.log 2>&1

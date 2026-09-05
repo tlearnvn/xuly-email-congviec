@@ -1,0 +1,9 @@
+# Cho phép gọi ingest.php từ bộ nhận mail
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+<FilesMatch "^(?!ingest\.php$).*$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
