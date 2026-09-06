@@ -671,31 +671,36 @@ static std::string boThucTheHtml(std::string s) {
 
 static void quetMotBan(const std::string& nguon, std::vector<std::string>& ra,
                        std::set<std::string>& daCo) {
-    const std::string TIEN_TO[] = { "https://", "http://" };
-    for (const std::string& tt : TIEN_TO) {
-        size_t i = 0;
-        while ((i = nguon.find(tt, i)) != std::string::npos) {
-            size_t j = i;
-            // URL kết thúc ở khoảng trắng hoặc ký tự bao quanh trong HTML/văn bản
-            while (j < nguon.size()) {
-                unsigned char c = (unsigned char)nguon[j];
-                if (c <= ' ' || c == '"' || c == '\'' || c == '<' || c == '>' ||
-                    c == '\\' || c == '|') break;
-                j++;
-            }
-            std::string url = boThucTheHtml(nguon.substr(i, j - i));
-            // Bỏ dấu câu dính ở cuối câu: "…/view)." hay "…/edit,"
-            while (!url.empty()) {
-                char c = url.back();
-                if (c == '.' || c == ',' || c == ';' || c == ':' ||
-                    c == ')' || c == ']' || c == '}') url.pop_back();
-                else break;
-            }
-            if (url.size() > 12 && laMienChiaSe(hostCuaUrl(url))) {
-                if (daCo.insert(toLower(url)).second) ra.push_back(url);
-            }
-            i = j > i ? j : i + 1;
+    // Quét một lượt từ trái sang phải, xét cả hai giao thức tại mỗi vị trí, để
+    // thứ tự thu được đúng bằng thứ tự link xuất hiện trong thư.
+    for (size_t i = 0; i < nguon.size(); i++) {
+        size_t dai = 0;
+        if (nguon.compare(i, 8, "https://") == 0)     dai = 8;
+        else if (nguon.compare(i, 7, "http://") == 0) dai = 7;
+        if (dai == 0) continue;
+
+        // URL kết thúc ở khoảng trắng hoặc ký tự bao quanh trong HTML/văn bản
+        size_t j = i + dai;
+        while (j < nguon.size()) {
+            unsigned char c = (unsigned char)nguon[j];
+            if (c <= ' ' || c == '"' || c == '\'' || c == '<' || c == '>' ||
+                c == '\\' || c == '|') break;
+            j++;
         }
+        std::string url = boThucTheHtml(nguon.substr(i, j - i));
+        // Bỏ dấu câu dính ở cuối câu: "…/view)." hay "…/edit,"
+        while (!url.empty()) {
+            char c = url.back();
+            if (c == '.' || c == ',' || c == ';' || c == ':' ||
+                c == ')' || c == ']' || c == '}') url.pop_back();
+            else break;
+        }
+        if (url.size() > 12 && laMienChiaSe(hostCuaUrl(url))) {
+            if (daCo.insert(toLower(url)).second) ra.push_back(url);
+            i = j - 1;                 // link đã nhận thì nhảy qua, khỏi xét lại bên trong
+        }
+        // Link không phải miền chia sẻ thì vẫn xét tiếp từ ký tự sau, phòng
+        // trường hợp link Drive nằm trong tham số chuyển hướng của link khác.
     }
 }
 

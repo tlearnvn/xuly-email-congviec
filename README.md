@@ -244,6 +244,11 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.4.1 — 06/09/2026
+
+- **Dò link đúng thứ tự xuất hiện:** bộ dò link trước đây quét hết `https://` rồi mới quét `http://`, nên thư có link `http://` đứng trước link `https://` sẽ bị đảo thứ tự. Nay quét đúng một lượt từ trái sang phải, xét cả hai giao thức tại từng vị trí.
+- **Bắt được link Drive lồng trong đường dẫn chuyển hướng:** `https://vanban.…/go?u=https://drive.google.com/…` nay được nhận ra, mà link Drive lồng trong chính link Drive khác vẫn chỉ tính một lần.
+
 ### 1.4.0 — 06/09/2026
 
 - **Sửa lỗi bỏ sót thư nghiêm trọng:** trường không đính kèm tệp mà dán link Google Drive thì điều kiện lọc mặc định `has:attachment` **loại thẳng** bức thư — hệ thống không hề nhìn thấy, thống kê báo "chưa nộp" oan. Nay khi bật `gmail.nhan_link_drive` (mặc định bật), cụm `has:attachment` được nới thành `(has:attachment OR "drive.google.com" OR "docs.google.com" OR "1drv.ms" OR …)`. Nới ngay ở truy vấn nên cả hộp thư chính lẫn hộp Thư rác đều được lợi mà **không đội thêm** hạn mức số mail mỗi lần quét.

@@ -219,7 +219,7 @@ figcaption{
   <h1>Hệ thống phân luồng<br>Mail công vụ</h1>
   <div class="bia-gach"></div>
   <div class="bia-phu">Tài liệu quy trình kỹ thuật<br>và hướng dẫn sử dụng</div>
-  <div class="bia-the">Phiên bản 1.4.0 · build 12 · 06/09/2026</div>
+  <div class="bia-the">Phiên bản 1.4.1 · build 14 · 06/09/2026</div>
   <div class="bia-chan">Thiết kế bởi <strong>Trương Anh Tuấn</strong></div>
 </div>
 
@@ -294,6 +294,7 @@ sau:    (has:attachment OR "drive.google.com" OR "docs.google.com" OR "1drv.ms"
          OR "wetransfer.com") newer_than:30d</code></pre>
 <p>Nới ngay ở truy vấn thay vì quét thêm một lượt riêng, nên cả hộp thư chính lẫn hộp Thư rác đều được lợi mà <strong>không đội thêm</strong> hạn mức <em>Số mail mỗi lần quét</em>. Truy vấn không có <code>has:attachment</code> thì giữ nguyên (đã bao gồm mọi thư rồi); <code>-has:attachment</code> cũng được giữ nguyên vì đó là điều kiện phủ định, sửa vào là làm sai ý quản trị.</p>
 <p><strong>b) Dò link trong thân thư.</strong> Hàm <code>timLienKetChiaSe()</code> quét <strong>cả</strong> bản text lẫn bản HTML, giải các thực thể HTML trong <code>href</code> (<code>&amp;amp;</code> → <code>&amp;</code>), cắt dấu câu cuối câu và dấu ngoặc bao ngoài, bỏ link trùng và giữ nguyên thứ tự xuất hiện, tối đa 50 link mỗi thư.</p>
+<p>Mỗi bản quét đúng <strong>một lượt từ trái sang phải</strong>, xét cả <code>https://</code> lẫn <code>http://</code> tại từng vị trí — nhờ vậy thứ tự thu được đúng bằng thứ tự link xuất hiện trong thư, và link Drive nằm trong tham số chuyển hướng của một đường dẫn khác (<code>https://vanban.…/go?u=https://drive.google.com/…</code>) vẫn được nhận ra.</p>
 <p>Chỉ nhận đúng danh sách tên miền chia sẻ tệp, và so khớp theo <strong>host</strong> chứ không theo chuỗi con — nên <code>https://drive.google.com.kexau.tld/x</code> bị loại, trong khi tên miền con thật như <code>https://abc-my.sharepoint.com/...</code> vẫn được nhận.</p>
 <p><strong>c) Bỏ hẳn thư vô can.</strong> Truy vấn nới rộng kéo về cả những thư chỉ tình cờ có chữ <code>drive.google.com</code> trong chữ ký. Thư nào <strong>không có tệp và cũng không có link chia sẻ</strong> thì bị bỏ ngay, không lưu vào kho.</p>
 <p>Thư qua được ba bước trên đi tiếp đúng quy trình bình thường: mã hồ sơ lấy từ tiêu đề, đọc được thì tạo công việc hoàn chỉnh, không đọc được thì vào hàng chờ phân luồng tay. Khác biệt nằm ở chỗ nói cho người xử lý biết:</p>

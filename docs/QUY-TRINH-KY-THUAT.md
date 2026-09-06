@@ -244,6 +244,11 @@ nguyên vì đó là điều kiện phủ định, sửa vào là làm sai ý qu
 giải các thực thể HTML trong `href` (`&amp;` → `&`), cắt dấu câu cuối câu và dấu ngoặc bao
 ngoài, bỏ link trùng và giữ nguyên thứ tự xuất hiện, tối đa 50 link mỗi thư.
 
+Mỗi bản quét đúng **một lượt từ trái sang phải**, xét cả `https://` lẫn `http://` tại từng vị
+trí — nhờ vậy thứ tự thu được đúng bằng thứ tự link xuất hiện trong thư, và link Drive nằm
+trong tham số chuyển hướng của một đường dẫn khác
+(`https://vanban.…/go?u=https://drive.google.com/…`) vẫn được nhận ra.
+
 Chỉ nhận đúng danh sách tên miền chia sẻ tệp, và so khớp theo **host** chứ không theo chuỗi
 con — nên `https://drive.google.com.kexau.tld/x` bị loại, trong khi tên miền con thật như
 `https://abc-my.sharepoint.com/...` vẫn được nhận.
