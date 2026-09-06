@@ -116,7 +116,7 @@ Trang này có đủ mọi thứ về bức thư:
 - **Thông tin chung** — trường, mã văn bản, người gửi, ngày nhận, người xử lý
 - **Nội dung thư gốc** — nguyên văn, không bị cắt xén
 - **Danh sách tệp đính kèm** — mỗi tệp có hai nút:
-  - **Xem** — mở ngay trong trình duyệt (dùng được với PDF, ảnh, văn bản)
+  - **Xem** — mở ngay trong trình duyệt, **không cần tải về**
   - **Tải về** — lưu tệp xuống máy
 
 Xử lý xong, bấm nút **Đánh dấu đã xử lý**. Muốn ghi lại điều gì cho người sau đọc thì gõ vào
@@ -124,6 +124,60 @@ Xử lý xong, bấm nút **Đánh dấu đã xử lý**. Muốn ghi lại đi�
 
 > **Nếu thấy nhãn "Bản cập nhật lần 2"** thì nghĩa là trường đã sửa tệp rồi gửi lại. Hệ thống
 > hiển thị bản mới nhất trước, nhưng bản cũ vẫn còn nguyên để bạn đối chiếu khi cần.
+
+### 4.1. Xem trực tiếp tệp Word, Excel, PowerPoint
+
+Không phải tải về mới đọc được. Nút **Xem** mở được cả sáu định dạng Office:
+
+![Nút Xem cho tệp Office đời cũ](hinh/web-18-nut-xem-cu.png)
+
+| Loại tệp | Bấm Xem thấy gì |
+|---|---|
+| **PDF, ảnh, .txt** | Mở nguyên bản trong trình duyệt |
+| **.docx** (Word 2007+) | Chữ, tiêu đề, in đậm/nghiêng/gạch chân, danh sách, **bảng**, **ảnh** |
+| **.xlsx** (Excel 2007+) | Bảng dữ liệu đủ các sheet, có tab chuyển, số hàng, ngày tháng đúng định dạng |
+| **.pptx** (PowerPoint 2007+) | Từng trang chiếu kèm chữ, ảnh và ghi chú người trình bày |
+| **.doc / .xls / .ppt** (97-2003) | Chữ và bảng số liệu — xem mục 4.2 |
+
+Bản Word dựng lại giữ được cả bảng và ảnh:
+
+![Xem tệp Word ngay trên web](hinh/web-19-xem-word.png)
+
+Bản Excel hiện đủ các sheet, có số hàng để đối chiếu với bản gốc:
+
+![Xem tệp Excel ngay trên web](hinh/web-19-xem-excel.png)
+
+> **Hồ sơ không đi ra ngoài.** Hệ thống **không** dùng Office Online hay Google Docs Viewer —
+> hai dịch vụ đó bắt buộc phải cho máy chủ của Microsoft/Google tải tệp về, tức là hồ sơ công
+> vụ phải công khai trên Internet. Ở đây trình duyệt của bạn tải tệp trực tiếp từ máy chủ của
+> Sở rồi tự dựng lại ngay trên máy bạn.
+
+**Bản xem nhanh không thay được bản gốc.** Nó dựng lại nội dung nên có thể khác đôi chút về
+bố cục, phông chữ, màu sắc. Cần bản chuẩn xác để **in, ký, hay đối chiếu số liệu quan trọng**
+thì vẫn bấm **Tải về máy** rồi mở bằng Word/Excel/PowerPoint.
+
+### 4.2. Tệp Office đời cũ (.doc, .xls, .ppt)
+
+Nhiều trường vẫn dùng Office 2003. Hệ thống xem được, nhưng ít hơn:
+
+![Xem tệp Word 97-2003](hinh/web-19-xem-word-cu.png)
+
+| | .docx / .xlsx / .pptx | .doc / .xls / .ppt |
+|---|---|---|
+| Chữ, đoạn, bảng | ✅ | ✅ |
+| Bảng số liệu Excel, ngày tháng | ✅ | ✅ |
+| In đậm, nghiêng, màu chữ | ✅ | ❌ |
+| Ảnh, biểu đồ | ✅ | ❌ |
+
+Lý do: bản 2007 trở lên lưu nội dung dưới dạng văn bản có cấu trúc, còn bản 97-2003 là định
+dạng nhị phân đời cũ — lấy được chữ và bảng đã là nhiều.
+
+> **⚠️ Tệp gõ bằng phông VNI hoặc TCVN3 (font ABC) sẽ hiện sai dấu.** Đó không phải lỗi hệ
+> thống: chữ trong tệp không phải Unicode, nên mở bằng máy nào không có đúng phông đó cũng
+> sai. Gặp trường hợp này phải tải về mở bằng Word có cài phông tương ứng.
+>
+> **Cách xử lý tận gốc:** nhắc trường mở tệp bằng Word rồi *Lưu thành* → chọn `.docx`
+> (hoặc `.xlsx`, `.pptx`). Vừa xem được đầy đủ, vừa nhẹ hơn, vừa không lo lỗi phông.
 
 ---
 
@@ -798,6 +852,17 @@ Hệ thống đọc mã trên **từng tệp**:
   hàng chờ phân luồng tay
 
 Chi tiết đầy đủ ở [mục 17](#17-cách-đặt-tên-tệp-khi-gửi-báo-cáo).
+
+**Xem được tệp Word, Excel, PowerPoint mà không tải về không?**
+Được, bấm nút **Xem** là mở ngay trên web — cả `.docx/.xlsx/.pptx` lẫn `.doc/.xls/.ppt` đời cũ.
+Định dạng mới thì giữ được cả bảng và ảnh; định dạng cũ chỉ lấy được chữ và bảng số liệu.
+
+Hệ thống **không** dùng Office Online hay Google Docs Viewer, vì hai dịch vụ đó bắt buộc phải
+cho máy chủ của Microsoft/Google tải tệp về. Trình duyệt của bạn tải trực tiếp từ máy chủ của
+Sở rồi tự dựng lại — **hồ sơ không đi ra ngoài**. Chi tiết ở
+[mục 4.1](#41-xem-trực-tiếp-tệp-word-excel-powerpoint).
+
+Cần bản chuẩn xác để in hoặc ký thì vẫn tải về mở bằng Office.
 
 **Cùng một công văn được 12 trường gửi kèm lại thì có tốn 12 lần dung lượng không?**
 Không. Tệp có nội dung giống hệt nhau chỉ được lưu **một bản** trong cơ sở dữ liệu, dù tên

@@ -12,31 +12,37 @@ class View
 
     public static function dat(string $k, $v): void { self::$bien[$k] = $v; }
 
+    // Biến cục bộ của hai hàm dưới đây đều mang tiền tố "__vi" là có chủ ý:
+    // extract() dùng EXTR_SKIP nên biến nào của hàm trùng tên với biến của view
+    // thì biến của view bị BỎ LẶNG LẼ, view nhận giá trị nội bộ của hàm. Trước
+    // đây hàm noiDung() dùng tên $f cho đường dẫn tệp, nên view nào truyền vào
+    // biến tên "f" cũng nhận được đường dẫn view thay vì dữ liệu của mình.
+
     /** Hiển thị một view kèm khung trang */
-    public static function hien(string $ten, array $bien = [], string $khung = 'khung'): void
+    public static function hien(string $__viTen, array $__viBien = [], string $__viKhung = 'khung'): void
     {
-        $duLieu = array_merge(self::$bien, $bien);
-        $noiDung = self::noiDung($ten, $duLieu);
-        if ($khung === '') { echo $noiDung; return; }
-        extract($duLieu, EXTR_SKIP);
-        require DUONG_DAN_GOC . '/app/views/layout/' . $khung . '.php';
+        $__viDuLieu = array_merge(self::$bien, $__viBien);
+        $noiDung = self::noiDung($__viTen, $__viDuLieu);      // khung.php in ra biến $noiDung
+        if ($__viKhung === '') { echo $noiDung; return; }
+        extract($__viDuLieu, EXTR_SKIP);
+        require DUONG_DAN_GOC . '/app/views/layout/' . $__viKhung . '.php';
     }
 
     /** Lấy nội dung một view dưới dạng chuỗi */
-    public static function noiDung(string $ten, array $bien = []): string
+    public static function noiDung(string $__viTen, array $__viBien = []): string
     {
-        $f = DUONG_DAN_GOC . '/app/views/' . $ten . '.php';
-        if (!is_file($f)) throw new RuntimeException('Không tìm thấy giao diện: ' . $ten);
-        extract(array_merge(self::$bien, $bien), EXTR_SKIP);
+        $__viTep = DUONG_DAN_GOC . '/app/views/' . $__viTen . '.php';
+        if (!is_file($__viTep)) throw new RuntimeException('Không tìm thấy giao diện: ' . $__viTen);
+        extract(array_merge(self::$bien, $__viBien), EXTR_SKIP);
         ob_start();
-        require $f;
+        require $__viTep;
         return (string)ob_get_clean();
     }
 
     /** Chèn một mảnh giao diện */
-    public static function manh(string $ten, array $bien = []): void
+    public static function manh(string $__viTen, array $__viBien = []): void
     {
-        echo self::noiDung($ten, $bien);
+        echo self::noiDung($__viTen, $__viBien);
     }
 
     // ------------------------------------------------------------------

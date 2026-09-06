@@ -95,7 +95,9 @@
       <div class="ds-tep">
         <?php foreach ($tep as $f):
             $bt = Util::bieuTuongTep($f['ten_tep']);
-            $xemDuoc = Util::xemTrucTiep($f['kieu_mime'], $f['ten_tep']) && (int)$f['co_du_lieu'] === 1; ?>
+            $coDl = (int)$f['co_du_lieu'] === 1;
+            $xemDuoc = $coDl && Util::xemTrucTiep($f['kieu_mime'], $f['ten_tep']);
+            $duoiOff = $coDl ? Util::duoiBoDocOffice($f['kieu_mime'], $f['ten_tep']) : ''; ?>
           <div class="tep">
             <span class="bt bt-<?= Util::h($bt) ?>">
               <?= Util::h(strtoupper(substr(pathinfo($f['ten_tep'], PATHINFO_EXTENSION) ?: '?', 0, 4))) ?>
@@ -118,8 +120,13 @@
                    href="<?= Util::h(Util::url('xem', ['id' => $f['id']])) ?>">
                   <?php View::manh('layout/bieu-tuong', ['ma' => 'xem']); ?> Xem
                 </a>
+              <?php elseif ($duoiOff !== ''): ?>
+                <a class="nut nut-phu nho"
+                   href="<?= Util::h(Util::url('xem-office', ['id' => $f['id'], 'cv' => $cv['id']])) ?>">
+                  <?php View::manh('layout/bieu-tuong', ['ma' => 'xem']); ?> Xem
+                </a>
               <?php endif; ?>
-              <?php if ((int)$f['co_du_lieu'] === 1): ?>
+              <?php if ($coDl): ?>
                 <a class="nut nut-chinh nho" href="<?= Util::h(Util::url('tai', ['id' => $f['id']])) ?>">
                   <?php View::manh('layout/bieu-tuong', ['ma' => 'tai']); ?> Tải về
                 </a>

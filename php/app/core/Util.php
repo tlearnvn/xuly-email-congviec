@@ -288,7 +288,7 @@ class Util
         return $h ? strtolower($h) : $url;
     }
 
-    /** Có thể xem trực tiếp trên trình duyệt hay không */
+    /** Trình duyệt mở thẳng được (PDF, ảnh, văn bản thuần) */
     public static function xemTrucTiep(?string $mime, ?string $tenTep): bool
     {
         $mime = strtolower((string)$mime);
@@ -297,6 +297,51 @@ class Util
         if (strpos($mime, 'text/plain') === 0) return true;
         $e = strtolower(pathinfo((string)$tenTep, PATHINFO_EXTENSION));
         return in_array($e, ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'txt'], true);
+    }
+
+    /**
+     * Xem được bằng bộ đọc Office tự viết hay không.
+     *
+     * Hai họ định dạng, hai bộ đọc riêng:
+     *  - .docx/.xlsx/.pptx là ZIP chứa XML  -> assets/js/xem-office.js
+     *  - .doc/.xls/.ppt (97-2003) là OLE2   -> assets/js/xem-office-cu.js
+     */
+    public static function xemBangBoDocOffice(?string $mime, ?string $tenTep): bool
+    {
+        return self::duoiBoDocOffice($mime, $tenTep) !== '';
+    }
+
+    /** Đuôi tệp mà bộ đọc Office dùng để biết cách dựng lại nội dung */
+    public static function duoiBoDocOffice(?string $mime, ?string $tenTep): string
+    {
+        $e = strtolower(pathinfo((string)$tenTep, PATHINFO_EXTENSION));
+        if (in_array($e, ['docx', 'xlsx', 'pptx', 'doc', 'xls', 'ppt'], true)) return $e;
+
+        // Một số nơi gửi tệp không đuôi, đối chiếu thêm kiểu MIME
+        $m = strtolower((string)$mime);
+        if (strpos($m, 'wordprocessingml') !== false)   return 'docx';
+        if (strpos($m, 'spreadsheetml') !== false)      return 'xlsx';
+        if (strpos($m, 'presentationml') !== false)     return 'pptx';
+        if ($m === 'application/msword')                return 'doc';
+        if ($m === 'application/vnd.ms-excel')          return 'xls';
+        if ($m === 'application/vnd.ms-powerpoint')     return 'ppt';
+        return '';
+    }
+
+    /** Tệp Office đời cũ (97-2003) — cần bộ đọc OLE2 thay vì bộ đọc ZIP */
+    public static function laOfficeDoiCu(string $duoi): bool
+    {
+        return in_array($duoi, ['doc', 'xls', 'ppt'], true);
+    }
+
+    /** Tên phần mềm để nhắc người dùng mở bằng gì */
+    public static function tenUngDungOffice(string $duoi): string
+    {
+        return [
+            'docx' => 'Word', 'doc' => 'Word',
+            'xlsx' => 'Excel', 'xls' => 'Excel',
+            'pptx' => 'PowerPoint', 'ppt' => 'PowerPoint',
+        ][$duoi] ?? strtoupper($duoi);
     }
 
     public static function tenTrangThai(string $tt): string

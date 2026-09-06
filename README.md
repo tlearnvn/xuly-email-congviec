@@ -21,7 +21,7 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 | Tài liệu | Nội dung |
 |---|---|
-| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 61 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 67 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
 | [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
 | [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
 | [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
@@ -244,6 +244,16 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.6.0 — 06/09/2026
+
+- **Xem trực tiếp tệp Word / Excel / PowerPoint ngay trên web, không cần tải về.** Nút *Xem* nay mở được cả sáu định dạng Office. Bản 2007+ (`.docx/.xlsx/.pptx`) dựng lại được tiêu đề, in đậm/nghiêng/gạch chân/màu, danh sách có số và không số, bảng kể cả gộp ô, ảnh, siêu liên kết; Excel hiện nhiều sheet có tab chuyển, số hàng, ngày tháng đúng định dạng; PowerPoint hiện từng trang chiếu kèm ghi chú người trình bày.
+- **Hồ sơ KHÔNG đi ra ngoài.** Không dùng Office Online hay Google Docs Viewer — hai dịch vụ đó bắt buộc tệp phải công khai trên Internet để máy chủ Microsoft/Google tải về được. Trình duyệt tải tệp trực tiếp từ máy chủ của Sở (cùng phiên đăng nhập, cùng luật quyền) rồi tự dựng lại tại chỗ. Máy chủ web cũng không cần cài thêm gì — chạy được trên hosting cPanel dùng chung.
+- **Đọc được cả Office đời cũ 97-2003** (`.doc/.xls/.ppt`). Ba loại này là tệp OLE2 chứa dữ liệu nhị phân chứ không phải ZIP, nên có bộ đọc riêng: `.doc` qua FIB và piece table, `.xls` qua bản ghi BIFF8 (kể cả `SST`+`CONTINUE`, `RK`, `MULRK`), `.ppt` qua các container Slide. Lấy được chữ và bảng số liệu; định dạng đẹp, ảnh và biểu đồ thì không.
+- **Nói rõ giới hạn ngay trên trang xem:** bản dựng lại có thể khác về bố cục và phông chữ, cần bản chuẩn xác để in hay ký thì tải về; tệp gõ bằng phông VNI/TCVN3 (font ABC) sẽ hiện sai dấu vì chữ trong tệp không phải Unicode, kèm cách xử lý tận gốc là lưu lại thành `.docx`.
+- **Sửa bẫy trong `View::noiDung()`:** hàm dùng biến cục bộ tên `$f` cộng `extract(..., EXTR_SKIP)`, nên bất kỳ giao diện nào truyền vào biến tên `f` đều nhận được đường dẫn tệp view thay vì dữ liệu của mình — bị bỏ lặng lẽ, không một cảnh báo. Các biến nội bộ nay mang tiền tố `__vi`.
+- **Không mời bấm Xem rồi báo lỗi:** nút *Xem* chỉ hiện cho đúng sáu đuôi tệp Office cùng PDF/ảnh/văn bản thuần.
+- **Tài liệu:** quy trình kỹ thuật thêm mục 6.0 (so sánh ba đường đi, bảng phần nào đọc từ đâu, ba chỗ dễ sai đã trả giá để biết); hướng dẫn sử dụng thêm mục 4.1 và 4.2 kèm 5 ảnh minh hoạ.
+
 ### 1.5.0 — 06/09/2026
 
 - **Xử lý được tệp Gmail tự chuyển sang Drive khi vượt 25 MB.** Trường đính kèm đàng hoàng, đặt tên đúng quy ước, nhưng tệp nặng quá nên Gmail tự đưa lên Drive rồi thay tệp bằng một ô link. Thư đó `has:attachment` là **sai**, nên bản 1.4.x vẫn bỏ sót; nay cụm nới truy vấn thêm bốn toán tử riêng của Gmail: `has:drive`, `has:document`, `has:spreadsheet`, `has:presentation`.

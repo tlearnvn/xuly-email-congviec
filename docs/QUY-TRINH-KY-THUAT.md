@@ -480,6 +480,63 @@ Một số cột đáng chú ý trong bảng `email`:
 | **`tu_spam`** | `TINYINT(1)` | Bằng 1 nếu thư vớt được từ hộp Thư rác, xem [mục 3.1](#31-thư-bị-google-xếp-vào-hộp-thư-rác). Có chỉ mục `idx_email_spam` để lọc nhanh |
 | **`lien_ket_ngoai`** | `TEXT` | Link Google Drive/OneDrive… trong thân thư; mỗi dòng một link, có tên tệp thì thêm sau dấu TAB — xem [mục 3.2](#32-thư-không-đính-kèm-tệp-chỉ-dán-link-google-drive) và [3.3](#33-tệp-vượt-25-mb-gmail-tự-đưa-lên-drive). Chỉ là đường dẫn — **bản tệp không nằm trong kho** |
 
+### 6.0. Xem tệp Office ngay trên web mà không gửi hồ sơ ra ngoài
+
+Báo cáo của các trường phần lớn là `.docx` và `.xlsx`. Bắt cán bộ tải về rồi mở Word/Excel
+cho từng tệp là quá chậm, nên hệ thống dựng lại nội dung ngay trong trình duyệt.
+
+**Ba đường có thể đi, và vì sao chọn đường thứ ba:**
+
+| Cách | Vấn đề |
+|---|---|
+| Nhúng **Office Online** (`view.officeapps.live.com`) hoặc **Google Docs Viewer** | Bắt buộc tệp phải **công khai trên Internet** để máy chủ Microsoft/Google tải về được. Hồ sơ công vụ thì không. **Loại thẳng.** |
+| Chuyển sang PDF ở máy chủ bằng **LibreOffice headless** | Hosting cPanel dùng chung không có LibreOffice và không cài được. Loại. |
+| **Tự đọc ngay trong trình duyệt** | Phải viết bộ đọc, nhưng hồ sơ không rời khỏi máy chủ của Sở và máy chủ web không cần cài gì thêm. **Chọn cách này.** |
+
+Trình duyệt tải tệp qua chính đường `?t=tai&id=…` (cùng phiên đăng nhập, cùng luật quyền) rồi
+dựng lại tại chỗ. Không có bên thứ ba nào nhìn thấy nội dung.
+
+**Hai họ định dạng, hai bộ đọc riêng:**
+
+`assets/js/xem-office.js` — cho `.docx` / `.xlsx` / `.pptx`. Ba loại này đều là **tệp ZIP chứa
+XML** (Office Open XML), nên chỉ cần hai thứ trình duyệt đã có sẵn:
+`DecompressionStream('deflate-raw')` để giải nén và `DOMParser` để đọc XML. Không thư viện ngoài.
+
+| Định dạng | Đọc phần nào trong ZIP | Dựng lại được |
+|---|---|---|
+| `.docx` | `word/document.xml`, `word/numbering.xml`, `word/_rels/…` | Tiêu đề, in đậm/nghiêng/gạch chân/màu, danh sách có số và không số, bảng (kể cả gộp ô), ảnh, siêu liên kết |
+| `.xlsx` | `xl/workbook.xml`, `xl/worksheets/sheetN.xml`, `xl/sharedStrings.xml`, `xl/styles.xml` | Nhiều sheet có tab chuyển, số hàng, ô gộp, dòng trống giữa bảng, số theo lối Việt Nam, **ngày tháng** (phải tra `styles.xml` mới biết ô nào là ngày) |
+| `.pptx` | `ppt/presentation.xml`, `ppt/slides/slideN.xml`, `ppt/notesSlides/…` | Từng trang chiếu, chữ theo cấp thụt lề, ảnh, ghi chú người trình bày |
+
+`assets/js/xem-office-cu.js` — cho `.doc` / `.xls` / `.ppt` (97-2003). Ba loại này **không phải
+ZIP** mà là **OLE2 Compound File**: một hệ thống tệp thu nhỏ nằm trong một tệp, có FAT, thư mục
+và mini-stream riêng. Phải tự đọc OLE2 trước, rồi bóc từng định dạng nhị phân bên trong:
+
+| Định dạng | Luồng cần đọc | Cách bóc |
+|---|---|---|
+| `.doc` | `WordDocument` + `1Table` | Đọc FIB lấy `fcClx`/`lcbClx` → piece table → từng mảnh văn bản (nén 1 byte CP1252 hoặc UTF-16) |
+| `.xls` | `Workbook` | Bản ghi BIFF8: `BOUNDSHEET`, `SST` (+`CONTINUE`), `LABELSST`, `RK`, `MULRK`, `NUMBER`, `FORMULA`, `XF`/`FORMAT` |
+| `.ppt` | `PowerPoint Document` | Đi vào các container `Slide` (0x03EE), gom `TextCharsAtom` (0x0FA0) và `TextBytesAtom` (0x0FA8) |
+
+Ba chỗ dễ sai mà đã trả giá để biết:
+
+- **Thứ tự dọn ký tự điều khiển.** Trong `.doc`, `0x07` là dấu hết một ô bảng và `0x0B` là ngắt
+  dòng mềm. Nếu lọc ký tự điều khiển *trước* khi đổi chúng thành TAB / xuống dòng thì **cả một
+  hàng bảng dồn thành cục chữ dính liền**. Tương tự, khoảng lọc không được ăn `0x0D` — cả `.doc`
+  lẫn `.ppt` dùng CR làm dấu ngắt đoạn.
+- **Hết ô và hết hàng đều là `0x07`.** Nên sau khi đổi ra TAB thì `\t\t` mới là dấu hết hàng;
+  tách hàng theo đó rồi mới tách ô theo từng TAB.
+- **`.ppt` giữ hai bản sao của cùng đoạn chữ** — một trong container `Slide`, một trong phần
+  `Document`. Quét cả luồng là ra chữ trùng đôi; chỉ quét bên trong `Slide` mới đúng.
+
+**Giới hạn đã ghi rõ ngay trên trang xem**, không để người dùng tự đoán: bản dựng lại có thể
+khác về bố cục và phông chữ; định dạng cũ không lấy được ảnh, biểu đồ hay kiểu chữ; và tệp gõ
+bằng phông VNI/TCVN3 sẽ hiện sai dấu vì chữ trong tệp không phải Unicode. Cần bản chuẩn xác để
+in hoặc ký thì tải về mở bằng Office.
+
+> Bộ đọc chỉ được mời dùng cho đúng sáu đuôi tệp nói trên (`Util::duoiBoDocOffice`). Mời người
+> dùng bấm **Xem** rồi báo lỗi thì tệ hơn là chỉ cho tải về.
+
 ### 6.1. Vì sao lưu tệp trong CSDL thay vì trong thư mục?
 
 Đây là quyết định được cân nhắc kỹ, vì lưu BLOB trong CSDL thường bị coi là phản mẫu.

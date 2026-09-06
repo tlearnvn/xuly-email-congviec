@@ -41,6 +41,9 @@
                 <?php if (Util::xemTrucTiep($f['kieu_mime'], $f['ten_tep'])): ?>
                   <a class="nut nut-phu nho" target="_blank" rel="noopener"
                      href="<?= Util::h(Util::url('xem', ['id' => $f['id']])) ?>">Xem</a>
+                <?php elseif (Util::duoiBoDocOffice($f['kieu_mime'], $f['ten_tep']) !== ''): ?>
+                  <a class="nut nut-phu nho"
+                     href="<?= Util::h(Util::url('xem-office', ['id' => $f['id']])) ?>">Xem</a>
                 <?php endif; ?>
                 <a class="nut nut-phu nho" href="<?= Util::h(Util::url('tai', ['id' => $f['id']])) ?>">Tải</a>
               </span>
