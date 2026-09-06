@@ -219,7 +219,7 @@ figcaption{
   <h1>Hệ thống phân luồng<br>Mail công vụ</h1>
   <div class="bia-gach"></div>
   <div class="bia-phu">Tài liệu quy trình kỹ thuật<br>và hướng dẫn sử dụng</div>
-  <div class="bia-the">Phiên bản 1.2.2 · build 10 · 05/09/2026</div>
+  <div class="bia-the">Phiên bản 1.3.0 · build 11 · 06/09/2026</div>
   <div class="bia-chan">Thiết kế bởi <strong>Trương Anh Tuấn</strong></div>
 </div>
 
@@ -250,6 +250,16 @@ figcaption{
 <p><strong>Thứ tự tìm mã.</strong> Hệ thống tìm mã theo thứ tự ưu tiên giảm dần, dừng lại ở nguồn đầu tiên cho kết quả đủ tin cậy:</p>
 <ol><li><strong>Tên từng tệp đính kèm</strong> — chính xác nhất, vì mỗi tệp có thể thuộc một trường khác nhau</li><li><strong>Tiêu đề thư</strong> — dùng khi tên tệp không có mã</li><li><strong>Email người gửi</strong> — đối chiếu với cột <code>email</code> trong danh mục trường để đoán mã trường</li><li><strong>Trợ lý AI</strong> — nếu quản trị đã bật, và ba cách trên đều không ra kết quả</li></ol>
 <p>Vì bước 1 chạy trên <strong>từng tệp</strong>, một bức thư kèm ba tệp của ba trường khác nhau sẽ sinh ra ba công việc riêng cho ba người xử lý riêng — đúng như mong muốn.</p>
+<h3 id="kt-21-một-thư-nhiều-tệp-đính-kèm">2.1. Một thư nhiều tệp đính kèm</h3>
+<p>Đây là tình huống rất hay gặp: trường gửi báo cáo chính kèm thêm công văn, phụ lục, hoặc bản scan có chữ ký. Quy tắc gom nhóm như sau.</p>
+<p><strong>Tệp đọc được mã</strong> thì gom theo mã: cùng mã vào <strong>chung một công việc</strong>, khác mã thì tách thành <strong>các công việc riêng</strong>.</p>
+<p><strong>Tệp không đọc được mã</strong> thì lần lượt xét:</p>
+<ol><li>Tiêu đề thư có mã → tệp thuộc về mã của tiêu đề;</li><li>Tiêu đề không có mã, mà cả thư <strong>chỉ có đúng một</strong> nhóm mã đầy đủ → tệp được <strong>gộp vào nhóm đó</strong>, kèm ghi chú giải thích;</li><li>Còn lại (từ hai nhóm mã trở lên, hoặc không nhóm nào đủ mã) → tệp thành một công việc riêng, vào <strong>hàng chờ phân luồng tay</strong>.</li></ol>
+<p>Điều kiện "chỉ có đúng một nhóm mã" ở bước 2 là có chủ ý. Thư kèm một báo cáo đã ghi mã và một công văn đặt tên tự do thì công văn gần như chắc chắn thuộc về báo cáo đó — gộp lại là đúng. Nhưng thư kèm <strong>hai</strong> báo cáo của hai trường cộng một tệp không mã thì không có cách nào đoán tệp đó thuộc về ai; <strong>đoán sai là giao nhầm người</strong>, nên hệ thống dừng lại và hỏi quản trị.</p>
+<p>Bảng dưới đây là kết quả chạy thật, ghi lại đủ các tổ hợp:</p>
+<div class="bang-bao"><table><thead><tr><th>Tiêu đề</th><th>Tệp đính kèm</th><th>Kết quả</th></tr></thead><tbody><tr><td>không có mã</td><td><code>001_003_TAT.pdf</code> + <code>001_003_TAT.xlsx</code></td><td><strong>1 công việc</strong>, 2 tệp</td></tr><tr><td>không có mã</td><td><code>001_003_TAT.pdf</code> + <code>002_003_NVA.pdf</code></td><td><strong>2 công việc</strong>, mỗi việc 1 tệp, 2 người xử lý</td></tr><tr><td>không có mã</td><td><code>001_003_TAT.pdf</code> + <code>cong van kem theo.pdf</code></td><td><strong>1 công việc</strong>, 2 tệp <em>(gộp theo quy tắc 2)</em></td></tr><tr><td><code>001_003_TAT …</code></td><td><code>001_003_TAT.pdf</code> + <code>phu luc.xlsx</code></td><td><strong>1 công việc</strong>, 2 tệp</td></tr><tr><td><code>001_003_TAT …</code></td><td><code>bao cao.pdf</code> + <code>phu luc.xlsx</code></td><td><strong>1 công việc</strong>, 2 tệp <em>(mã lấy từ tiêu đề)</em></td></tr><tr><td>không có mã</td><td><code>bao cao.pdf</code> + <code>phu luc.xlsx</code></td><td><strong>1 công việc</strong> → chờ phân luồng tay, 2 tệp đi cùng nhau</td></tr><tr><td>không có mã</td><td>2 tệp khác mã <strong>+</strong> <code>phu luc.xlsx</code></td><td><strong>3 công việc</strong> — tệp không mã tách riêng, không đoán bừa</td></tr><tr><td><code>002_003_NVA …</code></td><td><code>001_003_TAT.pdf</code> + <code>phu luc.xlsx</code></td><td><strong>2 công việc</strong> — tiêu đề nói mã khác nên không gộp</td></tr></tbody></table></div>
+<p>Bảng nối <code>cong_viec_tep</code> cho phép một công việc trỏ tới nhiều tệp, và ngược lại một tệp cũng có thể thuộc nhiều công việc — nên không có chuyện tệp bị nhân bản trong kho.</p>
+<blockquote><strong>Với người gửi:</strong> cách chắc ăn nhất vẫn là <strong>đặt mã cho mọi tệp</strong> trong cùng bức thư. Chỉ cần một tệp ghi đúng mã là cả thư đi đúng chỗ, nhưng ghi hết thì không phụ thuộc vào suy đoán.</blockquote>
 <hr>
 <h2 id="kt-3-quy-trình-xử-lý-một-bức-thư">3. Quy trình xử lý một bức thư</h2>
 <figure class="so-do"><img src="../hinh/so-do-quy-trinh-thu.svg" alt="Quy trình xử lý một bức thư"><figcaption>Quy trình xử lý một bức thư</figcaption></figure>
@@ -625,6 +635,20 @@ sudo systemctl enable --now mailrouter</code></pre>
 <p class="dan-de">Không đọc được — sẽ chậm vì phải chuyển tay:</p>
 <div class="bang-bao"><table><thead><tr><th>Tên tệp</th><th>Vì sao không được</th></tr></thead><tbody><tr><td><code>tai lieu khong ro.pdf</code></td><td>Không có mã nào</td></tr><tr><td><code>Bao cao thang 9.docx</code></td><td>Toàn chữ</td></tr><tr><td><code>scan_0001.pdf</code></td><td>Chỉ có một con số</td></tr><tr><td><code>999_001_TAT.pdf</code></td><td>Mã trường <code>999</code> không có trong danh mục</td></tr></tbody></table></div>
 <p><strong>Nếu không đặt tên tệp được</strong> (ví dụ gửi từ điện thoại), hãy ghi mã vào <strong>tiêu đề thư</strong> — hệ thống cũng đọc được từ đó.</p>
+<h3 id="hd-một-thư-gửi-nhiều-tệp-thì-đặt-tên-thế-nào">Một thư gửi nhiều tệp thì đặt tên thế nào?</h3>
+<p>Rất hay gặp: báo cáo chính kèm thêm công văn, phụ lục, hay bản scan có chữ ký.</p>
+<p><strong>Cách chắc ăn nhất — đặt mã cho mọi tệp</strong>, cùng một mã:</p>
+<pre class="ma"><code>001_003_TAT.pdf          (báo cáo chính)
+001_003_TAT_phuluc.xlsx  (phụ lục)</code></pre>
+<p>Cả hai vào <strong>chung một công việc</strong>, cán bộ mở ra thấy đủ cả hai tệp.</p>
+<p><strong>Chỉ một tệp có mã cũng được.</strong> Nếu cả thư chỉ nói về một hồ sơ, hệ thống tự hiểu tệp còn lại đi kèm và gộp chung:</p>
+<pre class="ma"><code>001_003_TAT.pdf          (có mã)
+cong van kem theo.pdf    (không mã) → vẫn vào chung công việc trên</code></pre>
+<p><strong>Nhưng đừng gộp nhiều trường vào một thư.</strong> Nếu một thư có tệp của hai trường khác nhau cộng thêm một tệp không mã, hệ thống <strong>không đoán</strong> tệp không mã thuộc về ai — vì đoán sai là giao nhầm người — nên nó sẽ nằm chờ quản trị xử lý tay:</p>
+<pre class="ma"><code>001_003_TAT.pdf   → về đúng người
+002_003_NVA.pdf   → về đúng người
+phu luc.xlsx      → CHỜ PHÂN LUỒNG TAY, chậm</code></pre>
+<p>Mỗi trường gửi một thư riêng là gọn nhất.</p>
 <p><strong>Gửi nhầm rồi gửi lại có sao không?</strong> Không sao cả. Gửi lại y hệt thì hệ thống nhận ra và bỏ qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nhật, cán bộ sẽ thấy bản mới nhất.</p>
 <hr>
 <h1 id="hd-phần-e">Phần E</h1>
@@ -638,7 +662,9 @@ sudo systemctl enable --now mailrouter</code></pre>
 <p>Nhưng nên xử lý tận gốc, đừng để lặp lại: vào Gmail → <em>Cài đặt → Bộ lọc và địa chỉ bị chặn → Tạo bộ lọc mới</em>, ô <strong>Từ</strong> điền tên miền của các trường (ví dụ <code>@thpt.edu.vn</code>), bấm <em>Tạo bộ lọc</em>, rồi tích <strong>“Không bao giờ chuyển vào Thư rác”</strong>. Dùng Google Workspace thì quản trị viên làm một lần cho cả cơ quan ở <em>Admin console → Apps → Gmail → Spam, Phishing and Malware → Allowlist</em>.</p>
 <p><strong>Thư đã xoá vào Thùng rác có bị lấy lại không?</strong> Không. Thùng rác luôn được bỏ qua — đã chủ động xoá thì hệ thống tôn trọng quyết định đó.</p>
 <p><strong>Bộ nhận mail phải bật 24/24 không?</strong> Không bắt buộc. Tắt máy vài ngày rồi bật lại, hệ thống sẽ lấy bù những mail chưa đọc (trong phạm vi truy vấn Gmail — mặc định là 30 ngày gần nhất).</p>
-<p><strong>Một mail kèm nhiều tệp của nhiều trường thì sao?</strong> Hệ thống đọc mã trên <strong>từng tệp</strong>, nên sẽ tạo ra nhiều công việc riêng cho nhiều người xử lý riêng. Đây là tình huống đã được tính tới.</p>
+<p><strong>Một mail kèm nhiều tệp thì sao?</strong> Hệ thống đọc mã trên <strong>từng tệp</strong>:</p>
+<ul><li>Các tệp <strong>cùng mã</strong> → gộp vào <strong>một công việc</strong>, cán bộ mở ra thấy đủ cả bộ</li><li>Các tệp <strong>khác mã</strong> → tách thành <strong>nhiều công việc</strong> cho nhiều người xử lý khác nhau</li><li>Tệp <strong>không có mã</strong> → nếu cả thư chỉ nói về một hồ sơ thì được gộp vào hồ sơ đó (trường hợp báo cáo kèm công văn); nếu thư có từ hai mã trở lên thì hệ thống <strong>không đoán</strong>, tệp đó vào hàng chờ phân luồng tay</li></ul>
+<p>Chi tiết đầy đủ ở <a href="#17-cách-đặt-tên-tệp-khi-gửi-báo-cáo">mục 17</a>.</p>
 <p><strong>Cùng một công văn được 12 trường gửi kèm lại thì có tốn 12 lần dung lượng không?</strong> Không. Tệp có nội dung giống hệt nhau chỉ được lưu <strong>một bản</strong> trong cơ sở dữ liệu, dù tên tệp khác nhau hay do trường khác nhau gửi.</p>
 <p><strong>Không bật trợ lý AI thì có dùng được không?</strong> Được đầy đủ. AI chỉ là lớp hỗ trợ thêm cho những mail khó đọc; không bật thì các mail đó vào hàng chờ phân luồng tay để quản trị xử lý.</p>
 <p><strong>Đổi mật khẩu cho người quên mật khẩu thế nào?</strong> Quản trị vào <em>Danh mục → Người xử lý</em>, bấm <strong>Sửa</strong> người đó, gõ mật khẩu mới vào ô Mật khẩu rồi lưu. Để trống ô đó nghĩa là giữ nguyên mật khẩu cũ.</p>

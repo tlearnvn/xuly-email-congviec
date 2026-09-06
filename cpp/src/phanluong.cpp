@@ -291,12 +291,35 @@ void BoPhanLuong::phanLuong(BanGhiEmail& em, std::vector<NhomCongViec>& nhom) {
 
     // 4) Các tệp không đọc được mã -> theo mã chung của email
     if (!tepKhongMa.empty() || em.tep.empty()) {
-        MaHoSo mc = em.ma_chung;
-        NhomCongViec& n = timNhom(mc);
-        if (n.nguon == "khong_xac_dinh")
-            n.nguon = coTieuDe ? em.nguon_phan_luong : "khong_xac_dinh";
-        n.do_tin_cay = std::max(n.do_tin_cay, coTieuDe ? tuTieuDe.diem : 0.0);
-        for (int i : tepKhongMa) n.chi_so_tep.push_back(i);
+        // Trường hợp hay gặp: trường gửi một tệp đặt tên đúng quy ước, kèm thêm
+        // công văn hoặc phụ lục đặt tên tự do. Nếu cả thư chỉ có ĐÚNG MỘT nhóm
+        // mã đầy đủ và tiêu đề không chỉ sang mã khác, thì các tệp không mã gần
+        // như chắc chắn thuộc về nhóm đó - gộp vào thay vì đẻ ra một công việc
+        // mồ côi mà quản trị phải phân luồng tay mỗi lần.
+        // Từ hai nhóm mã trở lên thì không đoán, vì đoán sai là giao nhầm người.
+        NhomCongViec* duyNhat = nullptr;
+        if (!tepKhongMa.empty() && !em.ma_chung.coGiTruoc()) {
+            int soNhomDu = 0;
+            for (auto& g : gom) {
+                if (g.second.ma.coDu()) { soNhomDu++; duyNhat = &g.second; }
+            }
+            if (soNhomDu != 1) duyNhat = nullptr;
+        }
+
+        if (duyNhat) {
+            for (int i : tepKhongMa) duyNhat->chi_so_tep.push_back(i);
+            duyNhat->ghi_chu += (duyNhat->ghi_chu.empty() ? "" : " | ");
+            duyNhat->ghi_chu += "Kèm " + std::to_string(tepKhongMa.size()) +
+                                " tệp không có mã trong tên, gộp chung vì cả thư "
+                                "chỉ có một mã hồ sơ";
+        } else {
+            MaHoSo mc = em.ma_chung;
+            NhomCongViec& n = timNhom(mc);
+            if (n.nguon == "khong_xac_dinh")
+                n.nguon = coTieuDe ? em.nguon_phan_luong : "khong_xac_dinh";
+            n.do_tin_cay = std::max(n.do_tin_cay, coTieuDe ? tuTieuDe.diem : 0.0);
+            for (int i : tepKhongMa) n.chi_so_tep.push_back(i);
+        }
     }
 
     // 5) Hoàn thiện từng nhóm

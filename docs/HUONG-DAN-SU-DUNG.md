@@ -585,6 +585,39 @@ Ví dụ: `001_003_TAT.pdf` nghĩa là trường `001` nộp văn bản `003`, c
 **Nếu không đặt tên tệp được** (ví dụ gửi từ điện thoại), hãy ghi mã vào **tiêu đề thư** —
 hệ thống cũng đọc được từ đó.
 
+### Một thư gửi nhiều tệp thì đặt tên thế nào?
+
+Rất hay gặp: báo cáo chính kèm thêm công văn, phụ lục, hay bản scan có chữ ký.
+
+**Cách chắc ăn nhất — đặt mã cho mọi tệp**, cùng một mã:
+
+```
+001_003_TAT.pdf          (báo cáo chính)
+001_003_TAT_phuluc.xlsx  (phụ lục)
+```
+
+Cả hai vào **chung một công việc**, cán bộ mở ra thấy đủ cả hai tệp.
+
+**Chỉ một tệp có mã cũng được.** Nếu cả thư chỉ nói về một hồ sơ, hệ thống tự hiểu tệp còn lại
+đi kèm và gộp chung:
+
+```
+001_003_TAT.pdf          (có mã)
+cong van kem theo.pdf    (không mã) → vẫn vào chung công việc trên
+```
+
+**Nhưng đừng gộp nhiều trường vào một thư.** Nếu một thư có tệp của hai trường khác nhau cộng
+thêm một tệp không mã, hệ thống **không đoán** tệp không mã thuộc về ai — vì đoán sai là giao
+nhầm người — nên nó sẽ nằm chờ quản trị xử lý tay:
+
+```
+001_003_TAT.pdf   → về đúng người
+002_003_NVA.pdf   → về đúng người
+phu luc.xlsx      → CHỜ PHÂN LUỒNG TAY, chậm
+```
+
+Mỗi trường gửi một thư riêng là gọn nhất.
+
 **Gửi nhầm rồi gửi lại có sao không?** Không sao cả. Gửi lại y hệt thì hệ thống nhận ra và bỏ
 qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nhật, cán bộ sẽ thấy bản mới nhất.
 
@@ -635,9 +668,16 @@ Không. Thùng rác luôn được bỏ qua — đã chủ động xoá thì h�
 Không bắt buộc. Tắt máy vài ngày rồi bật lại, hệ thống sẽ lấy bù những mail chưa đọc (trong
 phạm vi truy vấn Gmail — mặc định là 30 ngày gần nhất).
 
-**Một mail kèm nhiều tệp của nhiều trường thì sao?**
-Hệ thống đọc mã trên **từng tệp**, nên sẽ tạo ra nhiều công việc riêng cho nhiều người xử lý
-riêng. Đây là tình huống đã được tính tới.
+**Một mail kèm nhiều tệp thì sao?**
+Hệ thống đọc mã trên **từng tệp**:
+
+- Các tệp **cùng mã** → gộp vào **một công việc**, cán bộ mở ra thấy đủ cả bộ
+- Các tệp **khác mã** → tách thành **nhiều công việc** cho nhiều người xử lý khác nhau
+- Tệp **không có mã** → nếu cả thư chỉ nói về một hồ sơ thì được gộp vào hồ sơ đó (trường hợp
+  báo cáo kèm công văn); nếu thư có từ hai mã trở lên thì hệ thống **không đoán**, tệp đó vào
+  hàng chờ phân luồng tay
+
+Chi tiết đầy đủ ở [mục 17](#17-cách-đặt-tên-tệp-khi-gửi-báo-cáo).
 
 **Cùng một công văn được 12 trường gửi kèm lại thì có tốn 12 lần dung lượng không?**
 Không. Tệp có nội dung giống hệt nhau chỉ được lưu **một bản** trong cơ sở dữ liệu, dù tên

@@ -51,8 +51,9 @@
   <!-- ===== Bước 5 ===== -->
   <rect x="110" y="600" width="380" height="66" rx="11" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>
   <rect x="110" y="600" width="6" height="66" rx="3" fill="#1e5eff"/>
-  <text x="132" y="626" font-size="14.5" font-weight="700" fill="#1443ab">5 · Đọc mã 001_001_TAT</text>
-  <text x="132" y="649" font-size="12" fill="#5a6884">Ưu tiên tên tệp → tiêu đề thư → email người gửi</text>
+  <text x="132" y="622" font-size="14.5" font-weight="700" fill="#1443ab">5 · Đọc mã 001_001_TAT</text>
+  <text x="132" y="641" font-size="12" fill="#5a6884">Ưu tiên tên tệp → tiêu đề thư → email người gửi</text>
+  <text x="132" y="658" font-size="12" fill="#5a6884">Đọc trên TỪNG tệp, cùng mã thì gộp một việc</text>
 
   <!-- ===== Bước 6 ===== -->
   <rect x="110" y="686" width="380" height="66" rx="11" fill="#ffffff" stroke="#dae4fb" stroke-width="2"/>

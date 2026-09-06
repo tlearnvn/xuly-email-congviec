@@ -92,6 +92,46 @@ cho kết quả đủ tin cậy:
 Vì bước 1 chạy trên **từng tệp**, một bức thư kèm ba tệp của ba trường khác nhau sẽ sinh ra
 ba công việc riêng cho ba người xử lý riêng — đúng như mong muốn.
 
+### 2.1. Một thư nhiều tệp đính kèm
+
+Đây là tình huống rất hay gặp: trường gửi báo cáo chính kèm thêm công văn, phụ lục, hoặc bản
+scan có chữ ký. Quy tắc gom nhóm như sau.
+
+**Tệp đọc được mã** thì gom theo mã: cùng mã vào **chung một công việc**, khác mã thì tách
+thành **các công việc riêng**.
+
+**Tệp không đọc được mã** thì lần lượt xét:
+
+1. Tiêu đề thư có mã → tệp thuộc về mã của tiêu đề;
+2. Tiêu đề không có mã, mà cả thư **chỉ có đúng một** nhóm mã đầy đủ → tệp được **gộp vào
+   nhóm đó**, kèm ghi chú giải thích;
+3. Còn lại (từ hai nhóm mã trở lên, hoặc không nhóm nào đủ mã) → tệp thành một công việc
+   riêng, vào **hàng chờ phân luồng tay**.
+
+Điều kiện "chỉ có đúng một nhóm mã" ở bước 2 là có chủ ý. Thư kèm một báo cáo đã ghi mã và
+một công văn đặt tên tự do thì công văn gần như chắc chắn thuộc về báo cáo đó — gộp lại là
+đúng. Nhưng thư kèm **hai** báo cáo của hai trường cộng một tệp không mã thì không có cách nào
+đoán tệp đó thuộc về ai; **đoán sai là giao nhầm người**, nên hệ thống dừng lại và hỏi quản trị.
+
+Bảng dưới đây là kết quả chạy thật, ghi lại đủ các tổ hợp:
+
+| Tiêu đề | Tệp đính kèm | Kết quả |
+|---|---|---|
+| không có mã | `001_003_TAT.pdf` + `001_003_TAT.xlsx` | **1 công việc**, 2 tệp |
+| không có mã | `001_003_TAT.pdf` + `002_003_NVA.pdf` | **2 công việc**, mỗi việc 1 tệp, 2 người xử lý |
+| không có mã | `001_003_TAT.pdf` + `cong van kem theo.pdf` | **1 công việc**, 2 tệp *(gộp theo quy tắc 2)* |
+| `001_003_TAT …` | `001_003_TAT.pdf` + `phu luc.xlsx` | **1 công việc**, 2 tệp |
+| `001_003_TAT …` | `bao cao.pdf` + `phu luc.xlsx` | **1 công việc**, 2 tệp *(mã lấy từ tiêu đề)* |
+| không có mã | `bao cao.pdf` + `phu luc.xlsx` | **1 công việc** → chờ phân luồng tay, 2 tệp đi cùng nhau |
+| không có mã | 2 tệp khác mã **+** `phu luc.xlsx` | **3 công việc** — tệp không mã tách riêng, không đoán bừa |
+| `002_003_NVA …` | `001_003_TAT.pdf` + `phu luc.xlsx` | **2 công việc** — tiêu đề nói mã khác nên không gộp |
+
+Bảng nối `cong_viec_tep` cho phép một công việc trỏ tới nhiều tệp, và ngược lại một tệp cũng
+có thể thuộc nhiều công việc — nên không có chuyện tệp bị nhân bản trong kho.
+
+> **Với người gửi:** cách chắc ăn nhất vẫn là **đặt mã cho mọi tệp** trong cùng bức thư. Chỉ
+> cần một tệp ghi đúng mã là cả thư đi đúng chỗ, nhưng ghi hết thì không phụ thuộc vào suy đoán.
+
 ---
 
 ## 3. Quy trình xử lý một bức thư

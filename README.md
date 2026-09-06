@@ -21,7 +21,7 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 | Tài liệu | Nội dung |
 |---|---|
-| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 52 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 54 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
 | [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
 | [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
 | [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
@@ -76,7 +76,9 @@ systemd.
   base64, nhiều bảng mã).
 - Tách mã `<mã trường>_<mã văn bản>_<mã người xử lý>` từ tên tệp trước, sau đó tới tiêu đề.
   Chấp nhận dấu phân cách `_`, `-`, `.`, khoảng trắng và tên tệp có dấu tiếng Việt.
-- Một thư nhiều tệp của nhiều người xử lý khác nhau ⇒ tách thành nhiều công việc riêng.
+- Một thư nhiều tệp: cùng mã ⇒ gộp **một** công việc; khác mã ⇒ tách thành **nhiều** công việc
+  cho nhiều người xử lý. Tệp không có mã được gộp vào khi cả thư chỉ nói về một hồ sơ (báo cáo
+  kèm công văn), còn từ hai mã trở lên thì đưa vào hàng chờ chứ không đoán bừa.
 - **Chỉ đọc** hộp thư (`gmail.readonly`) — không bao giờ xoá thư.
 
 **Chống trùng lặp**
@@ -242,6 +244,12 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.3.0 — 06/09/2026
+
+- **Cải thiện gom nhóm tệp đính kèm:** thư kèm một tệp đặt tên đúng quy ước cộng thêm công văn/phụ lục đặt tên tự do trước đây sinh ra **hai** công việc — một cái đúng, một cái mồ côi phải phân luồng tay mỗi lần. Nay nếu cả thư chỉ có **đúng một** mã hồ sơ thì các tệp không mã được gộp chung vào đó, kèm ghi chú giải thích.
+- **Vẫn không đoán bừa:** từ hai mã hồ sơ trở lên trong cùng thư, hoặc tiêu đề chỉ sang mã khác, thì tệp không mã vẫn vào hàng chờ phân luồng tay — đoán sai là giao nhầm người.
+- **Tài liệu:** thêm mục 2.1 *Một thư nhiều tệp đính kèm* (bảng 8 tổ hợp chạy thật) trong quy trình kỹ thuật, và mục hướng dẫn đặt tên khi gửi nhiều tệp cho các trường.
+
 ### 1.2.2 — 05/09/2026
 
 - **Tài liệu:** bổ sung đầy đủ các tính năng của bản 1.2.x — quy trình kỹ thuật thêm mục 15 *Nâng cấp hệ thống đang chạy* (ba lớp bảo vệ, vì sao chạy lại nhiều lần vẫn an toàn, trình tự 5 bước), hướng dẫn sử dụng thêm mục 12 *Nâng cấp lên phiên bản mới* và mục 16.1–16.2 về hộp Thư rác kèm cách xử lý tận gốc bằng bộ lọc Gmail.
@@ -264,7 +272,7 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 ### 1.1.0 — 05/09/2026
 
 - **Tài liệu:** thêm bộ tài liệu đầy đủ — [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) và [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md), kèm 8 sơ đồ SVG và 23 ảnh chụp màn hình.
-- **Tài liệu:** xuất bản [bản PDF trọn bộ 52 trang](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf) tông vàng mệnh Kim, dựng bằng `scripts/tao-pdf.js`.
+- **Tài liệu:** xuất bản [bản PDF trọn bộ 54 trang](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf) tông vàng mệnh Kim, dựng bằng `scripts/tao-pdf.js`.
 - **Phát hành:** thêm workflow `.github/workflows/phat-hanh.yml` — đẩy thẻ `vX.Y.Z` là GitHub tự biên dịch Windows + Linux, đóng gói web và tạo bản phát hành kèm tệp tải về.
 - **Sửa lỗi giao diện:** các ô nhập trong biểu mẫu bị lệch nhau (rõ nhất ở trang *Chờ phân luồng tay*). Nguyên nhân: `.truong` dùng `display:flex` khiến dấu `*` bắt buộc rớt xuống dòng riêng; lớp `.truong.rong` trùng tên với `.rong` của khung báo trống; các ô `<input list=…>` không ghi `type` nên rơi về khung mặc định của trình duyệt.
 - **Sửa lỗi giao diện:** mọi ô nhập một dòng nay cùng cao 38px nên thanh lọc ở các trang Nhật ký, Thống kê, Tất cả văn bản đều thẳng hàng.
