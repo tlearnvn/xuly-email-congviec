@@ -219,7 +219,7 @@ figcaption{
   <h1>Hệ thống phân luồng<br>Mail công vụ</h1>
   <div class="bia-gach"></div>
   <div class="bia-phu">Tài liệu quy trình kỹ thuật<br>và hướng dẫn sử dụng</div>
-  <div class="bia-the">Phiên bản 1.6.0 · build 18 · 06/09/2026</div>
+  <div class="bia-the">Phiên bản 1.7.0 · build 20 · 06/09/2026</div>
   <div class="bia-chan">Thiết kế bởi <strong>Trương Anh Tuấn</strong></div>
 </div>
 
@@ -376,6 +376,20 @@ https://1drv.ms/x/s!XyZ</code></pre>
 <ul><li><strong>Thứ tự dọn ký tự điều khiển.</strong> Trong <code>.doc</code>, <code>0x07</code> là dấu hết một ô bảng và <code>0x0B</code> là ngắt dòng mềm. Nếu lọc ký tự điều khiển <em>trước</em> khi đổi chúng thành TAB / xuống dòng thì <strong>cả một hàng bảng dồn thành cục chữ dính liền</strong>. Tương tự, khoảng lọc không được ăn <code>0x0D</code> — cả <code>.doc</code> lẫn <code>.ppt</code> dùng CR làm dấu ngắt đoạn.</li><li><strong>Hết ô và hết hàng đều là <code>0x07</code>.</strong> Nên sau khi đổi ra TAB thì <code>\t\t</code> mới là dấu hết hàng; tách hàng theo đó rồi mới tách ô theo từng TAB.</li><li><strong><code>.ppt</code> giữ hai bản sao của cùng đoạn chữ</strong> — một trong container <code>Slide</code>, một trong phần <code>Document</code>. Quét cả luồng là ra chữ trùng đôi; chỉ quét bên trong <code>Slide</code> mới đúng.</li></ul>
 <p><strong>Giới hạn đã ghi rõ ngay trên trang xem</strong>, không để người dùng tự đoán: bản dựng lại có thể khác về bố cục và phông chữ; định dạng cũ không lấy được ảnh, biểu đồ hay kiểu chữ; và tệp gõ bằng phông VNI/TCVN3 sẽ hiện sai dấu vì chữ trong tệp không phải Unicode. Cần bản chuẩn xác để in hoặc ký thì tải về mở bằng Office.</p>
 <blockquote>Bộ đọc chỉ được mời dùng cho đúng sáu đuôi tệp nói trên (<code>Util::duoiBoDocOffice</code>). Mời người dùng bấm <strong>Xem</strong> rồi báo lỗi thì tệ hơn là chỉ cho tải về.</blockquote>
+<h3 id="kt-60b-dọn-dữ-liệu-thử-nghiệm-xoá-đúng-phần-cần-xoá">6.0b. Dọn dữ liệu thử nghiệm — xoá đúng phần cần xoá</h3>
+<p>Lúc mới triển khai phải chạy thử nhiều lượt rồi xoá đi làm lại. Trang <code>?t=don-du-lieu</code> (lớp <code>DonDuLieu</code>) lo việc đó, và điều đáng nói không phải là câu <code>DELETE</code> mà là <strong>xoá đúng chỗ</strong>.</p>
+<p><strong>Chỗ dễ sót nhất: kho BLOB.</strong> Khoá ngoại của lược đồ như sau:</p>
+<pre class="ma"><code>email ──CASCADE──&gt; tep_dinh_kem ──SET NULL──&gt; tep_du_lieu
+  └───CASCADE──&gt; cong_viec ──CASCADE──&gt; cong_viec_tep</code></pre>
+<p><code>DELETE FROM email</code> kéo theo <code>tep_dinh_kem</code>, <code>cong_viec</code>, <code>cong_viec_tep</code> — nhưng <code>tep_du_lieu</code> chỉ bị <strong>SET NULL</strong>, nên toàn bộ nội dung tệp vẫn nằm nguyên trong cơ sở dữ liệu mà không ai tham chiếu tới. Đúng cái phần chiếm gần hết dung lượng. Vì vậy bảng này phải xoá tường minh, và thứ tự xoá được khai theo hằng <code>BANG_VIEC</code>:</p>
+<pre class="ma"><code>cong_viec_tep → cong_viec → tep_dinh_kem → tep_du_lieu → email
+              → phien_dong_bo → tai_len_tam</code></pre>
+<p><strong>Danh sách bảng giữ nguyên cũng khai tường minh</strong> (<code>BANG_GIU</code>) và hiện ra trên trang, chứ không để người dùng đoán: <code>truong</code>, <code>nguoi_xu_ly</code>, <code>bi_danh_nguoi_xu_ly</code>, <code>cau_hinh</code>. Nhờ vậy dọn xong là chạy thử lại được ngay, không phải khai báo lại danh mục hay đăng nhập lại.</p>
+<p><strong><code>ALTER TABLE</code> phải chạy ngoài giao dịch.</strong> Phần xoá nằm trong một giao dịch; nhưng <code>ALTER TABLE … AUTO_INCREMENT = 1</code> là DDL nên MySQL <strong>tự chốt giao dịch ngầm</strong>. Gọi nó trong giao dịch là mất tính nguyên tử của phần xoá, nên nó chạy sau khi đã commit — và lỗi ở bước này (hosting không cho quyền <code>ALTER</code>) được bỏ qua chứ không làm hỏng kết quả xoá đã thành công.</p>
+<p><strong>Ba lớp chặn</strong>, vì đây là chức năng phá dữ liệu:</p>
+<div class="bang-bao"><table><thead><tr><th>Lớp</th><th>Chặn được gì</th></tr></thead><tbody><tr><td><code>Auth::batBuocAdmin()</code></td><td>Người xử lý mở trang là 403, cả GET lẫn POST</td></tr><tr><td><code>Util::kiemTraToken()</code></td><td>Biểu mẫu giả từ trang khác</td></tr><tr><td>Gõ tay đúng chuỗi <code>XOA SACH</code></td><td>Bấm nhầm nút; tên cơ sở dữ liệu hiện ngay cạnh để không dọn nhầm CSDL</td></tr></tbody></table></div>
+<p>Việc dọn ghi một dòng <code>canh_bao</code> vào nhật ký kèm số dòng đã xoá của từng bảng. Dòng này được ghi <strong>sau</strong> khi xoá, nên còn lại kể cả khi người dùng chọn dọn luôn nhật ký.</p>
+<blockquote>Sau khi dọn, bộ nhận mail quét lại Gmail là dữ liệu về từ đầu — vì việc chống trùng dựa vào <code>gmail_message_id</code> trong bảng <code>email</code> vừa được xoá sạch. Token Gmail nằm trong <code>mailrouter.ini</code> nên không bị ảnh hưởng.</blockquote>
 <h3 id="kt-61-vì-sao-lưu-tệp-trong-csdl-thay-vì-trong-thư-mục">6.1. Vì sao lưu tệp trong CSDL thay vì trong thư mục?</h3>
 <p>Đây là quyết định được cân nhắc kỹ, vì lưu BLOB trong CSDL thường bị coi là phản mẫu. Lý do chọn cách này:</p>
 <ul><li><strong>Sao lưu trọn gói.</strong> Một lệnh <code>mysqldump</code> là có đủ dữ liệu lẫn tệp. Không sợ cảnh sao lưu CSDL xong quên mất thư mục <code>uploads/</code>, đến khi phục hồi thì mất hết tệp.</li><li><strong>Chống trùng ở mức nội dung.</strong> Ràng buộc UNIQUE trên <code>hash_tep</code> do chính CSDL bảo đảm, không phụ thuộc vào việc mã ứng dụng có kiểm tra đúng hay không.</li><li><strong>Tính toàn vẹn giao dịch.</strong> Bản ghi công việc và tệp đính kèm cùng vào ra trong một giao dịch — không có cảnh tệp nằm chỏng chơ mà không có bản ghi nào trỏ tới.</li><li><strong>Hosting cPanel thường siết quyền ghi thư mục</strong> nhưng lại rộng rãi với dung lượng CSDL.</li></ul>
@@ -609,6 +623,18 @@ PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;</code></pre>
 <p>Nơi lấy <strong>khoá API</strong> để dán vào bộ nhận mail khi chạy ở chế độ <em>Qua API PHP</em>. Cũng đặt được kích thước mỗi khối tải lên — giảm xuống nếu hosting giới hạn <code>post_max_size</code> nhỏ.</p>
 <h3 id="hd-116-nhật-ký">11.6. Nhật ký</h3>
 <p>Chọn mức ghi tối thiểu và số ngày giữ nhật ký. Đặt 0 ngày để giữ mãi.</p>
+<h3 id="hd-117-dọn-dữ-liệu-thử-nghiệm">11.7. Dọn dữ liệu thử nghiệm</h3>
+<p>Lúc mới cài, thường phải chạy thử vài lượt: nhận mail, xem phân luồng đúng chưa, sửa danh mục, rồi muốn xoá hết chạy lại từ đầu. Ô cuối trang <em>Cài đặt</em> dẫn tới chức năng đó:</p>
+<figure class="anh-chup"><img src="../hinh/web-21-loi-vao-don.png" alt="Lối vào chức năng dọn dữ liệu"><figcaption>Lối vào chức năng dọn dữ liệu</figcaption></figure>
+<p>Trang này nói rõ <strong>cái gì sẽ mất, cái gì còn nguyên</strong> trước khi bạn bấm bất cứ nút nào:</p>
+<figure class="anh-chup"><img src="../hinh/web-20-don-du-lieu.png" alt="Trang dọn dữ liệu thử nghiệm"><figcaption>Trang dọn dữ liệu thử nghiệm</figcaption></figure>
+<div class="bang-bao"><table><thead><tr><th>Sẽ bị xoá</th><th>Giữ nguyên</th></tr></thead><tbody><tr><td>Thư đã nhận</td><td>Danh mục <strong>trường</strong></td></tr><tr><td>Công việc đã phân luồng</td><td>Danh mục <strong>người xử lý</strong> kèm tài khoản đăng nhập</td></tr><tr><td>Tệp đính kèm và nội dung tệp</td><td>Mã văn bản <strong>chính thức</strong> do quản trị đặt</td></tr><tr><td>Phiên đồng bộ</td><td>Mọi thiết lập trong <em>Cài đặt</em></td></tr><tr><td>Tệp đang tải lên dở</td><td>Bí danh người xử lý</td></tr></tbody></table></div>
+<p>Nghĩa là <strong>dọn xong chạy thử lại được ngay, không phải khai báo lại từ đầu</strong> — và cũng không phải đăng nhập lại Gmail, vì token nằm trong <code>mailrouter.ini</code> chứ không nằm trong cơ sở dữ liệu.</p>
+<p class="dan-de">Ba tuỳ chọn thêm:</p>
+<ul><li><strong>Xoá mã văn bản hệ thống tự thêm</strong> — mặc định bật. Là các mã lạ hệ thống sinh ra khi gặp tên tệp có mã chưa có trong danh mục. Mã do quản trị tự đặt thì không bị xoá.</li><li><strong>Xoá luôn nhật ký hệ thống</strong> — mặc định tắt, để bạn còn xem lại nhật ký lần chạy thử trước.</li><li><strong>Đặt lại số đếm ID về 1</strong> — mặc định bật, cho lần thử sau đánh số từ đầu dễ theo dõi.</li></ul>
+<blockquote>### ⚠️ Ba lớp chặn để không xoá oan  1. <strong>Chỉ quản trị</strong> mở được trang này — người xử lý bấm vào sẽ bị chặn. 2. <strong>Phải tự tay gõ <code>XOA SACH</code></strong> vào ô xác nhận. Bấm nhầm một nút thì không xoá được gì. 3. Trang <strong>hiện tên cơ sở dữ liệu</strong> đang thao tác ngay dòng cảnh báo đỏ, để bạn kiểm lại    không dọn nhầm cơ sở dữ liệu thật.  <strong>Xoá là vĩnh viễn, không có nút hoàn tác.</strong> Nếu chưa chắc thì sao lưu trước: cPanel → <em>phpMyAdmin</em> → chọn cơ sở dữ liệu → <em>Export</em>. Một tệp <code>.sql</code> là đủ cả dữ liệu lẫn tệp đính kèm.</blockquote>
+<p>Việc dọn được ghi lại một dòng cảnh báo trong nhật ký, kèm số dòng đã xoá của từng bảng — kể cả khi bạn chọn xoá nhật ký, vì dòng đó được ghi sau khi xoá xong.</p>
+<blockquote><strong>Sau khi cài xong và bắt đầu dùng thật thì nên xoá tệp <code>nang-cap.php</code> và không vào trang này nữa.</strong> Chức năng dành cho lúc thử nghiệm, không phải để dùng hằng ngày.</blockquote>
 <hr>
 <h2 id="hd-12-nâng-cấp-lên-phiên-bản-mới">12. Nâng cấp lên phiên bản mới</h2>
 <p>Khi có bản mới trên <a href="https://github.com/tlearnvn/xuly-email-congviec/releases/latest">trang phát hành</a>, làm theo đúng năm bước dưới đây. Toàn bộ mất chừng mười phút.</p>

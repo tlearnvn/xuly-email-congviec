@@ -383,6 +383,52 @@ kích thước mỗi khối tải lên — giảm xuống nếu hosting giới h
 
 Chọn mức ghi tối thiểu và số ngày giữ nhật ký. Đặt 0 ngày để giữ mãi.
 
+### 11.7. Dọn dữ liệu thử nghiệm
+
+Lúc mới cài, thường phải chạy thử vài lượt: nhận mail, xem phân luồng đúng chưa, sửa danh
+mục, rồi muốn xoá hết chạy lại từ đầu. Ô cuối trang *Cài đặt* dẫn tới chức năng đó:
+
+![Lối vào chức năng dọn dữ liệu](hinh/web-21-loi-vao-don.png)
+
+Trang này nói rõ **cái gì sẽ mất, cái gì còn nguyên** trước khi bạn bấm bất cứ nút nào:
+
+![Trang dọn dữ liệu thử nghiệm](hinh/web-20-don-du-lieu.png)
+
+| Sẽ bị xoá | Giữ nguyên |
+|---|---|
+| Thư đã nhận | Danh mục **trường** |
+| Công việc đã phân luồng | Danh mục **người xử lý** kèm tài khoản đăng nhập |
+| Tệp đính kèm và nội dung tệp | Mã văn bản **chính thức** do quản trị đặt |
+| Phiên đồng bộ | Mọi thiết lập trong *Cài đặt* |
+| Tệp đang tải lên dở | Bí danh người xử lý |
+
+Nghĩa là **dọn xong chạy thử lại được ngay, không phải khai báo lại từ đầu** — và cũng không
+phải đăng nhập lại Gmail, vì token nằm trong `mailrouter.ini` chứ không nằm trong cơ sở dữ liệu.
+
+**Ba tuỳ chọn thêm:**
+
+- **Xoá mã văn bản hệ thống tự thêm** — mặc định bật. Là các mã lạ hệ thống sinh ra khi gặp
+  tên tệp có mã chưa có trong danh mục. Mã do quản trị tự đặt thì không bị xoá.
+- **Xoá luôn nhật ký hệ thống** — mặc định tắt, để bạn còn xem lại nhật ký lần chạy thử trước.
+- **Đặt lại số đếm ID về 1** — mặc định bật, cho lần thử sau đánh số từ đầu dễ theo dõi.
+
+> ### ⚠️ Ba lớp chặn để không xoá oan
+>
+> 1. **Chỉ quản trị** mở được trang này — người xử lý bấm vào sẽ bị chặn.
+> 2. **Phải tự tay gõ `XOA SACH`** vào ô xác nhận. Bấm nhầm một nút thì không xoá được gì.
+> 3. Trang **hiện tên cơ sở dữ liệu** đang thao tác ngay dòng cảnh báo đỏ, để bạn kiểm lại
+>    không dọn nhầm cơ sở dữ liệu thật.
+>
+> **Xoá là vĩnh viễn, không có nút hoàn tác.** Nếu chưa chắc thì sao lưu trước:
+> cPanel → *phpMyAdmin* → chọn cơ sở dữ liệu → *Export*. Một tệp `.sql` là đủ cả dữ liệu
+> lẫn tệp đính kèm.
+
+Việc dọn được ghi lại một dòng cảnh báo trong nhật ký, kèm số dòng đã xoá của từng bảng — kể
+cả khi bạn chọn xoá nhật ký, vì dòng đó được ghi sau khi xoá xong.
+
+> **Sau khi cài xong và bắt đầu dùng thật thì nên xoá tệp `nang-cap.php` và không vào trang
+> này nữa.** Chức năng dành cho lúc thử nghiệm, không phải để dùng hằng ngày.
+
 ---
 
 ## 12. Nâng cấp lên phiên bản mới

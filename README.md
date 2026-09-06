@@ -21,7 +21,7 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 | Tài liệu | Nội dung |
 |---|---|
-| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 67 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 71 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
 | [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
 | [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
 | [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
@@ -244,6 +244,15 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.7.0 — 06/09/2026
+
+- **Dọn dữ liệu thử nghiệm:** trang mới trong *Cài đặt* xoá sạch dữ liệu công việc để chạy thử lại từ đầu — thư đã nhận, công việc, tệp đính kèm, kho nội dung tệp, phiên đồng bộ, tệp tải lên dở. **Giữ nguyên** danh mục trường, người xử lý kèm tài khoản đăng nhập, mã văn bản chính thức và mọi thiết lập, nên dọn xong chạy thử lại được ngay mà không phải khai báo lại.
+- **Xoá cả kho BLOB — chỗ dễ sót nhất.** Khoá ngoại `tep_dinh_kem → tep_du_lieu` chỉ là SET NULL, nên `DELETE FROM email` để lại toàn bộ nội dung tệp không ai tham chiếu tới, đúng phần chiếm gần hết dung lượng. Bảng này được xoá tường minh theo thứ tự khai sẵn.
+- **Ba tuỳ chọn:** xoá mã văn bản hệ thống tự thêm (mặc định bật), xoá luôn nhật ký (mặc định tắt để còn xem lại lần chạy trước), đặt lại số đếm ID về 1 (mặc định bật).
+- **Ba lớp chặn vì đây là chức năng phá dữ liệu:** chỉ quản trị mở được (403 cả GET lẫn POST), có token chống giả mạo biểu mẫu, và phải tự tay gõ đúng `XOA SACH` — bấm nhầm nút thì không xoá được gì. Tên cơ sở dữ liệu hiện ngay dòng cảnh báo để không dọn nhầm CSDL thật.
+- **`ALTER TABLE` chạy ngoài giao dịch:** phần xoá nằm trong một giao dịch, nhưng `AUTO_INCREMENT = 1` là DDL nên MySQL tự chốt giao dịch ngầm — gọi trong giao dịch là mất tính nguyên tử. Hosting không cho quyền ALTER thì bỏ qua chứ không làm hỏng kết quả xoá.
+- **Tài liệu:** hướng dẫn sử dụng thêm mục 11.7 kèm bảng đối chiếu xoá/giữ và 2 ảnh; quy trình kỹ thuật thêm mục 6.0b về sơ đồ khoá ngoại và ba lớp chặn.
+
 ### 1.6.0 — 06/09/2026
 
 - **Xem trực tiếp tệp Word / Excel / PowerPoint ngay trên web, không cần tải về.** Nút *Xem* nay mở được cả sáu định dạng Office. Bản 2007+ (`.docx/.xlsx/.pptx`) dựng lại được tiêu đề, in đậm/nghiêng/gạch chân/màu, danh sách có số và không số, bảng kể cả gộp ô, ảnh, siêu liên kết; Excel hiện nhiều sheet có tab chuyển, số hàng, ngày tháng đúng định dạng; PowerPoint hiện từng trang chiếu kèm ghi chú người trình bày.

@@ -537,6 +537,53 @@ in hoặc ký thì tải về mở bằng Office.
 > Bộ đọc chỉ được mời dùng cho đúng sáu đuôi tệp nói trên (`Util::duoiBoDocOffice`). Mời người
 > dùng bấm **Xem** rồi báo lỗi thì tệ hơn là chỉ cho tải về.
 
+### 6.0b. Dọn dữ liệu thử nghiệm — xoá đúng phần cần xoá
+
+Lúc mới triển khai phải chạy thử nhiều lượt rồi xoá đi làm lại. Trang
+`?t=don-du-lieu` (lớp `DonDuLieu`) lo việc đó, và điều đáng nói không phải là câu `DELETE`
+mà là **xoá đúng chỗ**.
+
+**Chỗ dễ sót nhất: kho BLOB.** Khoá ngoại của lược đồ như sau:
+
+```
+email ──CASCADE──> tep_dinh_kem ──SET NULL──> tep_du_lieu
+  └───CASCADE──> cong_viec ──CASCADE──> cong_viec_tep
+```
+
+`DELETE FROM email` kéo theo `tep_dinh_kem`, `cong_viec`, `cong_viec_tep` — nhưng
+`tep_du_lieu` chỉ bị **SET NULL**, nên toàn bộ nội dung tệp vẫn nằm nguyên trong cơ sở dữ
+liệu mà không ai tham chiếu tới. Đúng cái phần chiếm gần hết dung lượng. Vì vậy bảng này
+phải xoá tường minh, và thứ tự xoá được khai theo hằng `BANG_VIEC`:
+
+```
+cong_viec_tep → cong_viec → tep_dinh_kem → tep_du_lieu → email
+              → phien_dong_bo → tai_len_tam
+```
+
+**Danh sách bảng giữ nguyên cũng khai tường minh** (`BANG_GIU`) và hiện ra trên trang, chứ
+không để người dùng đoán: `truong`, `nguoi_xu_ly`, `bi_danh_nguoi_xu_ly`, `cau_hinh`. Nhờ vậy
+dọn xong là chạy thử lại được ngay, không phải khai báo lại danh mục hay đăng nhập lại.
+
+**`ALTER TABLE` phải chạy ngoài giao dịch.** Phần xoá nằm trong một giao dịch; nhưng
+`ALTER TABLE … AUTO_INCREMENT = 1` là DDL nên MySQL **tự chốt giao dịch ngầm**. Gọi nó trong
+giao dịch là mất tính nguyên tử của phần xoá, nên nó chạy sau khi đã commit — và lỗi ở bước
+này (hosting không cho quyền `ALTER`) được bỏ qua chứ không làm hỏng kết quả xoá đã thành công.
+
+**Ba lớp chặn**, vì đây là chức năng phá dữ liệu:
+
+| Lớp | Chặn được gì |
+|---|---|
+| `Auth::batBuocAdmin()` | Người xử lý mở trang là 403, cả GET lẫn POST |
+| `Util::kiemTraToken()` | Biểu mẫu giả từ trang khác |
+| Gõ tay đúng chuỗi `XOA SACH` | Bấm nhầm nút; tên cơ sở dữ liệu hiện ngay cạnh để không dọn nhầm CSDL |
+
+Việc dọn ghi một dòng `canh_bao` vào nhật ký kèm số dòng đã xoá của từng bảng. Dòng này được
+ghi **sau** khi xoá, nên còn lại kể cả khi người dùng chọn dọn luôn nhật ký.
+
+> Sau khi dọn, bộ nhận mail quét lại Gmail là dữ liệu về từ đầu — vì việc chống trùng dựa vào
+> `gmail_message_id` trong bảng `email` vừa được xoá sạch. Token Gmail nằm trong
+> `mailrouter.ini` nên không bị ảnh hưởng.
+
 ### 6.1. Vì sao lưu tệp trong CSDL thay vì trong thư mục?
 
 Đây là quyết định được cân nhắc kỹ, vì lưu BLOB trong CSDL thường bị coi là phản mẫu.

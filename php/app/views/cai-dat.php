@@ -271,6 +271,14 @@ $nhomTen = [
           <dd><strong><?= is_int($v) ? Util::h(Util::so($v)) : Util::h($v) ?></strong></dd>
         <?php endforeach; ?>
       </dl>
+      <hr style="border:0;border-top:1px solid var(--vien);margin:1rem 0 .9rem">
+      <p class="chu-nho chu-mo" style="margin:0 0 .7rem">
+        Đang thử nghiệm hệ thống và muốn chạy lại từ đầu? Có thể xoá sạch dữ liệu công việc
+        mà vẫn giữ nguyên danh mục, tài khoản và thiết lập.
+      </p>
+      <a class="nut nut-phu nho" href="<?= Util::h(Util::url('don-du-lieu')) ?>">
+        <?php View::manh('layout/bieu-tuong', ['ma' => 'xoa']); ?> Dọn dữ liệu thử nghiệm
+      </a>
     </div>
   </div>
 </div>
