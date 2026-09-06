@@ -56,6 +56,7 @@ INSERT INTO `cau_hinh` (`khoa`,`gia_tri`,`nhom`,`kieu`,`nhan`,`mo_ta`,`thu_tu`,`
 ('gmail.chu_ky_phut','15','gmail','number','Chu kỳ quét (phút)','Dùng khi chạy chế độ dịch vụ',4,0,NOW()),
 ('gmail.giu_mail','1','gmail','bool','Không xoá mail sau khi lưu','Luôn bật - hệ thống chỉ đọc, không xoá',5,0,NOW()),
 ('gmail.quet_spam','1','gmail','bool','Quét cả hộp Thư rác (Spam)','Google hay xếp nhầm báo cáo của trường vào Thư rác; tắt đi là bỏ sót',6,0,NOW()),
+('gmail.nhan_link_drive','1','gmail','bool','Bắt cả thư chỉ dán link chia sẻ','Thư không đính kèm tệp mà dán link Google Drive/OneDrive… vẫn được lấy về; kho chỉ giữ đường dẫn, không giữ tệp',7,0,NOW()),
 
 -- Nhóm: API tiếp nhận
 ('api.bat','1','api','bool','Bật API tiếp nhận','Cho phép bộ nhận mail đẩy dữ liệu qua HTTPS',1,0,NOW()),

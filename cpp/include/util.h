@@ -72,6 +72,11 @@ std::string thuMucCuaTep(const std::string& duongDan);
 std::string thuMucChuongTrinh();                     // thư mục chứa file thực thi
 std::string tenMayChu();
 std::string phanMoRong(const std::string& tenTep);   // trả về "pdf" (chữ thường)
+
+// Tìm các liên kết chia sẻ tệp (Google Drive/Docs, OneDrive, Dropbox…) nằm trong
+// thân thư. Dùng khi trường không đính kèm tệp mà chỉ dán đường dẫn.
+// Quét cả bản text lẫn bản HTML, bỏ trùng, giữ nguyên thứ tự xuất hiện.
+std::vector<std::string> timLienKetChiaSe(const std::string& text, const std::string& html);
 std::string doanMimeTuTen(const std::string& tenTep);
 void nguGiay(int giay);
 void nguMiliGiay(int ms);

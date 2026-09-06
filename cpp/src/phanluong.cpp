@@ -322,6 +322,18 @@ void BoPhanLuong::phanLuong(BanGhiEmail& em, std::vector<NhomCongViec>& nhom) {
         }
     }
 
+    // 4b) Thư không đính kèm tệp, chỉ dán link chia sẻ. Ghi thẳng vào ghi chú
+    // của công việc để người xử lý mở hộp việc là thấy ngay - đừng để họ tưởng
+    // tệp có trong kho rồi đi tìm mãi không ra.
+    if (em.tep.empty() && !em.lien_ket_ngoai.empty()) {
+        for (auto& g : gom) {
+            g.second.ghi_chu += (g.second.ghi_chu.empty() ? "" : " | ");
+            g.second.ghi_chu += "Thư không có tệp đính kèm, chỉ có " +
+                                std::to_string(em.lien_ket_ngoai.size()) +
+                                " link chia sẻ - kho KHÔNG giữ bản tệp, phải mở link để tải";
+        }
+    }
+
     // 5) Hoàn thiện từng nhóm
     for (auto& g : gom) {
         hoanThien(g.second, em);

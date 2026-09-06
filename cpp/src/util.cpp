@@ -3,6 +3,7 @@
 // =====================================================================
 #include "util.h"
 
+#include <set>
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -613,6 +614,98 @@ std::string urlDecode(const std::string& s) {
         } else r += s[i];
     }
     return r;
+}
+
+// =====================================================================
+//  Tìm liên kết chia sẻ tệp trong thân thư
+// =====================================================================
+
+// Các tên miền chia sẻ tệp thường gặp. So khớp trên phần host, không phân biệt
+// hoa thường, và phải khớp trọn nhãn miền để "notdrive.google.com.evil.tld"
+// không lọt qua.
+static const char* MIEN_CHIA_SE[] = {
+    "drive.google.com", "docs.google.com", "sheets.google.com",
+    "slides.google.com", "forms.google.com",
+    "1drv.ms", "onedrive.live.com", "sharepoint.com",
+    "dropbox.com", "box.com", "mega.nz", "we.tl", "wetransfer.com",
+    nullptr
+};
+
+// Lấy phần host của một URL đã biết là http(s)://…
+static std::string hostCuaUrl(const std::string& url) {
+    size_t p = url.find("://");
+    if (p == std::string::npos) return "";
+    size_t b = p + 3;
+    size_t e = url.find_first_of("/?#", b);
+    std::string h = toLower(url.substr(b, e == std::string::npos ? std::string::npos : e - b));
+    size_t at = h.rfind('@');                 // bỏ phần user:pass@
+    if (at != std::string::npos) h = h.substr(at + 1);
+    size_t c = h.find(':');                   // bỏ cổng
+    if (c != std::string::npos) h = h.substr(0, c);
+    return h;
+}
+
+static bool laMienChiaSe(const std::string& host) {
+    if (host.empty()) return false;
+    for (int i = 0; MIEN_CHIA_SE[i]; i++) {
+        std::string m = MIEN_CHIA_SE[i];
+        if (host == m) return true;
+        // khớp tên miền con: phải có dấu chấm ngay trước, tránh "faledrive.google.com"
+        if (host.size() > m.size() + 1 &&
+            host.compare(host.size() - m.size(), m.size(), m) == 0 &&
+            host[host.size() - m.size() - 1] == '.') return true;
+    }
+    return false;
+}
+
+// Giải các thực thể HTML hay gặp trong thuộc tính href
+static std::string boThucTheHtml(std::string s) {
+    s = replaceAll(s, "&amp;", "&");
+    s = replaceAll(s, "&#38;", "&");
+    s = replaceAll(s, "&quot;", "\"");
+    s = replaceAll(s, "&#39;", "'");
+    s = replaceAll(s, "&lt;", "<");
+    s = replaceAll(s, "&gt;", ">");
+    return s;
+}
+
+static void quetMotBan(const std::string& nguon, std::vector<std::string>& ra,
+                       std::set<std::string>& daCo) {
+    const std::string TIEN_TO[] = { "https://", "http://" };
+    for (const std::string& tt : TIEN_TO) {
+        size_t i = 0;
+        while ((i = nguon.find(tt, i)) != std::string::npos) {
+            size_t j = i;
+            // URL kết thúc ở khoảng trắng hoặc ký tự bao quanh trong HTML/văn bản
+            while (j < nguon.size()) {
+                unsigned char c = (unsigned char)nguon[j];
+                if (c <= ' ' || c == '"' || c == '\'' || c == '<' || c == '>' ||
+                    c == '\\' || c == '|') break;
+                j++;
+            }
+            std::string url = boThucTheHtml(nguon.substr(i, j - i));
+            // Bỏ dấu câu dính ở cuối câu: "…/view)." hay "…/edit,"
+            while (!url.empty()) {
+                char c = url.back();
+                if (c == '.' || c == ',' || c == ';' || c == ':' ||
+                    c == ')' || c == ']' || c == '}') url.pop_back();
+                else break;
+            }
+            if (url.size() > 12 && laMienChiaSe(hostCuaUrl(url))) {
+                if (daCo.insert(toLower(url)).second) ra.push_back(url);
+            }
+            i = j > i ? j : i + 1;
+        }
+    }
+}
+
+std::vector<std::string> timLienKetChiaSe(const std::string& text, const std::string& html) {
+    std::vector<std::string> ra;
+    std::set<std::string> daCo;
+    quetMotBan(text, ra, daCo);
+    quetMotBan(html, ra, daCo);
+    if (ra.size() > 50) ra.resize(50);     // chặn thư rác nhồi hàng nghìn link
+    return ra;
 }
 
 } // namespace mr

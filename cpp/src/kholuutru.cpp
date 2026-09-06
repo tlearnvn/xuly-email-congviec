@@ -170,6 +170,7 @@ bool KhoMySql::kiemTraCotMoi(std::string& loi) {
     struct CotCan { const char* bang; const char* cot; const char* tu_ban; };
     static const CotCan CAN[] = {
         { "email", "tu_spam", "1.2.0" },
+        { "email", "lien_ket_ngoai", "1.4.0" },
         { nullptr, nullptr, nullptr }
     };
 
@@ -470,7 +471,7 @@ bool KhoMySql::luuEmail(const BanGhiEmail& em, const std::vector<NhomCongViec>& 
         "tieu_de_chuan, nguoi_gui, ten_nguoi_gui, nguoi_nhan, ngay_gui, ngay_nhan, doan_trich, "
         "noi_dung_text, noi_dung_html, so_tep, tong_dung_luong, hash_noi_dung, hash_tep, hash_tong_hop, "
         "trang_thai, id_email_goc, phien_ban, ly_do_trung, nguon_phan_luong, do_tin_cay, ghi_chu_ai, "
-        "tu_spam, ngay_tao, ngay_cap_nhat) VALUES (" +
+        "tu_spam, lien_ket_ngoai, ngay_tao, ngay_cap_nhat) VALUES (" +
         MySql::nhay(em.gmail_id) + "," +
         MySql::nhay(em.thread_id) + "," +
         MySql::nhay(catUtf8(em.message_id_header, 190)) + "," +
@@ -496,7 +497,8 @@ bool KhoMySql::luuEmail(const BanGhiEmail& em, const std::vector<NhomCongViec>& 
         MySql::nhay(em.nguon_phan_luong) + "," +
         std::to_string(em.do_tin_cay) + "," +
         MySql::nhay(catUtf8(em.ghi_chu_ai, 4000)) + "," +
-        (em.tuSpam() ? "1" : "0") + ",NOW(),NOW())";
+        (em.tuSpam() ? "1" : "0") + "," +
+        MySql::nhay(catUtf8(join(em.lien_ket_ngoai, "\n"), 8000)) + ",NOW(),NOW())";
     if (!db_.thucThi(sql, l2)) return huyBo("Lỗi ghi email: " + l2);
     kq.id_email = db_.idChenCuoi();
 
@@ -839,6 +841,10 @@ bool KhoApi::luuEmail(const BanGhiEmail& em, const std::vector<NhomCongViec>& nh
     j.dat("do_tin_cay", em.do_tin_cay);
     j.dat("ghi_chu_ai", em.ghi_chu_ai);
     j.dat("tu_spam", em.tuSpam() ? 1LL : 0LL);
+
+    Json lk = Json::mang();
+    for (const auto& u : em.lien_ket_ngoai) lk.them(Json(u));
+    j.dat("lien_ket_ngoai", lk);
 
     Json ts = Json::mang();
     for (const auto& t : em.tep) {

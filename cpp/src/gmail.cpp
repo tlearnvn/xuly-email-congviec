@@ -217,13 +217,47 @@ bool Gmail::quetMotLuot(const std::string& truyVan, int soLuong, bool trongSpam,
     return true;
 }
 
-bool Gmail::danhSachMail(const std::string& truyVan, int soLuong, bool gomSpam,
+// Các tên miền nhét vào truy vấn Gmail để bắt thư "không tệp, chỉ có link".
+// Ngắn hơn danh sách đầy đủ trong util.cpp: truy vấn Gmail có giới hạn độ dài,
+// và bộ dò link mới là nơi quyết định cuối cùng - truy vấn chỉ là cái lưới thả rộng.
+static const char* MIEN_TIM_KIEM[] = {
+    "drive.google.com", "docs.google.com", "1drv.ms", "onedrive.live.com",
+    "sharepoint.com", "dropbox.com", "mega.nz", "wetransfer.com",
+    nullptr
+};
+
+std::string Gmail::moRongTruyVanLink(const std::string& truyVan) {
+    // Chỉ nới khi truy vấn đang lọc "has:attachment" - vì chính điều kiện đó
+    // loại thẳng thư chỉ dán link. Truy vấn không lọc theo tệp thì đã lấy đủ rồi.
+    const std::string moc = "has:attachment";
+    std::string thap = toLower(truyVan);
+    size_t p = 0, tim = std::string::npos;
+    while ((p = thap.find(moc, p)) != std::string::npos) {
+        size_t sau = p + moc.size();
+        char t = (p == 0) ? ' ' : thap[p - 1];              // '-has:attachment' thì bỏ qua
+        char s = (sau >= thap.size()) ? ' ' : thap[sau];
+        if ((t == ' ' || t == '(') && (s == ' ' || s == ')')) { tim = p; break; }
+        p = sau;
+    }
+    if (tim == std::string::npos) return truyVan;
+
+    std::string ve = "(has:attachment";
+    for (int i = 0; MIEN_TIM_KIEM[i]; i++) ve += std::string(" OR \"") + MIEN_TIM_KIEM[i] + "\"";
+    ve += ")";
+    return truyVan.substr(0, tim) + ve + truyVan.substr(tim + moc.size());
+}
+
+bool Gmail::danhSachMail(const std::string& truyVan, int soLuong, bool gomSpam, bool nhanLink,
                          std::vector<std::string>& ids, std::string& loi,
                          std::string* canhBao) {
     ids.clear();
     std::set<std::string> daCo;
 
-    if (!quetMotLuot(truyVan, soLuong, false, daCo, ids, loi)) return false;
+    // Nới truy vấn ngay từ đầu thay vì quét thêm một lượt riêng: cả hộp thư chính
+    // lẫn hộp Thư rác đều được lợi, và không đội thêm hạn mức mail mỗi lần.
+    const std::string q = nhanLink ? moRongTruyVanLink(truyVan) : truyVan;
+
+    if (!quetMotLuot(q, soLuong, false, daCo, ids, loi)) return false;
 
     // Lượt hai: hộp Thư rác. Trường gửi báo cáo hay bị Google xếp nhầm vào đây;
     // bỏ qua thì thống kê sẽ báo "chưa nộp" oan cho trường.
@@ -239,7 +273,7 @@ bool Gmail::danhSachMail(const std::string& truyVan, int soLuong, bool gomSpam,
         if (conLai < san) conLai = san;
 
         std::string loiSpam;
-        if (!quetMotLuot(truyVan, conLai, true, daCo, ids, loiSpam)) {
+        if (!quetMotLuot(q, conLai, true, daCo, ids, loiSpam)) {
             // Hộp thư chính đã quét xong, không để lỗi ở Spam làm hỏng cả phiên
             if (canhBao) *canhBao = "Không quét được hộp Thư rác: " + loiSpam;
         }
@@ -537,6 +571,11 @@ void Gmail::phanTichMail(const Json& j, BanGhiEmail& em) {
         em.noi_dung_text = trim(catUtf8(boTheHtml(em.noi_dung_html), GIOI_HAN_THAN));
     if (em.doan_trich.empty())
         em.doan_trich = catUtf8(trim(em.noi_dung_text), 480);
+
+    // Nhiều trường không đính kèm tệp mà dán link Google Drive/OneDrive vào
+    // thân thư. Quét lấy các link đó để người xử lý còn biết mà mở, đồng thời
+    // biết rằng bản thân tệp KHÔNG nằm trong kho.
+    em.lien_ket_ngoai = timLienKetChiaSe(em.noi_dung_text, em.noi_dung_html);
 
     for (size_t i = 0; i < em.tep.size(); i++) em.tep[i].thu_tu = (int)i;
 }

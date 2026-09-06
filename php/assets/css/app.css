@@ -269,6 +269,9 @@ input:disabled,select:disabled{background:#f2f4f8;color:var(--chu-nhat);}
   font-size:.66rem;font-weight:700;letter-spacing:.02em;color:#fff;}
 .bt-pdf{background:#e0453a;} .bt-doc{background:#2b579a;} .bt-xls{background:#1d7044;}
 .bt-ppt{background:#c43e1c;} .bt-anh{background:#7748e6;} .bt-nen{background:#e08a06;} .bt-khac{background:#8b95a8;}
+/* Link chia sẻ (Drive/OneDrive…): viền đứt để nhìn là biết ngay "không phải tệp trong kho" */
+.bt-lienket{background:#0f9d8f;}
+.tep-lienket{border-style:dashed;background:#f6fbfa;}
 .tep .ten{flex:1;min-width:0;}
 .tep .ten strong{display:block;font-size:.86rem;font-weight:560;overflow-wrap:anywhere;}
 .tep .ten small{font-size:.75rem;color:var(--chu-phu);}

@@ -44,6 +44,7 @@ bool UngDung::khoiTao(const std::string& tepCauHinh, std::string& loi) {
         ch_.dat("gmail.truy_van", "");
         ch_.dat("gmail.so_mail_moi_lan", "");
         ch_.dat("gmail.quet_spam", "1");
+        ch_.dat("gmail.nhan_link_drive", "1");
         ch_.dat("ai.bat", "");
         ch_.dat("ai.url", "");
         ch_.dat("ai.api_key", "");
@@ -341,10 +342,36 @@ bool UngDung::xuLyMotMail(const std::string& id, ThongKePhien& tk, std::string& 
         return true;
     }
 
+    // Truy vấn được nới ra để bắt thư dán link, nên Gmail trả về cả những thư
+    // vô can (chữ "drive.google.com" nằm trong chữ ký chẳng hạn). Thư không tệp
+    // mà cũng không có link chia sẻ thì không phải hồ sơ - bỏ, đừng làm rác kho.
+    if (em.tep.empty() && em.lien_ket_ngoai.empty()) {
+        NK.go("mail", "Bỏ qua mail không có tệp đính kèm và không có link chia sẻ: " +
+                      catUtf8(em.tieu_de, 100));
+        return true;
+    }
+
     NK.tin("mail", std::string(em.tuSpam() ? "[THƯ RÁC] Đang xử lý: " : "Đang xử lý: ") +
                    "[" + dinhDangGioVN(em.ngay_gui, "%d/%m/%Y %H:%M") + "] " +
                    catUtf8(em.tieu_de, 150) + " - " + em.nguoi_gui +
-                   " (" + std::to_string(em.tep.size()) + " tệp)");
+                   " (" + std::to_string(em.tep.size()) + " tệp" +
+                   (em.lien_ket_ngoai.empty() ? "" :
+                    ", " + std::to_string(em.lien_ket_ngoai.size()) + " link") + ")");
+
+    // Thư chỉ có link: KHÔNG lưu được tệp vào kho. Phải nói thẳng để người xử lý
+    // biết mà vào Drive tải về, và để trường biết đường lần sau đính kèm thẳng.
+    if (em.tep.empty() && !em.lien_ket_ngoai.empty()) {
+        tk.so_mail_link++;
+        std::string ds;
+        for (const auto& u : em.lien_ket_ngoai) {
+            if (!ds.empty()) ds += " | ";
+            ds += catUtf8(u, 160);
+        }
+        NK.canhBao("link", "Thư KHÔNG có tệp đính kèm, chỉ có link chia sẻ - kho lưu trữ "
+                           "sẽ không giữ được bản tệp: " + catUtf8(em.tieu_de, 100) +
+                           " - " + em.nguoi_gui + ". Link: " + catUtf8(ds, 600));
+    }
+
     if (em.tuSpam()) {
         tk.so_mail_spam++;
         NK.canhBao("spam", "Vớt được từ hộp Thư rác: " + catUtf8(em.tieu_de, 120) +
@@ -452,15 +479,21 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
     // thống kê báo "chưa nộp" oan, nên mặc định quét luôn cả hộp đó.
     bool quetSpam = toBool(ch_.uuTien("gmail.quet_spam", "gmail.quet_spam", "1"), true);
 
-    kho_->moPhien(tk, hopThu, truyVan, loi);
+    // Trường không đính kèm mà dán link Google Drive thì "has:attachment" loại
+    // thẳng thư đó, hệ thống không bao giờ nhìn thấy. Mặc định nới truy vấn.
+    bool nhanLink = toBool(ch_.uuTien("gmail.nhan_link_drive", "gmail.nhan_link_drive", "1"), true);
+    std::string truyVanThat = nhanLink ? Gmail::moRongTruyVanLink(truyVan) : truyVan;
+
+    kho_->moPhien(tk, hopThu, truyVanThat, loi);
     NK.tin("dong_bo", "Bắt đầu phiên đồng bộ - hộp thư: " + (hopThu.empty() ? "(chưa rõ)" : hopThu) +
-                      " | điều kiện: " + truyVan + " | tối đa " + std::to_string(soLuong) + " mail" +
-                      (quetSpam ? " | có quét hộp Thư rác" : " | bỏ qua hộp Thư rác"));
+                      " | điều kiện: " + truyVanThat + " | tối đa " + std::to_string(soLuong) + " mail" +
+                      (quetSpam ? " | có quét hộp Thư rác" : " | bỏ qua hộp Thư rác") +
+                      (nhanLink ? " | có bắt link chia sẻ" : " | bỏ qua link chia sẻ"));
 
     datTienTrinh("liet_ke", 0, 0, "Đang lấy danh sách mail...");
     std::vector<std::string> ids;
     std::string canhBaoSpam;
-    if (!gmail_.danhSachMail(truyVan, soLuong, quetSpam, ids, loi, &canhBaoSpam)) {
+    if (!gmail_.danhSachMail(truyVan, soLuong, quetSpam, nhanLink, ids, loi, &canhBaoSpam)) {
         tk.thong_diep = loi;
         tk.so_loi++;
         std::string l2;
@@ -494,9 +527,9 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
     char buf[400];
     std::snprintf(buf, sizeof(buf),
         "Hoàn tất: quét %d mail, mới %d, bản mới %d, trùng %d, công việc %d, tệp %d, "
-        "chờ phân luồng %d, dùng AI %d, vớt từ Thư rác %d, lỗi %d (%.1f giây)",
+        "chờ phân luồng %d, dùng AI %d, vớt từ Thư rác %d, chỉ có link %d, lỗi %d (%.1f giây)",
         tk.so_mail_quet, tk.so_mail_moi, tk.so_mail_ban_moi, tk.so_mail_trung, tk.so_cong_viec,
-        tk.so_tep, tk.so_cho_phan_luong, tk.so_dung_ai, tk.so_mail_spam, tk.so_loi,
+        tk.so_tep, tk.so_cho_phan_luong, tk.so_dung_ai, tk.so_mail_spam, tk.so_mail_link, tk.so_loi,
         (double)(tk.ket_thuc - tk.bat_dau));
     tk.thong_diep = buf;
     NK.tin("dong_bo", tk.thong_diep);

@@ -246,6 +246,33 @@ class Util
         return $bang[$e] ?? 'khac';
     }
 
+    /**
+     * Tách cột email.lien_ket_ngoai (mỗi dòng một link) thành mảng đã lọc.
+     * Lọc lại lần nữa dù bên nhận đã lọc: dòng cũ có từ trước khi có bộ lọc,
+     * hoặc ai đó sửa tay bằng phpMyAdmin, vẫn không được thành thẻ <a> nguy hiểm.
+     */
+    public static function dsLinkChiaSe(?string $raw): array
+    {
+        if ($raw === null || trim($raw) === '') return [];
+        $ra = [];
+        foreach (preg_split('/[\r\n]+/', $raw) ?: [] as $u) {
+            $u = trim($u);
+            if ($u === '' || strlen($u) > 900) continue;
+            if (!preg_match('~^https?://~i', $u)) continue;
+            if (preg_match('/[\x00-\x20\x7F]/', $u)) continue;
+            if (!in_array($u, $ra, true)) $ra[] = $u;
+            if (count($ra) >= 50) break;
+        }
+        return $ra;
+    }
+
+    /** Tên miền của một URL, dùng làm nhãn ngắn cho link chia sẻ */
+    public static function mienCuaLink(string $url): string
+    {
+        $h = parse_url($url, PHP_URL_HOST);
+        return $h ? strtolower($h) : $url;
+    }
+
     /** Có thể xem trực tiếp trên trình duyệt hay không */
     public static function xemTrucTiep(?string $mime, ?string $tenTep): bool
     {

@@ -146,9 +146,14 @@ kết thúc lúc nào, quét bao nhiêu thư, tạo bao nhiêu việc, gặp bao
 phân luồng. Làm ngược lại sẽ tốn công gọi AI và tra danh mục cho những bức thư mà cuối cùng
 bị bỏ qua vì trùng.
 
-Truy vấn Gmail mặc định là `has:attachment newer_than:30d` — chỉ lấy thư có tệp đính kèm
-trong vòng 30 ngày. Quản trị đổi được trong mục *Phân luồng & đồng bộ* của bộ nhận mail.
-Việc giới hạn 30 ngày giúp phiên đồng bộ đầu tiên không phải tải về toàn bộ lịch sử hộp thư.
+Truy vấn Gmail mặc định là `has:attachment newer_than:30d` — thư có tệp đính kèm trong vòng
+30 ngày. Quản trị đổi được trong mục *Phân luồng & đồng bộ* của bộ nhận mail. Việc giới hạn
+30 ngày giúp phiên đồng bộ đầu tiên không phải tải về toàn bộ lịch sử hộp thư.
+
+Truy vấn đó **được nới thêm hai lần** trước khi gọi API, để bịt hai lỗ mất dữ liệu âm thầm:
+một lượt quét riêng cho hộp Thư rác ([mục 3.1](#31-thư-bị-google-xếp-vào-hộp-thư-rác)), và
+mở rộng `has:attachment` để bắt cả thư chỉ dán link chia sẻ
+([mục 3.2](#32-thư-không-đính-kèm-tệp-chỉ-dán-link-google-drive)).
 
 ### 3.1. Thư bị Google xếp vào hộp Thư rác
 
@@ -205,6 +210,69 @@ hại hơn nhiều so với việc thỉnh thoảng nhận nhầm một thư rá
 > Workspace, quản trị viên làm ở *Admin console → Apps → Gmail → Spam, Phishing and
 > Malware → Allowlist*. Hệ thống chỉ có quyền đọc (`gmail.readonly`) nên không thể tự
 > gỡ nhãn Thư rác giúp.
+
+### 3.2. Thư không đính kèm tệp, chỉ dán link Google Drive
+
+Cùng loại lỗi mất dữ liệu âm thầm như §3.1, nhưng đến từ hướng khác. Trường không đính kèm
+tệp mà viết:
+
+> *"Kính gửi Phòng, trường xin gửi báo cáo qua đường dẫn:
+> https://drive.google.com/file/d/1AbCd.../view"*
+
+Thư đó **không có tệp đính kèm**, nên truy vấn mặc định `has:attachment` loại thẳng nó ra.
+Hệ thống không hề nhìn thấy bức thư — không phải phân luồng sai, mà là **không tồn tại**.
+Thống kê lại báo trường *"chưa nộp"* trong khi họ đã gửi.
+
+Cách xử lý gồm ba phần.
+
+**a) Nới truy vấn để thư được lấy về.** Khi bật `gmail.nhan_link_drive` (mặc định bật),
+cụm `has:attachment` trong truy vấn được thay bằng một cụm OR:
+
+```
+trước:  has:attachment newer_than:30d
+sau:    (has:attachment OR "drive.google.com" OR "docs.google.com" OR "1drv.ms"
+         OR "onedrive.live.com" OR "sharepoint.com" OR "dropbox.com" OR "mega.nz"
+         OR "wetransfer.com") newer_than:30d
+```
+
+Nới ngay ở truy vấn thay vì quét thêm một lượt riêng, nên cả hộp thư chính lẫn hộp Thư rác
+đều được lợi mà **không đội thêm** hạn mức *Số mail mỗi lần quét*. Truy vấn không có
+`has:attachment` thì giữ nguyên (đã bao gồm mọi thư rồi); `-has:attachment` cũng được giữ
+nguyên vì đó là điều kiện phủ định, sửa vào là làm sai ý quản trị.
+
+**b) Dò link trong thân thư.** Hàm `timLienKetChiaSe()` quét **cả** bản text lẫn bản HTML,
+giải các thực thể HTML trong `href` (`&amp;` → `&`), cắt dấu câu cuối câu và dấu ngoặc bao
+ngoài, bỏ link trùng và giữ nguyên thứ tự xuất hiện, tối đa 50 link mỗi thư.
+
+Chỉ nhận đúng danh sách tên miền chia sẻ tệp, và so khớp theo **host** chứ không theo chuỗi
+con — nên `https://drive.google.com.kexau.tld/x` bị loại, trong khi tên miền con thật như
+`https://abc-my.sharepoint.com/...` vẫn được nhận.
+
+**c) Bỏ hẳn thư vô can.** Truy vấn nới rộng kéo về cả những thư chỉ tình cờ có chữ
+`drive.google.com` trong chữ ký. Thư nào **không có tệp và cũng không có link chia sẻ** thì
+bị bỏ ngay, không lưu vào kho.
+
+Thư qua được ba bước trên đi tiếp đúng quy trình bình thường: mã hồ sơ lấy từ tiêu đề, đọc
+được thì tạo công việc hoàn chỉnh, không đọc được thì vào hàng chờ phân luồng tay. Khác
+biệt nằm ở chỗ nói cho người xử lý biết:
+
+| Nơi | Thể hiện |
+|---|---|
+| Cột `email.lien_ket_ngoai` | Danh sách link, mỗi dòng một link |
+| Ghi chú công việc | *"Thư không có tệp đính kèm, chỉ có N link chia sẻ — kho KHÔNG giữ bản tệp, phải mở link để tải"* |
+| Trang chi tiết & phân luồng tay | Thẻ **"Link chia sẻ trong thư"** viền đứt, kèm cảnh báo vàng |
+| Danh sách văn bản | Huy hiệu *"N link"* ngay dưới số tệp |
+| Nhật ký & thống kê phiên | Một dòng cảnh báo kèm danh sách link; phiên đếm riêng *"chỉ có link"* |
+
+> **Giới hạn quan trọng — không thể khắc phục bằng cách nới thêm:** hệ thống **chỉ lưu được
+> đường dẫn, không lưu được bản tệp**. Muốn tải tệp về từ Drive thì phải xin thêm quyền
+> `drive.readonly`, tức là chương trình sẽ đọc được **toàn bộ** Drive của tài khoản, chứ
+> không riêng tệp trong thư; mà kể cả vậy vẫn hỏng khi trường chia sẻ ở chế độ "chỉ người
+> được mời". Đánh đổi đó không xứng đáng, nên hệ thống giữ đúng phạm vi `gmail.readonly`.
+>
+> Hệ quả thực tế: **người gửi đổi quyền chia sẻ hoặc xoá tệp trên Drive là hồ sơ coi như
+> mất.** Cán bộ xử lý nên mở link tải về rồi lưu lại, và nhắc trường lần sau đính kèm thẳng
+> vào thư.
 
 ---
 
@@ -329,6 +397,7 @@ Một số cột đáng chú ý trong bảng `email`:
 | `phien_ban`, `id_email_goc` | `INT`, `BIGINT` | Chuỗi phiên bản khi trường sửa tệp rồi gửi lại |
 | `nguon_phan_luong`, `do_tin_cay` | `ENUM`, `DECIMAL` | Mã này đọc từ đâu ra và tin được bao nhiêu |
 | **`tu_spam`** | `TINYINT(1)` | Bằng 1 nếu thư vớt được từ hộp Thư rác, xem [mục 3.1](#31-thư-bị-google-xếp-vào-hộp-thư-rác). Có chỉ mục `idx_email_spam` để lọc nhanh |
+| **`lien_ket_ngoai`** | `TEXT` | Link Google Drive/OneDrive… dán trong thân thư, mỗi dòng một link, xem [mục 3.2](#32-thư-không-đính-kèm-tệp-chỉ-dán-link-google-drive). Chỉ là đường dẫn — **bản tệp không nằm trong kho** |
 
 ### 6.1. Vì sao lưu tệp trong CSDL thay vì trong thư mục?
 
@@ -524,6 +593,13 @@ của tệp CSS/JS — nên **người dùng không bao giờ phải xoá cache 
 nhớ các mã băm đã gặp **trong chính phiên đang chạy**, phòng trường hợp hai bản sao của cùng
 một thư nằm cạnh nhau trong cùng một lần quét.
 
+**Giữ đúng một quyền `gmail.readonly`, không xin thêm `drive.readonly`.** Xin thêm quyền Drive
+sẽ tải được tệp mà trường chia sẻ bằng link (xem [mục 3.2](#32-thư-không-đính-kèm-tệp-chỉ-dán-link-google-drive)),
+nhưng phạm vi Google cấp là **toàn bộ** Drive của tài khoản, không riêng tệp trong thư — mà
+kể cả vậy vẫn hỏng khi trường chia sẻ ở chế độ "chỉ người được mời". Đổi một phạm vi quyền
+rộng như thế lấy một tính năng vẫn không chắc chạy là không đáng, nên hệ thống chỉ lưu đường
+dẫn và nói rõ ra rằng bản tệp không có trong kho.
+
 ---
 
 ## 14. Quy trình phát hành phiên bản
@@ -569,8 +645,8 @@ nối** và in ra đúng tên cột thiếu kèm cách sửa, thay vì để l�
 đang xử lý thư:
 
 ```
-Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu 1 cột:
-email.tu_spam (thêm từ bản 1.2.0).
+Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu 2 cột:
+email.tu_spam (thêm từ bản 1.2.0), email.lien_ket_ngoai (thêm từ bản 1.4.0).
 Hãy mở https://<tên-miền>/nang-cap.php một lần để bổ sung,
 hoặc nạp tệp sql/03_nang_cap.sql bằng phpMyAdmin.
 Dữ liệu cũ được giữ nguyên, không mất gì.

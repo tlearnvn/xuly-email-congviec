@@ -49,6 +49,32 @@
         </div>
       <?php endif; ?>
 
+      <?php $dsLink = Util::dsLinkChiaSe($dangChon['lien_ket_ngoai'] ?? null); ?>
+      <?php if ($dsLink): ?>
+        <h3 style="margin-top:1.1rem">Link chia sẻ trong thư (<?= count($dsLink) ?>)</h3>
+        <?php if (!$tepChon): ?>
+          <div class="nhan nhan-canh" style="margin:.5rem 0 .7rem">
+            <strong>Thư không đính kèm tệp.</strong> Kho chỉ giữ được đường dẫn, không giữ bản tệp.
+            Nên mở link tải về rồi lưu lại, và nhắc đơn vị lần sau đính kèm thẳng vào thư.
+          </div>
+        <?php endif; ?>
+        <div class="ds-tep">
+          <?php foreach ($dsLink as $u): ?>
+            <div class="tep tep-lienket">
+              <span class="bt bt-lienket">LINK</span>
+              <span class="ten">
+                <strong><?= Util::h(Util::mienCuaLink($u)) ?></strong>
+                <small><?= Util::h(Util::catChu($u, 90)) ?></small>
+              </span>
+              <span class="viec">
+                <a class="nut nut-phu nho" target="_blank" rel="noopener noreferrer nofollow"
+                   href="<?= Util::h($u) ?>">Mở</a>
+              </span>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
       <?php if (trim((string)$dangChon['noi_dung_text']) !== ''): ?>
         <h3 style="margin-top:1.1rem">Trích nội dung thư</h3>
         <pre class="noi-dung-mail" style="max-height:220px"><?= Util::h(Util::catChu($dangChon['noi_dung_text'], 2500)) ?></pre>

@@ -36,3 +36,21 @@ PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
 INSERT IGNORE INTO `cau_hinh` (`khoa`,`gia_tri`,`nhom`,`kieu`,`nhan`,`mo_ta`,`thu_tu`,`bi_mat`,`ngay_cap_nhat`)
 VALUES ('gmail.quet_spam','1','gmail','bool','Quét cả hộp Thư rác (Spam)',
         'Google hay xếp nhầm báo cáo của trường vào Thư rác; tắt đi là bỏ sót',6,0,NOW());
+
+-- ---------------------------------------------------------------------
+--  1.4.0 - email.lien_ket_ngoai: link Google Drive/OneDrive… trong thân thư
+--          (thư không đính kèm tệp mà chỉ dán đường dẫn chia sẻ)
+-- ---------------------------------------------------------------------
+SET @co = (SELECT COUNT(*) FROM information_schema.COLUMNS
+           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email' AND COLUMN_NAME = 'lien_ket_ngoai');
+SET @sql = IF(@co = 0,
+  'ALTER TABLE `email` ADD COLUMN `lien_ket_ngoai` TEXT NULL AFTER `tu_spam`',
+  'DO 0');
+PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
+
+-- ---------------------------------------------------------------------
+--  1.4.0 - khoá cấu hình mới
+-- ---------------------------------------------------------------------
+INSERT IGNORE INTO `cau_hinh` (`khoa`,`gia_tri`,`nhom`,`kieu`,`nhan`,`mo_ta`,`thu_tu`,`bi_mat`,`ngay_cap_nhat`)
+VALUES ('gmail.nhan_link_drive','1','gmail','bool','Bắt cả thư chỉ dán link chia sẻ',
+        'Thư không đính kèm tệp mà dán link Google Drive/OneDrive… vẫn được lấy về; kho chỉ giữ đường dẫn, không giữ tệp',7,0,NOW());

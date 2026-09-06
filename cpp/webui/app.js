@@ -200,7 +200,7 @@
     'mysql.timeout', 'mysql.kich_thuoc_khoi_kb',
     'api.url', 'api.khoa', 'api.timeout', 'api.kich_thuoc_khoi_kb',
     'gmail.client_id', 'gmail.client_secret', 'gmail.access_token', 'gmail.refresh_token',
-    'gmail.truy_van', 'gmail.so_mail_moi_lan', 'gmail.quet_spam',
+    'gmail.truy_van', 'gmail.so_mail_moi_lan', 'gmail.quet_spam', 'gmail.nhan_link_drive',
     'ai.bat', 'ai.url', 'ai.api_key', 'ai.model', 'ai.max_tokens', 'ai.timeout',
     'ai.temperature', 'ai.nguong_tin_cay',
     'ung_dung.chu_ky_phut', 'ung_dung.dung_luong_tep_toi_da_mb'
@@ -368,7 +368,7 @@
   // --- Phân luồng ---
   $('#nut-luu-phan-luong').addEventListener('click', (ev) =>
     chay(ev.currentTarget, () => luuCauHinh(['gmail.truy_van', 'gmail.so_mail_moi_lan',
-      'gmail.quet_spam', 'ung_dung.chu_ky_phut',
+      'gmail.quet_spam', 'gmail.nhan_link_drive', 'ung_dung.chu_ky_phut',
       'ung_dung.dung_luong_tep_toi_da_mb']), 'Đã lưu thiết lập'));
 
   async function chayDongBo(nut) {

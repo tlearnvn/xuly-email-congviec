@@ -21,7 +21,7 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 | Tài liệu | Nội dung |
 |---|---|
-| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 54 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 59 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
 | [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
 | [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
 | [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
@@ -244,6 +244,15 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.4.0 — 06/09/2026
+
+- **Sửa lỗi bỏ sót thư nghiêm trọng:** trường không đính kèm tệp mà dán link Google Drive thì điều kiện lọc mặc định `has:attachment` **loại thẳng** bức thư — hệ thống không hề nhìn thấy, thống kê báo "chưa nộp" oan. Nay khi bật `gmail.nhan_link_drive` (mặc định bật), cụm `has:attachment` được nới thành `(has:attachment OR "drive.google.com" OR "docs.google.com" OR "1drv.ms" OR …)`. Nới ngay ở truy vấn nên cả hộp thư chính lẫn hộp Thư rác đều được lợi mà **không đội thêm** hạn mức số mail mỗi lần quét.
+- **Dò link chia sẻ trong thân thư:** quét cả bản text lẫn bản HTML, giải thực thể HTML trong `href`, cắt dấu câu và dấu ngoặc bao ngoài, bỏ trùng, tối đa 50 link mỗi thư. So khớp theo **host** nên tên miền giả dạng `drive.google.com.kexau.tld` bị loại, còn tên miền con thật `abc-my.sharepoint.com` vẫn nhận.
+- **Nói rõ giới hạn, không để nhầm:** kho **chỉ giữ đường dẫn, KHÔNG giữ bản tệp** (hệ thống chỉ xin quyền `gmail.readonly`, không đụng tới Google Drive). Trang chi tiết và trang phân luồng tay hiện thẻ *Link chia sẻ trong thư* viền đứt kèm cảnh báo vàng; danh sách văn bản hiện huy hiệu *N link* dưới số tệp; ghi chú công việc, nhật ký và thống kê phiên đều ghi rõ.
+- **Bỏ thư vô can:** truy vấn nới rộng kéo về cả thư chỉ tình cờ có chữ `drive.google.com` trong chữ ký — thư không có tệp lẫn link chia sẻ bị bỏ ngay, không lưu vào kho.
+- **Cột mới** `email.lien_ket_ngoai` cùng khoá cấu hình `gmail.nhan_link_drive`; `php/nang-cap.php` và `sql/03_nang_cap.sql` bổ sung sẵn, chạy lại nhiều lần vẫn an toàn.
+- **Tài liệu:** quy trình kỹ thuật thêm mục 3.2 *Thư không đính kèm tệp, chỉ dán link Google Drive*; hướng dẫn sử dụng thêm mục 16.3, mục hỏi đáp cho các trường *Gửi link Google Drive thay cho tệp đính kèm được không?* và 2 dòng xử lý sự cố mới.
+
 ### 1.3.0 — 06/09/2026
 
 - **Cải thiện gom nhóm tệp đính kèm:** thư kèm một tệp đặt tên đúng quy ước cộng thêm công văn/phụ lục đặt tên tự do trước đây sinh ra **hai** công việc — một cái đúng, một cái mồ côi phải phân luồng tay mỗi lần. Nay nếu cả thư chỉ có **đúng một** mã hồ sơ thì các tệp không mã được gộp chung vào đó, kèm ghi chú giải thích.

@@ -274,6 +274,15 @@
         <p class="phu">Google hay xếp nhầm báo cáo của các trường vào Thư rác. Tắt mục này là
            bỏ sót, thống kê sẽ báo “chưa nộp” oan. Thư trong Thùng rác thì luôn bỏ qua.
            Hộp Thư rác dùng phần còn thừa của hạn mức trên, tối thiểu 1/5 hạn mức.</p>
+        <label class="chuyen" style="margin-top:.6rem">
+          <input type="checkbox" id="gmail_nhan_link_drive" checked>
+          <span>Bắt cả thư chỉ dán link chia sẻ (Google Drive, OneDrive…)</span>
+        </label>
+        <p class="phu">Điều kiện <code>has:attachment</code> loại thẳng thư không đính kèm tệp,
+           nên trường nào dán link Drive là hệ thống không hề nhìn thấy. Bật mục này thì điều kiện
+           tự nới thành <code>(has:attachment OR "drive.google.com" OR …)</code>.
+           <b>Lưu ý:</b> kho chỉ giữ được đường dẫn, KHÔNG giữ bản tệp — chương trình chỉ xin
+           quyền đọc Gmail, không đụng tới Google Drive.</p>
         <div class="hang-nut">
           <button class="nut chinh-nut" id="nut-luu-phan-luong">Lưu thiết lập</button>
         </div>

@@ -139,7 +139,16 @@
             <?php if ($tatCa): ?>
               <td class="chu-nho"><?= Util::h($d['ho_ten'] ?: ($d['ma_nguoi_xu_ly'] ?: '—')) ?></td>
             <?php endif; ?>
-            <td class="giua chu-nho"><?= (int)$d['so_tep'] ?></td>
+            <td class="giua chu-nho">
+              <?= (int)$d['so_tep'] ?>
+              <?php $soLink = count(Util::dsLinkChiaSe($d['lien_ket_ngoai'] ?? null)); ?>
+              <?php if ($soLink): ?>
+                <div class="hh hh-xanh-duong hh-nhat" style="margin-top:.15rem"
+                     title="Thư có <?= $soLink ?> link chia sẻ; kho không giữ bản tệp của link">
+                  <?= $soLink ?> link
+                </div>
+              <?php endif; ?>
+            </td>
             <td><?= View::huyHieuTrangThai($d['trang_thai']) ?></td>
             <td class="chu-nho" title="<?= Util::h(Util::ngay($d['ngay_nhan'])) ?>">
               <?= Util::h(Util::ngay($d['ngay_nhan'], 'd/m/Y H:i')) ?>

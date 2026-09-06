@@ -57,7 +57,16 @@ $hienNguoi = $hienNguoi ?? true;
         <?php if ($hienNguoi): ?>
           <td class="chu-nho"><?= Util::h($d['ho_ten'] ?? ($d['ma_nguoi_xu_ly'] ?: '—')) ?></td>
         <?php endif; ?>
-        <td class="giua chu-nho"><?= (int)($d['so_tep'] ?? 0) ?></td>
+        <td class="giua chu-nho">
+          <?= (int)($d['so_tep'] ?? 0) ?>
+          <?php $soLink = count(Util::dsLinkChiaSe($d['lien_ket_ngoai'] ?? null)); ?>
+          <?php if ($soLink): ?>
+            <div class="hh hh-xanh-duong hh-nhat" style="margin-top:.15rem"
+                 title="Thư có <?= $soLink ?> link chia sẻ; kho không giữ bản tệp của link">
+              <?= $soLink ?> link
+            </div>
+          <?php endif; ?>
+        </td>
         <td>
           <?= View::huyHieuTrangThai($d['trang_thai']) ?>
           <?php if ($quaHan): ?><div class="chu-nho" style="color:#dc4437">Quá hạn</div><?php endif; ?>

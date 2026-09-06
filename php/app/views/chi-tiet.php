@@ -87,7 +87,10 @@
       </div>
 
       <?php if (!$tep): ?>
-        <p class="rong-nho">Thư này không có tệp đính kèm.</p>
+        <p class="rong-nho">Thư này không có tệp đính kèm.<?php
+          if ($email && Util::dsLinkChiaSe($email['lien_ket_ngoai'] ?? null)) {
+              echo ' Xem mục “Link chia sẻ trong thư” bên dưới.';
+          } ?></p>
       <?php else: ?>
       <div class="ds-tep">
         <?php foreach ($tep as $f):
@@ -127,6 +130,9 @@
       </div>
       <?php endif; ?>
     </div>
+
+    <!-- ---------------- Link chia sẻ trong thân thư ---------------- -->
+    <?= $email ? View::hopLinkChiaSe($email['lien_ket_ngoai'] ?? null, !$tep) : '' ?>
 
     <!-- ---------------- Nội dung thư gốc ---------------- -->
     <?php if ($email): ?>

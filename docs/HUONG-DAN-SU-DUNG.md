@@ -528,6 +528,41 @@ Gmail → Spam, Phishing and Malware → Allowlist*.
 > Hệ thống chỉ xin quyền **đọc** hộp thư (`gmail.readonly`) nên **không thể tự gỡ nhãn Thư
 > rác** giúp anh — đó là cái giá của việc không bao giờ đụng vào hộp thư công vụ.
 
+### 16.3. Bắt cả thư chỉ dán link Google Drive
+
+![Ô đánh dấu bắt thư chỉ có link chia sẻ](hinh/bnm-08-nhan-link.png)
+
+Ô **Bắt cả thư chỉ dán link chia sẻ (Google Drive, OneDrive…)** — **nên để bật**, và mặc định
+đã bật sẵn.
+
+Nhiều trường không đính kèm tệp mà viết kiểu *"trường xin gửi báo cáo qua đường dẫn:
+https://drive.google.com/…"*. Thư đó **không có tệp đính kèm**, mà điều kiện lọc mặc định lại
+là `has:attachment` — nên Gmail loại thẳng nó ra, hệ thống **không hề nhìn thấy** bức thư.
+Trường đã gửi mà thống kê vẫn báo *"chưa nộp"*, y như tình huống Thư rác ở trên.
+
+Bật ô này thì điều kiện lọc tự nới ra để bắt thêm thư có link chia sẻ, và **không** làm tăng
+số thư mỗi lần quét. Thư nào chỉ tình cờ có chữ `drive.google.com` trong chữ ký mà không có
+tệp lẫn link thật thì bị bỏ luôn, không làm rác kho.
+
+Thư loại này vẫn phân luồng bình thường theo mã trong tiêu đề. Chỗ khác là trang chi tiết hiện
+thêm thẻ **"Link chia sẻ trong thư"** kèm cảnh báo màu vàng, danh sách văn bản hiện huy hiệu
+*"N link"* dưới số tệp, và nhật ký ghi một dòng cảnh báo.
+
+![Thẻ Link chia sẻ trong thư ở trang chi tiết](hinh/web-16-link-chia-se.png)
+
+> ### ⚠️ Điều quan trọng nhất phải nhớ
+>
+> **Kho lưu trữ chỉ giữ được đường dẫn, KHÔNG giữ được bản tệp.**
+>
+> Hệ thống chỉ xin quyền đọc Gmail, không đụng tới Google Drive — nên nó không tải tệp từ
+> Drive về được. Nghĩa là **người gửi đổi quyền chia sẻ hoặc xoá tệp trên Drive là hồ sơ coi
+> như mất**, dù trong hệ thống vẫn thấy công việc.
+>
+> Gặp thư loại này, cán bộ xử lý nên:
+> 1. Bấm **Mở link**, tải tệp về máy ngay;
+> 2. Lưu tệp vào chỗ lưu trữ của Phòng;
+> 3. **Nhắc trường** lần sau đính kèm thẳng tệp vào thư, đừng gửi link.
+
 ### Chạy nền như một dịch vụ
 
 **Trên Linux** — dùng tệp `mailrouter.service` có sẵn trong gói:
@@ -621,6 +656,25 @@ Mỗi trường gửi một thư riêng là gọn nhất.
 **Gửi nhầm rồi gửi lại có sao không?** Không sao cả. Gửi lại y hệt thì hệ thống nhận ra và bỏ
 qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nhật, cán bộ sẽ thấy bản mới nhất.
 
+### Gửi link Google Drive thay cho tệp đính kèm được không?
+
+**Được, nhưng đừng làm vậy.** Hệ thống có nhận thư dán link Drive và hiện link đó ra cho cán
+bộ xử lý, nhưng nó **không tải được tệp về kho**:
+
+| Đính kèm thẳng vào thư | Dán link Google Drive |
+|---|---|
+| Tệp nằm luôn trong kho của Phòng | Kho chỉ giữ **đường dẫn**, không giữ tệp |
+| Mở ra là đọc được, kể cả nhiều năm sau | Đổi quyền chia sẻ hoặc xoá tệp là **hồ sơ mất** |
+| Đọc được mã hồ sơ ngay trong tên tệp | Link không có tên tệp, phải trông vào tiêu đề thư |
+| Chống trùng, lưu lịch sử bản sửa | Không so được bản nào mới bản nào cũ |
+
+Nếu buộc phải gửi link vì tệp quá nặng, xin làm đủ hai việc:
+
+1. **Đặt mã hồ sơ vào tiêu đề thư** — ví dụ `001_003_TAT Báo cáo sơ kết học kỳ I`. Không có mã
+   trong tiêu đề thì thư sẽ nằm chờ phân luồng tay, chậm cho cả hai bên.
+2. **Đặt quyền chia sẻ "Bất kỳ ai có đường liên kết"** và **giữ nguyên tệp**, đừng xoá hay đổi
+   quyền sau khi gửi.
+
 ---
 
 # Phần E
@@ -632,6 +686,8 @@ qua. Sửa tệp rồi gửi lại thì hệ thống lưu thành bản cập nh�
 | `Table '...cau_hinh' doesn't exist` | Chưa chạy trình cài đặt, CSDL còn rỗng | Mở `https://tên-miền/cai-dat.php` chạy hết 4 bước, rồi **xoá tệp `cai-dat.php`** đi |
 | `Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu … cột` | Nâng cấp mã nguồn nhưng chưa nâng cấp CSDL | Mở `https://tên-miền/nang-cap.php`, bấm **Nâng cấp ngay**, rồi **xoá tệp `nang-cap.php`** đi. Dữ liệu cũ giữ nguyên |
 | Trường khẳng định đã gửi mà hệ thống không thấy | Thư rơi vào Thư rác, hoặc mục *Quét cả hộp Thư rác* đang tắt | Bật lại mục đó trong *Phân luồng & đồng bộ*, chạy đồng bộ lại; sau đó tạo bộ lọc Gmail “không bao giờ chuyển vào Thư rác” cho tên miền các trường |
+| Trường khẳng định đã gửi, mở Gmail thấy thư nhưng hệ thống vẫn không có | Thư **không đính kèm tệp**, chỉ dán link Drive — điều kiện `has:attachment` loại thẳng nó ra | Bật mục *Bắt cả thư chỉ dán link chia sẻ* trong *Phân luồng & đồng bộ*, chạy đồng bộ lại. Xem [mục 16.3](#163-bắt-cả-thư-chỉ-dán-link-google-drive) |
+| Công việc hiện **0 tệp** nhưng có huy hiệu *"N link"* | Trường gửi link Drive thay vì đính kèm tệp | Mở trang chi tiết, bấm **Mở link** tải tệp về lưu lại. **Kho không giữ bản tệp** của link |
 | `Access denied for user` | Sai tài khoản MySQL, hoặc chưa mở Remote MySQL | Kiểm tra lại thông tin trong cPanel; hoặc chuyển sang chế độ *Qua API PHP* |
 | Kết nối MySQL bị từ chối từ máy nhà | Hosting chặn MySQL từ xa, hoặc IP nhà đã đổi | Chuyển sang chế độ *Qua API PHP* — cách này không phụ thuộc IP |
 | Dòng "Gia hạn" hiện chữ đỏ | Chỉ có access token, thiếu refresh token | Đăng nhập lại bằng Client ID để lấy refresh token |
@@ -663,6 +719,17 @@ viên làm một lần cho cả cơ quan ở *Admin console → Apps → Gmail �
 
 **Thư đã xoá vào Thùng rác có bị lấy lại không?**
 Không. Thùng rác luôn được bỏ qua — đã chủ động xoá thì hệ thống tôn trọng quyết định đó.
+
+**Trường không đính kèm tệp mà dán link Google Drive thì sao?**
+Hệ thống **vẫn lấy được thư** (khi mục *Bắt cả thư chỉ dán link chia sẻ* đang bật — mặc định
+bật), vẫn phân luồng theo mã trong tiêu đề, và hiện link ra ở trang chi tiết để bấm mở.
+
+Nhưng phải nhớ một điều: **kho chỉ giữ được đường dẫn, KHÔNG giữ được bản tệp.** Hệ thống chỉ
+xin quyền đọc Gmail, không đụng tới Google Drive, nên không tải tệp từ Drive về được. Trường
+đổi quyền chia sẻ hoặc xoá tệp là hồ sơ coi như mất.
+
+Vì vậy gặp thư loại này nên mở link tải tệp về lưu lại ngay, và nhắc trường lần sau đính kèm
+thẳng vào thư. Xem [mục 16.3](#163-bắt-cả-thư-chỉ-dán-link-google-drive).
 
 **Bộ nhận mail phải bật 24/24 không?**
 Không bắt buộc. Tắt máy vài ngày rồi bật lại, hệ thống sẽ lấy bù những mail chưa đọc (trong

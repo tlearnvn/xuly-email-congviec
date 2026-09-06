@@ -61,6 +61,46 @@ class View
         return '<span class="hh hh-' . $lop . ' hh-nhat">' . Util::h(Util::tenNguon($n)) . '</span>';
     }
 
+    /**
+     * Hộp liệt kê link chia sẻ (Google Drive, OneDrive, Dropbox…) dán trong thân thư.
+     * Trả về '' nếu thư không có link nào.
+     *
+     * $khongCoTep = true nghĩa là thư KHÔNG đính kèm tệp nào - kho lưu trữ không
+     * giữ được bản tệp. Phải nói thẳng ra, đừng để người xử lý tưởng đã có rồi
+     * đi tìm mãi không thấy; và để họ biết mà nhắc trường lần sau đính kèm thẳng.
+     */
+    public static function hopLinkChiaSe(?string $raw, bool $khongCoTep = false): string
+    {
+        $ds = Util::dsLinkChiaSe($raw);
+        if (!$ds) return '';
+
+        $h = '<div class="the">'
+           . '<div class="the-dau"><h2>Link chia sẻ trong thư (' . count($ds) . ')</h2></div>';
+        if ($khongCoTep) {
+            $h .= '<div class="nhan nhan-canh" style="margin-bottom:.9rem">'
+                . '<strong>Thư này không đính kèm tệp.</strong> Kho lưu trữ chỉ giữ được đường dẫn '
+                . 'bên dưới, không giữ bản tệp. Nếu người gửi đổi quyền chia sẻ hoặc xoá tệp trên '
+                . 'Drive thì hồ sơ coi như mất — nên tải về rồi gửi lại dạng đính kèm, và nhắc đơn '
+                . 'vị lần sau đính kèm thẳng vào thư.</div>';
+        } else {
+            $h .= '<div class="nhan nhan-tin" style="margin-bottom:.9rem">'
+                . 'Ngoài tệp đính kèm, trong thân thư còn có đường dẫn chia sẻ. '
+                . 'Kho lưu trữ không giữ nội dung của các đường dẫn này.</div>';
+        }
+
+        $h .= '<div class="ds-tep">';
+        foreach ($ds as $u) {
+            $h .= '<div class="tep tep-lienket">'
+                . '<span class="bt bt-lienket">LINK</span>'
+                . '<span class="ten"><strong>' . Util::h(Util::mienCuaLink($u)) . '</strong>'
+                . '<small>' . Util::h(Util::catChu($u, 120)) . '</small></span>'
+                . '<span class="viec"><a class="nut nut-phu nho" target="_blank" '
+                . 'rel="noopener noreferrer nofollow" href="' . Util::h($u) . '">Mở link</a></span>'
+                . '</div>';
+        }
+        return $h . '</div></div>';
+    }
+
     /** Thanh phân trang */
     public static function phanTrang(int $trang, int $tongDong, int $moiTrang): string
     {

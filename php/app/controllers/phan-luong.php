@@ -153,7 +153,7 @@ $idChon = (int)Util::lay('id', 0);
 if ($idChon) {
     $dangChon = Db::mot(
         'SELECT cv.*, e.nguoi_gui, e.ten_nguoi_gui, e.ngay_gui, e.doan_trich, e.noi_dung_text,
-                e.ghi_chu_ai, e.tu_spam
+                e.ghi_chu_ai, e.tu_spam, e.lien_ket_ngoai
          FROM cong_viec cv JOIN email e ON e.id = cv.id_email WHERE cv.id = ?', [$idChon]);
     if ($dangChon) {
         $tepChon = Db::tatCa('SELECT * FROM tep_dinh_kem WHERE id_email = ? ORDER BY thu_tu',

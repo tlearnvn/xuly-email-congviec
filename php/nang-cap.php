@@ -77,6 +77,41 @@ $DANH_SACH = [
             ]);
         },
     ],
+    [
+        'ten'  => 'Cột email.lien_ket_ngoai',
+        'mo_ta' => 'Giữ link Google Drive/OneDrive… khi thư không đính kèm tệp',
+        'ban'  => '1.4.0',
+        'co'   => function (PDO $db) {
+            return (bool)$db->query(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS
+                 WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'email'
+                   AND COLUMN_NAME = 'lien_ket_ngoai'")->fetchColumn();
+        },
+        'lam'  => function (PDO $db) {
+            $db->exec("ALTER TABLE `email`
+                       ADD COLUMN `lien_ket_ngoai` TEXT NULL AFTER `tu_spam`");
+        },
+    ],
+    [
+        'ten'  => 'Thiết lập gmail.nhan_link_drive',
+        'mo_ta' => 'Bắt cả thư chỉ dán link chia sẻ, mặc định bật',
+        'ban'  => '1.4.0',
+        'co'   => function (PDO $db) {
+            $s = $db->prepare("SELECT COUNT(*) FROM cau_hinh WHERE khoa = ?");
+            $s->execute(['gmail.nhan_link_drive']);
+            return (bool)$s->fetchColumn();
+        },
+        'lam'  => function (PDO $db) {
+            $s = $db->prepare(
+                "INSERT INTO cau_hinh (khoa, gia_tri, nhom, kieu, nhan, mo_ta, thu_tu, bi_mat, ngay_cap_nhat)
+                 VALUES (?,?,?,?,?,?,?,0,NOW())");
+            $s->execute([
+                'gmail.nhan_link_drive', '1', 'gmail', 'bool', 'Bắt cả thư chỉ dán link chia sẻ',
+                'Thư không đính kèm tệp mà dán link Google Drive/OneDrive… vẫn được lấy về; '
+                . 'kho chỉ giữ đường dẫn, không giữ tệp', 7,
+            ]);
+        },
+    ],
 ];
 
 // ---------------------------------------------------------------------

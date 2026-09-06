@@ -152,6 +152,8 @@ try {
                 'do_tin_cay'        => (float)($yc['do_tin_cay'] ?? 0),
                 'ghi_chu_ai'        => (string)($yc['ghi_chu_ai'] ?? ''),
                 'tu_spam'           => !empty($yc['tu_spam']) ? 1 : 0,
+                // Link Google Drive/OneDrive… trong thân thư (thư không có tệp đính kèm)
+                'lien_ket_ngoai'    => is_array($yc['lien_ket_ngoai'] ?? null) ? $yc['lien_ket_ngoai'] : [],
             ];
             $tep = is_array($yc['tep'] ?? null) ? $yc['tep'] : [];
             $cv  = is_array($yc['cong_viec'] ?? null) ? $yc['cong_viec'] : [];

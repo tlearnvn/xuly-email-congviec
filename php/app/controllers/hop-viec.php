@@ -68,8 +68,9 @@ $trangSo = max(1, (int)Util::lay('trang', 1));
 $boQua = ($trangSo - 1) * $moiTrang;
 
 $ds = Db::tatCa(
-    "SELECT cv.*, t.ten_truong, vb.ten_van_ban, n.ho_ten
+    "SELECT cv.*, t.ten_truong, vb.ten_van_ban, n.ho_ten, e.lien_ket_ngoai
      FROM cong_viec cv
+     LEFT JOIN email e ON e.id = cv.id_email
      LEFT JOIN truong t ON t.id = cv.id_truong
      LEFT JOIN van_ban vb ON vb.id = cv.id_van_ban
      LEFT JOIN nguoi_xu_ly n ON n.id = cv.id_nguoi_xu_ly

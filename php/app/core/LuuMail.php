@@ -292,6 +292,7 @@ class LuuMail
                 'do_tin_cay'        => (float)($em['do_tin_cay'] ?? 0),
                 'ghi_chu_ai'        => mb_substr((string)($em['ghi_chu_ai'] ?? ''), 0, 4000),
                 'tu_spam'           => !empty($em['tu_spam']) ? 1 : 0,
+                'lien_ket_ngoai'    => mb_substr(self::gomLink($em['lien_ket_ngoai'] ?? null), 0, 8000),
                 'ngay_tao'          => date('Y-m-d H:i:s'),
                 'ngay_cap_nhat'     => date('Y-m-d H:i:s'),
             ]);
@@ -405,6 +406,29 @@ class LuuMail
         $t = $ngayGui ? (is_numeric($ngayGui) ? (int)$ngayGui : strtotime((string)$ngayGui)) : time();
         if (!$t) $t = time();
         return date('Y-m-d', $t + $n * 86400);
+    }
+
+    /**
+     * Gom danh sách link chia sẻ thành chuỗi, mỗi dòng một link.
+     * Chỉ nhận http/https: link sẽ được in ra thành thẻ <a>, nên chặn ngay ở
+     * cửa nhận, không cho javascript:/data: lọt vào cơ sở dữ liệu.
+     *
+     * @param mixed $v mảng link, hoặc chuỗi nhiều dòng
+     */
+    private static function gomLink($v): string
+    {
+        if (is_string($v)) $v = preg_split('/[\r\n]+/', $v) ?: [];
+        if (!is_array($v)) return '';
+        $ra = [];
+        foreach ($v as $u) {
+            $u = trim((string)$u);
+            if ($u === '' || strlen($u) > 900) continue;
+            if (!preg_match('~^https?://~i', $u)) continue;
+            if (preg_match('/[\x00-\x20\x7F]/', $u)) continue;   // khoảng trắng, ký tự điều khiển
+            if (!in_array($u, $ra, true)) $ra[] = $u;
+            if (count($ra) >= 50) break;
+        }
+        return implode("\n", $ra);
     }
 
     private static function nguon(string $n): string

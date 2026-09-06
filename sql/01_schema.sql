@@ -180,6 +180,9 @@ CREATE TABLE IF NOT EXISTS `email` (
   `do_tin_cay`        DECIMAL(5,2)  NOT NULL DEFAULT 0,
   `ghi_chu_ai`        TEXT          NULL,
   `tu_spam`           TINYINT(1)    NOT NULL DEFAULT 0,  -- vớt được từ hộp Thư rác của Gmail
+  -- Link Google Drive/OneDrive/Dropbox… dán trong thân thư, mỗi dòng một link.
+  -- Thư loại này KHÔNG có tệp để lưu, kho chỉ giữ được đường dẫn.
+  `lien_ket_ngoai`    TEXT          NULL,
   `tieu_de_goc_raw`   TEXT          NULL,
   `ngay_tao`          DATETIME      NULL,
   `ngay_cap_nhat`     DATETIME      NULL,
