@@ -59,16 +59,16 @@
           </div>
         <?php endif; ?>
         <div class="ds-tep">
-          <?php foreach ($dsLink as $u): ?>
+          <?php foreach ($dsLink as $lk): ?>
             <div class="tep tep-lienket">
               <span class="bt bt-lienket">LINK</span>
               <span class="ten">
-                <strong><?= Util::h(Util::mienCuaLink($u)) ?></strong>
-                <small><?= Util::h(Util::catChu($u, 90)) ?></small>
+                <strong><?= Util::h(Util::nhanLinkChiaSe($lk)) ?></strong>
+                <small><?= Util::h(Util::catChu($lk['url'], 90)) ?></small>
               </span>
               <span class="viec">
                 <a class="nut nut-phu nho" target="_blank" rel="noopener noreferrer nofollow"
-                   href="<?= Util::h($u) ?>">Mở</a>
+                   href="<?= Util::h($lk['url']) ?>">Mở</a>
               </span>
             </div>
           <?php endforeach; ?>

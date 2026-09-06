@@ -409,23 +409,40 @@ class LuuMail
     }
 
     /**
-     * Gom danh sách link chia sẻ thành chuỗi, mỗi dòng một link.
+     * Gom danh sách link chia sẻ thành chuỗi cho cột email.lien_ket_ngoai:
+     * mỗi dòng một link, có tên tệp thì thêm sau dấu TAB.
+     *
+     * Nhận cả ba dạng để bộ nhận mail bản cũ vẫn đẩy dữ liệu lên được:
+     * mảng chuỗi URL, mảng đối tượng {url, ten}, hoặc chuỗi nhiều dòng.
+     *
      * Chỉ nhận http/https: link sẽ được in ra thành thẻ <a>, nên chặn ngay ở
      * cửa nhận, không cho javascript:/data: lọt vào cơ sở dữ liệu.
      *
-     * @param mixed $v mảng link, hoặc chuỗi nhiều dòng
+     * @param mixed $v
      */
     private static function gomLink($v): string
     {
         if (is_string($v)) $v = preg_split('/[\r\n]+/', $v) ?: [];
         if (!is_array($v)) return '';
         $ra = [];
-        foreach ($v as $u) {
-            $u = trim((string)$u);
+        $daCo = [];
+        foreach ($v as $muc) {
+            if (is_array($muc)) {
+                $u   = trim((string)($muc['url'] ?? ''));
+                $ten = trim((string)($muc['ten'] ?? ''));
+            } else {
+                $p   = explode("\t", (string)$muc, 2);
+                $u   = trim($p[0]);
+                $ten = trim($p[1] ?? '');
+            }
             if ($u === '' || strlen($u) > 900) continue;
             if (!preg_match('~^https?://~i', $u)) continue;
             if (preg_match('/[\x00-\x20\x7F]/', $u)) continue;   // khoảng trắng, ký tự điều khiển
-            if (!in_array($u, $ra, true)) $ra[] = $u;
+            if (isset($daCo[$u])) continue;
+            $daCo[$u] = true;
+            // Tên tệp do người gửi đặt: bỏ ký tự điều khiển, giữ lại tối đa 300 ký tự
+            $ten = mb_substr(preg_replace('/[\x00-\x1F\x7F]+/', ' ', $ten) ?? '', 0, 300);
+            $ra[] = trim($ten) === '' ? $u : ($u . "\t" . trim($ten));
             if (count($ra) >= 50) break;
         }
         return implode("\n", $ra);

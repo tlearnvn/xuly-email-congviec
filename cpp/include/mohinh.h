@@ -111,6 +111,9 @@ struct BanGhiEmail {
     std::vector<TepDinhKem> tep;
     std::vector<std::string> nhan_gmail;         // labelIds: INBOX, SPAM, TRASH…
     std::vector<std::string> lien_ket_ngoai;     // link Drive/OneDrive… trong thân thư
+    // Tên tệp Gmail hiện trong "Drive chip" (khi tệp > 25 MB nó tự đưa lên Drive).
+    // Cùng chỉ số với lien_ket_ngoai; rỗng nếu link chỉ được dán tay.
+    std::vector<std::string> ten_tep_ngoai;
 
     bool coNhan(const char* n) const {
         for (const auto& x : nhan_gmail) if (x == n) return true;

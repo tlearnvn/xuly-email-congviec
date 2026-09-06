@@ -85,6 +85,22 @@ static std::string sqlNgay(int64_t epoch) {
     return s.empty() ? "NULL" : ("'" + s + "'");
 }
 
+// Gói danh sách link chia sẻ vào một chuỗi cho cột email.lien_ket_ngoai:
+// mỗi dòng một link, có tên tệp thì thêm sau dấu TAB. Dùng TAB được vì link đã
+// bị loại hết ký tự <= 0x20 lúc dò, nên không bao giờ tự chứa TAB.
+// Nhét chung vào cột cũ thay vì thêm cột mới: nơi đã cài bản 1.4.x không phải
+// nâng cấp cơ sở dữ liệu thêm một lần nữa.
+static std::string gomLienKet(const BanGhiEmail& em) {
+    std::string ra;
+    for (size_t i = 0; i < em.lien_ket_ngoai.size(); i++) {
+        if (!ra.empty()) ra += "\n";
+        ra += em.lien_ket_ngoai[i];
+        if (i < em.ten_tep_ngoai.size() && !em.ten_tep_ngoai[i].empty())
+            ra += "\t" + replaceAll(replaceAll(em.ten_tep_ngoai[i], "\n", " "), "\t", " ");
+    }
+    return ra;
+}
+
 KhoMySql::KhoMySql(const CauHinh& ch) {
     ts_.may_chu       = ch.chuoi("mysql.may_chu", "127.0.0.1");
     ts_.cong          = (int)ch.nguyen("mysql.cong", 3306);
@@ -498,7 +514,7 @@ bool KhoMySql::luuEmail(const BanGhiEmail& em, const std::vector<NhomCongViec>& 
         std::to_string(em.do_tin_cay) + "," +
         MySql::nhay(catUtf8(em.ghi_chu_ai, 4000)) + "," +
         (em.tuSpam() ? "1" : "0") + "," +
-        MySql::nhay(catUtf8(join(em.lien_ket_ngoai, "\n"), 8000)) + ",NOW(),NOW())";
+        MySql::nhay(catUtf8(gomLienKet(em), 8000)) + ",NOW(),NOW())";
     if (!db_.thucThi(sql, l2)) return huyBo("Lỗi ghi email: " + l2);
     kq.id_email = db_.idChenCuoi();
 
@@ -843,7 +859,12 @@ bool KhoApi::luuEmail(const BanGhiEmail& em, const std::vector<NhomCongViec>& nh
     j.dat("tu_spam", em.tuSpam() ? 1LL : 0LL);
 
     Json lk = Json::mang();
-    for (const auto& u : em.lien_ket_ngoai) lk.them(Json(u));
+    for (size_t i = 0; i < em.lien_ket_ngoai.size(); i++) {
+        Json x = Json::doiTuong();
+        x.dat("url", em.lien_ket_ngoai[i]);
+        x.dat("ten", i < em.ten_tep_ngoai.size() ? em.ten_tep_ngoai[i] : std::string());
+        lk.them(x);
+    }
     j.dat("lien_ket_ngoai", lk);
 
     Json ts = Json::mang();

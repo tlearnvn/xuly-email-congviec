@@ -241,7 +241,13 @@ std::string Gmail::moRongTruyVanLink(const std::string& truyVan) {
     }
     if (tim == std::string::npos) return truyVan;
 
-    std::string ve = "(has:attachment";
+    // has:drive / has:document / has:spreadsheet / has:presentation là các toán
+    // tử RIÊNG của Gmail. Tệp vượt 25 MB được Gmail tự đưa lên Drive rồi chèn
+    // một khối hiển thị thay cho tệp - thư đó has:attachment là SAI, mà đường
+    // dẫn lại nằm trong thuộc tính href nên tìm theo tên miền cũng không chắc ra.
+    // Thiếu mấy toán tử này là bỏ sót đúng những báo cáo nặng nhất.
+    std::string ve = "(has:attachment OR has:drive OR has:document"
+                     " OR has:spreadsheet OR has:presentation";
     for (int i = 0; MIEN_TIM_KIEM[i]; i++) ve += std::string(" OR \"") + MIEN_TIM_KIEM[i] + "\"";
     ve += ")";
     return truyVan.substr(0, tim) + ve + truyVan.substr(tim + moc.size());
@@ -573,9 +579,15 @@ void Gmail::phanTichMail(const Json& j, BanGhiEmail& em) {
         em.doan_trich = catUtf8(trim(em.noi_dung_text), 480);
 
     // Nhiều trường không đính kèm tệp mà dán link Google Drive/OneDrive vào
-    // thân thư. Quét lấy các link đó để người xử lý còn biết mà mở, đồng thời
-    // biết rằng bản thân tệp KHÔNG nằm trong kho.
-    em.lien_ket_ngoai = timLienKetChiaSe(em.noi_dung_text, em.noi_dung_html);
+    // thân thư; Gmail cũng tự làm vậy khi tệp vượt 25 MB. Quét lấy các link đó
+    // để người xử lý còn biết mà mở, đồng thời biết rằng bản thân tệp KHÔNG nằm
+    // trong kho. Tên tệp trong "Drive chip" giữ lại để còn đọc ra mã hồ sơ.
+    em.lien_ket_ngoai.clear();
+    em.ten_tep_ngoai.clear();
+    for (const auto& t : timTepChiaSe(em.noi_dung_text, em.noi_dung_html)) {
+        em.lien_ket_ngoai.push_back(t.url);
+        em.ten_tep_ngoai.push_back(t.ten);
+    }
 
     for (size_t i = 0; i < em.tep.size(); i++) em.tep[i].thu_tu = (int)i;
 }

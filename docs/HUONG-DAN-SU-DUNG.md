@@ -563,6 +563,36 @@ thêm thẻ **"Link chia sẻ trong thư"** kèm cảnh báo màu vàng, danh s�
 > 2. Lưu tệp vào chỗ lưu trữ của Phòng;
 > 3. **Nhắc trường** lần sau đính kèm thẳng tệp vào thư, đừng gửi link.
 
+### 16.4. Tệp nặng quá 25 MB — Gmail tự chuyển thành link Drive
+
+Trường hợp này **hay gặp nhất**, mà lỗi lại không phải của trường: họ đính kèm tệp đàng
+hoàng, đặt tên đúng quy ước, nhưng tệp nặng quá 25 MB nên **Gmail tự** đưa lên Google Drive
+rồi thay tệp bằng một ô link trong thư.
+
+Hệ thống xử lý được, và xử lý **tốt hơn** trường hợp dán link tay:
+
+| | Trường dán link tay | Gmail tự chuyển tệp lớn |
+|---|---|---|
+| Có lấy được thư về không? | Có | Có |
+| Có đọc được mã hồ sơ không? | Chỉ từ **tiêu đề thư** | Từ **tên tệp** — chính xác hơn |
+| Nếu tiêu đề không có mã? | Chờ phân luồng tay | Vẫn về đúng người |
+
+Lý do: Gmail giữ nguyên **tên tệp gốc** trong ô link. Trường đặt tên `001_003_TAT.pdf` thì
+tên đó vẫn nằm trong thư, và hệ thống đọc mã từ đó y như tệp đính kèm thường. Trang chi tiết
+hiện luôn tên tệp thay vì đường dẫn dài:
+
+![Thẻ Link chia sẻ hiện tên tệp gốc](hinh/web-17-link-ten-tep.png)
+
+Thư kèm **hai** tệp Drive của hai trường khác nhau cũng tách ra thành **hai công việc** cho
+đúng hai người, không gom một cục.
+
+> **Vẫn phải nhớ:** kho **không giữ được bản tệp**, dù mã hồ sơ đã đọc đúng. Cán bộ xử lý
+> vẫn nên mở link tải về lưu lại — Drive của trường xoá tệp là hồ sơ mất.
+>
+> **Cách tránh hẳn:** bảo trường nén tệp lại dưới 25 MB, hoặc tách thành nhiều tệp nhỏ rồi
+> đính kèm thẳng. Ảnh scan là thủ phạm nặng nhất — scan ở 150 dpi đen trắng thay vì 600 dpi
+> màu thường giảm được vài chục lần dung lượng.
+
 ### Chạy nền như một dịch vụ
 
 **Trên Linux** — dùng tệp `mailrouter.service` có sẵn trong gói:
@@ -675,6 +705,21 @@ Nếu buộc phải gửi link vì tệp quá nặng, xin làm đủ hai việc:
 2. **Đặt quyền chia sẻ "Bất kỳ ai có đường liên kết"** và **giữ nguyên tệp**, đừng xoá hay đổi
    quyền sau khi gửi.
 
+### Tệp nặng quá 25 MB, Gmail báo "tệp quá lớn" thì làm sao?
+
+**Cứ đính kèm bình thường.** Gmail sẽ tự đưa tệp lên Google Drive rồi thay bằng một ô link —
+và vì nó **giữ nguyên tên tệp bạn đặt**, hệ thống vẫn đọc được mã hồ sơ và giao đúng người.
+Nên **đặt tên tệp đúng quy ước** vẫn là việc quan trọng nhất, kể cả với tệp nặng.
+
+Nhưng tốt hơn cả là làm tệp nhẹ đi để đính kèm thẳng, vì bản tệp mới được lưu vào kho của
+Phòng:
+
+- **Ảnh scan là thủ phạm nặng nhất.** Scan ở **150 dpi, chế độ đen trắng / xám** thay vì
+  600 dpi màu thường giảm được vài chục lần dung lượng mà chữ vẫn rõ.
+- **Nén PDF**: trong Word chọn *Lưu dưới dạng → PDF → Tối ưu cho: Kích thước tối thiểu*.
+- **Tách nhỏ**: báo cáo 3 phần thì gửi 3 tệp `001_003_TAT_p1.pdf`, `..._p2.pdf`, `..._p3.pdf`
+  trong cùng một thư — hệ thống gom chung thành một hồ sơ.
+
 ---
 
 # Phần E
@@ -687,7 +732,7 @@ Nếu buộc phải gửi link vì tệp quá nặng, xin làm đủ hai việc:
 | `Cơ sở dữ liệu được tạo từ phiên bản cũ, còn thiếu … cột` | Nâng cấp mã nguồn nhưng chưa nâng cấp CSDL | Mở `https://tên-miền/nang-cap.php`, bấm **Nâng cấp ngay**, rồi **xoá tệp `nang-cap.php`** đi. Dữ liệu cũ giữ nguyên |
 | Trường khẳng định đã gửi mà hệ thống không thấy | Thư rơi vào Thư rác, hoặc mục *Quét cả hộp Thư rác* đang tắt | Bật lại mục đó trong *Phân luồng & đồng bộ*, chạy đồng bộ lại; sau đó tạo bộ lọc Gmail “không bao giờ chuyển vào Thư rác” cho tên miền các trường |
 | Trường khẳng định đã gửi, mở Gmail thấy thư nhưng hệ thống vẫn không có | Thư **không đính kèm tệp**, chỉ dán link Drive — điều kiện `has:attachment` loại thẳng nó ra | Bật mục *Bắt cả thư chỉ dán link chia sẻ* trong *Phân luồng & đồng bộ*, chạy đồng bộ lại. Xem [mục 16.3](#163-bắt-cả-thư-chỉ-dán-link-google-drive) |
-| Công việc hiện **0 tệp** nhưng có huy hiệu *"N link"* | Trường gửi link Drive thay vì đính kèm tệp | Mở trang chi tiết, bấm **Mở link** tải tệp về lưu lại. **Kho không giữ bản tệp** của link |
+| Công việc hiện **0 tệp** nhưng có huy hiệu *"N link"* | Trường gửi link Drive thay vì đính kèm tệp, hoặc tệp nặng quá 25 MB nên Gmail tự chuyển | Mở trang chi tiết, bấm **Mở link** tải tệp về lưu lại. **Kho không giữ bản tệp** của link |
 | `Access denied for user` | Sai tài khoản MySQL, hoặc chưa mở Remote MySQL | Kiểm tra lại thông tin trong cPanel; hoặc chuyển sang chế độ *Qua API PHP* |
 | Kết nối MySQL bị từ chối từ máy nhà | Hosting chặn MySQL từ xa, hoặc IP nhà đã đổi | Chuyển sang chế độ *Qua API PHP* — cách này không phụ thuộc IP |
 | Dòng "Gia hạn" hiện chữ đỏ | Chỉ có access token, thiếu refresh token | Đăng nhập lại bằng Client ID để lấy refresh token |
@@ -730,6 +775,14 @@ xin quyền đọc Gmail, không đụng tới Google Drive, nên không tải t
 
 Vì vậy gặp thư loại này nên mở link tải tệp về lưu lại ngay, và nhắc trường lần sau đính kèm
 thẳng vào thư. Xem [mục 16.3](#163-bắt-cả-thư-chỉ-dán-link-google-drive).
+
+**Tệp nặng quá 25 MB, Gmail tự chuyển thành link Drive thì sao?**
+Hệ thống xử lý được, và tốt hơn trường hợp trên: Gmail **giữ nguyên tên tệp** trong ô link,
+nên mã hồ sơ vẫn đọc ra được từ tên tệp — kể cả khi tiêu đề thư không có mã. Thư kèm hai tệp
+Drive của hai trường khác nhau cũng tách thành hai công việc cho đúng hai người.
+
+Bản tệp thì vẫn không nằm trong kho, nên vẫn phải tải về lưu lại. Xem
+[mục 16.4](#164-tệp-nặng-quá-25-mb--gmail-tự-chuyển-thành-link-drive).
 
 **Bộ nhận mail phải bật 24/24 không?**
 Không bắt buộc. Tắt máy vài ngày rồi bật lại, hệ thống sẽ lấy bù những mail chưa đọc (trong

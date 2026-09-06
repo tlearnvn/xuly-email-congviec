@@ -89,10 +89,11 @@ class View
         }
 
         $h .= '<div class="ds-tep">';
-        foreach ($ds as $u) {
+        foreach ($ds as $lk) {
+            $u = $lk['url'];
             $h .= '<div class="tep tep-lienket">'
                 . '<span class="bt bt-lienket">LINK</span>'
-                . '<span class="ten"><strong>' . Util::h(Util::mienCuaLink($u)) . '</strong>'
+                . '<span class="ten"><strong>' . Util::h(Util::nhanLinkChiaSe($lk)) . '</strong>'
                 . '<small>' . Util::h(Util::catChu($u, 120)) . '</small></span>'
                 . '<span class="viec"><a class="nut nut-phu nho" target="_blank" '
                 . 'rel="noopener noreferrer nofollow" href="' . Util::h($u) . '">Mở link</a></span>'

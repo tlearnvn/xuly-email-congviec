@@ -279,8 +279,10 @@
           <span>Bắt cả thư chỉ dán link chia sẻ (Google Drive, OneDrive…)</span>
         </label>
         <p class="phu">Điều kiện <code>has:attachment</code> loại thẳng thư không đính kèm tệp,
-           nên trường nào dán link Drive là hệ thống không hề nhìn thấy. Bật mục này thì điều kiện
-           tự nới thành <code>(has:attachment OR "drive.google.com" OR …)</code>.
+           nên trường nào dán link Drive là hệ thống không hề nhìn thấy. <b>Tệp vượt 25 MB cũng vậy:</b>
+           Gmail tự đưa lên Drive rồi chèn link thay cho tệp. Bật mục này thì điều kiện tự nới thành
+           <code>(has:attachment OR has:drive OR has:document OR … OR "drive.google.com" OR …)</code>,
+           và tên tệp Gmail để lại trong thân thư vẫn được đọc để tách mã hồ sơ.
            <b>Lưu ý:</b> kho chỉ giữ được đường dẫn, KHÔNG giữ bản tệp — chương trình chỉ xin
            quyền đọc Gmail, không đụng tới Google Drive.</p>
         <div class="hang-nut">

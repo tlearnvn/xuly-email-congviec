@@ -230,10 +230,16 @@ cụm `has:attachment` trong truy vấn được thay bằng một cụm OR:
 
 ```
 trước:  has:attachment newer_than:30d
-sau:    (has:attachment OR "drive.google.com" OR "docs.google.com" OR "1drv.ms"
+sau:    (has:attachment OR has:drive OR has:document OR has:spreadsheet
+         OR has:presentation
+         OR "drive.google.com" OR "docs.google.com" OR "1drv.ms"
          OR "onedrive.live.com" OR "sharepoint.com" OR "dropbox.com" OR "mega.nz"
          OR "wetransfer.com") newer_than:30d
 ```
+
+Bốn toán tử `has:drive`, `has:document`, `has:spreadsheet`, `has:presentation` là các
+toán tử **riêng** của Gmail cho tệp đính kèm dạng Google Drive. Thiếu chúng là bỏ sót đúng
+những báo cáo nặng nhất — xem [mục 3.3](#33-tệp-vượt-25-mb-gmail-tự-đưa-lên-drive).
 
 Nới ngay ở truy vấn thay vì quét thêm một lượt riêng, nên cả hộp thư chính lẫn hộp Thư rác
 đều được lợi mà **không đội thêm** hạn mức *Số mail mỗi lần quét*. Truy vấn không có
@@ -278,6 +284,76 @@ biệt nằm ở chỗ nói cho người xử lý biết:
 > Hệ quả thực tế: **người gửi đổi quyền chia sẻ hoặc xoá tệp trên Drive là hồ sơ coi như
 > mất.** Cán bộ xử lý nên mở link tải về rồi lưu lại, và nhắc trường lần sau đính kèm thẳng
 > vào thư.
+
+### 3.3. Tệp vượt 25 MB: Gmail tự đưa lên Drive
+
+Đây là biến thể **hay gặp nhất** của mục 3.2, mà lại không phải lỗi của trường: trường đính
+kèm tệp đàng hoàng, đặt tên đúng quy ước, nhưng tệp nặng quá 25 MB nên **Gmail tự** tải nó
+lên Google Drive rồi chèn vào thư một khối hiển thị thay cho tệp:
+
+```html
+<div class="gmail_chip gmail_drive_chip">
+  <a href="https://drive.google.com/file/d/1AbCd…/view?usp=drive_web">
+    <img src="…icon_11_pdf_list.png">&nbsp;<span dir="ltr">001_003_TAT.pdf</span>
+  </a>
+</div>
+```
+
+Ba điều rút ra từ khối HTML đó, và hệ thống dùng cả ba:
+
+**a) `has:attachment` là SAI với thư này.** Không có phần MIME đính kèm nào cả. Gmail có
+toán tử riêng cho trường hợp này — `has:drive` (tệp tải lên Drive), `has:document`,
+`has:spreadsheet`, `has:presentation` (Google Docs/Sheets/Slides). Cả bốn đã nằm trong cụm
+OR ở mục 3.2. Chỉ trông vào `"drive.google.com"` là không đủ: đường dẫn nằm trong thuộc
+tính `href`, phần chữ hiển thị chỉ là tên tệp, nên tìm theo tên miền chưa chắc ra.
+
+**b) Đường dẫn nằm trong `href`** — bộ dò link ở mục 3.2 bắt được, vì nó quét cả bản HTML.
+
+**c) Tên tệp gốc còn nguyên trong `<span>`** — và đây là phần đáng giá nhất. Hàm
+`tenTepTrongThe()` lấy chữ hiển thị bên trong thẻ `<a>` bao quanh đường dẫn, bỏ thẻ con,
+giải `&nbsp;`, gom khoảng trắng. Chuỗi thu được đi thẳng vào bước tách mã như **một tên tệp
+bình thường**:
+
+| Nếu chỉ có mục 3.2 | Có thêm mục 3.3 |
+|---|---|
+| `?_?_?` → chờ phân luồng tay | `001_003_TAT` → giao đúng người ngay |
+
+Nếu chữ hiển thị chính là đường dẫn — kiểu `<a href="URL">URL</a>` người ta dán tay — thì
+bỏ, vì đó không phải tên tệp.
+
+Thứ tự ưu tiên khi tách mã giữ đúng như với tệp thật: **tên tệp trước, tiêu đề sau**. Thư
+đã đọc được mã từ tên tệp trên Drive thì không đẻ thêm công việc mồ côi mang mã của tiêu đề.
+
+Mười tổ hợp đã chạy thật:
+
+| Thư gồm | Kết quả |
+|---|---|
+| 1 tệp Drive tên có mã, tiêu đề không mã | 1 công việc đúng mã của tên tệp |
+| 1 tệp Drive tên không mã, tiêu đề có mã | 1 công việc theo mã tiêu đề |
+| 1 tệp Drive tên không mã, tiêu đề không mã | chờ phân luồng tay |
+| 2 tệp Drive, 2 mã khác nhau | **2 công việc**, 2 người xử lý |
+| 1 tài liệu Google Docs, tên có mã | 1 công việc đúng mã (tên không cần đuôi tệp) |
+| 1 tệp thật có mã + 1 tệp Drive mã khác | 2 công việc |
+| 1 tệp thật có mã + 1 tệp Drive không mã | 1 công việc |
+| Link dán tay (chữ hiện là URL), tiêu đề có mã | 1 công việc theo tiêu đề, **không** nhầm URL là tên tệp |
+| 1 tệp Drive có mã + 1 link dán tay | 1 công việc |
+| Tệp Drive mang mã trường lạ ngoài danh mục | vẫn tạo công việc, mã trường giữ nguyên |
+
+**Lưu trong cơ sở dữ liệu.** Tên tệp ghi chung vào cột `email.lien_ket_ngoai` sẵn có — mỗi
+dòng là `đường-dẫn`, có tên thì thêm sau một ký tự TAB:
+
+```
+https://drive.google.com/file/d/1AbCd…/view?usp=drive_web→001_003_TAT.pdf
+https://1drv.ms/x/s!XyZ
+```
+
+Dùng TAB được vì đường dẫn đã bị loại hết ký tự ≤ 0x20 lúc dò, nên không bao giờ tự chứa
+TAB. Nhét chung vào cột cũ thay vì thêm cột mới là có chủ ý: nơi đã cài bản 1.4.x **không
+phải nâng cấp cơ sở dữ liệu thêm một lần nữa**, và dòng cũ chỉ có đường dẫn vẫn đọc được
+bình thường.
+
+> Tệp vẫn **không** nằm trong kho — mọi cảnh báo ở mục 3.2 giữ nguyên. Khác biệt duy nhất là
+> hồ sơ về đúng người ngay, thay vì nằm chờ quản trị phân luồng tay.
 
 ---
 
@@ -402,7 +478,7 @@ Một số cột đáng chú ý trong bảng `email`:
 | `phien_ban`, `id_email_goc` | `INT`, `BIGINT` | Chuỗi phiên bản khi trường sửa tệp rồi gửi lại |
 | `nguon_phan_luong`, `do_tin_cay` | `ENUM`, `DECIMAL` | Mã này đọc từ đâu ra và tin được bao nhiêu |
 | **`tu_spam`** | `TINYINT(1)` | Bằng 1 nếu thư vớt được từ hộp Thư rác, xem [mục 3.1](#31-thư-bị-google-xếp-vào-hộp-thư-rác). Có chỉ mục `idx_email_spam` để lọc nhanh |
-| **`lien_ket_ngoai`** | `TEXT` | Link Google Drive/OneDrive… dán trong thân thư, mỗi dòng một link, xem [mục 3.2](#32-thư-không-đính-kèm-tệp-chỉ-dán-link-google-drive). Chỉ là đường dẫn — **bản tệp không nằm trong kho** |
+| **`lien_ket_ngoai`** | `TEXT` | Link Google Drive/OneDrive… trong thân thư; mỗi dòng một link, có tên tệp thì thêm sau dấu TAB — xem [mục 3.2](#32-thư-không-đính-kèm-tệp-chỉ-dán-link-google-drive) và [3.3](#33-tệp-vượt-25-mb-gmail-tự-đưa-lên-drive). Chỉ là đường dẫn — **bản tệp không nằm trong kho** |
 
 ### 6.1. Vì sao lưu tệp trong CSDL thay vì trong thư mục?
 

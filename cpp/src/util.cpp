@@ -669,8 +669,57 @@ static std::string boThucTheHtml(std::string s) {
     return s;
 }
 
-static void quetMotBan(const std::string& nguon, std::vector<std::string>& ra,
-                       std::set<std::string>& daCo) {
+// Chuỗi hiển thị bên trong một thẻ: bỏ thẻ con, giải thực thể, gom khoảng trắng
+static std::string chuHienThi(const std::string& html) {
+    std::string s;
+    bool trongThe = false;
+    for (char c : html) {
+        if (c == '<') { trongThe = true; continue; }
+        if (c == '>') { trongThe = false; s += ' '; continue; }
+        if (!trongThe) s += c;
+    }
+    s = replaceAll(s, "&nbsp;", " ");
+    s = replaceAll(s, "&#160;", " ");
+    s = boThucTheHtml(s);
+    std::string gon;                       // gom khoảng trắng liên tiếp thành một
+    bool sp = false;
+    for (char c : s) {
+        if ((unsigned char)c <= ' ') { sp = true; continue; }
+        if (sp && !gon.empty()) gon += ' ';
+        sp = false;
+        gon += c;
+    }
+    return gon;
+}
+
+// Lấy tên tệp mà Gmail hiển thị trong "Drive chip" - khối HTML nó tự chèn khi
+// tệp đính kèm vượt 25 MB:
+//   <a href="https://drive.google.com/file/d/…"><img …>&nbsp;<span>Tên tệp.pdf</span></a>
+// Tên tệp này quý: trường đặt tên đúng quy ước thì vẫn đọc ra được mã hồ sơ,
+// dù bản thân tệp không nằm trong thư nữa.
+// viTri = chỗ URL bắt đầu trong chuỗi html; trả về "" nếu không phải dạng chip.
+static std::string tenTepTrongThe(const std::string& html, size_t viTri, size_t hetUrl) {
+    // URL phải nằm trong href="…" của một thẻ <a …>
+    size_t q = html.rfind("href", viTri);
+    if (q == std::string::npos || viTri - q > 12) return "";
+    size_t moThe = html.rfind('<', q);
+    if (moThe == std::string::npos || moThe + 2 >= html.size()) return "";
+    if (toLower(html.substr(moThe, 3)) != "<a ") return "";
+
+    size_t dongThe = html.find('>', hetUrl);           // hết thẻ mở <a …>
+    if (dongThe == std::string::npos) return "";
+    size_t het = html.find("</a", dongThe);
+    if (het == std::string::npos || het - dongThe > 4000) return "";
+
+    std::string ten = chuHienThi(html.substr(dongThe + 1, het - dongThe - 1));
+    // Rất nhiều thư viết link kiểu <a href="URL">URL</a>: đó không phải tên tệp
+    if (ten.empty() || ten.size() > 300) return "";
+    if (startsWith(toLower(ten), "http")) return "";
+    return ten;
+}
+
+static void quetMotBan(const std::string& nguon, std::vector<TepChiaSe>& ra,
+                       std::set<std::string>& daCo, bool laHtml) {
     // Quét một lượt từ trái sang phải, xét cả hai giao thức tại mỗi vị trí, để
     // thứ tự thu được đúng bằng thứ tự link xuất hiện trong thư.
     for (size_t i = 0; i < nguon.size(); i++) {
@@ -696,7 +745,12 @@ static void quetMotBan(const std::string& nguon, std::vector<std::string>& ra,
             else break;
         }
         if (url.size() > 12 && laMienChiaSe(hostCuaUrl(url))) {
-            if (daCo.insert(toLower(url)).second) ra.push_back(url);
+            if (daCo.insert(toLower(url)).second) {
+                TepChiaSe t;
+                t.url = url;
+                if (laHtml) t.ten = tenTepTrongThe(nguon, i, j);
+                ra.push_back(t);
+            }
             i = j - 1;                 // link đã nhận thì nhảy qua, khỏi xét lại bên trong
         }
         // Link không phải miền chia sẻ thì vẫn xét tiếp từ ký tự sau, phòng
@@ -704,12 +758,20 @@ static void quetMotBan(const std::string& nguon, std::vector<std::string>& ra,
     }
 }
 
+std::vector<TepChiaSe> timTepChiaSe(const std::string& text, const std::string& html) {
+    std::vector<TepChiaSe> ra;
+    std::set<std::string> daCo;
+    // Quét bản HTML trước: chỉ ở đó mới có tên tệp trong "Drive chip" của Gmail.
+    // Cùng một link xuất hiện ở cả hai bản thì bản có tên tệp được giữ lại.
+    quetMotBan(html, ra, daCo, true);
+    quetMotBan(text, ra, daCo, false);
+    if (ra.size() > 50) ra.resize(50);     // chặn thư rác nhồi hàng nghìn link
+    return ra;
+}
+
 std::vector<std::string> timLienKetChiaSe(const std::string& text, const std::string& html) {
     std::vector<std::string> ra;
-    std::set<std::string> daCo;
-    quetMotBan(text, ra, daCo);
-    quetMotBan(html, ra, daCo);
-    if (ra.size() > 50) ra.resize(50);     // chặn thư rác nhồi hàng nghìn link
+    for (const auto& t : timTepChiaSe(text, html)) ra.push_back(t.url);
     return ra;
 }
 

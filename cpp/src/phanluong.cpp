@@ -258,6 +258,19 @@ void BoPhanLuong::phanLuong(BanGhiEmail& em, std::vector<NhomCongViec>& nhom) {
         }
     }
 
+    // 1b) Tệp gửi qua Google Drive vẫn còn tên trong thân thư.
+    // Gmail tự đưa tệp lên Drive khi vượt 25 MB, và để lại một khối hiển thị
+    // mang đúng tên tệp gốc. Trường đặt tên đúng quy ước thì mã hồ sơ vẫn đọc
+    // ra được từ đó, y như tên tệp đính kèm thường - đừng bắt quản trị phân
+    // luồng tay chỉ vì tệp nặng quá 25 MB.
+    std::vector<MaTimDuoc> maNgoai(em.ten_tep_ngoai.size());
+    std::vector<bool>      ngoaiCoMa(em.ten_tep_ngoai.size(), false);
+    for (size_t i = 0; i < em.ten_tep_ngoai.size(); i++) {
+        if (em.ten_tep_ngoai[i].empty()) continue;
+        MaTimDuoc kq;
+        if (tachMa(em.ten_tep_ngoai[i], kq, true)) { maNgoai[i] = kq; ngoaiCoMa[i] = true; }
+    }
+
     // 2) Đọc mã trên tiêu đề
     MaTimDuoc tuTieuDe;
     bool coTieuDe = tachMa(em.tieu_de, tuTieuDe, false);
@@ -289,8 +302,23 @@ void BoPhanLuong::phanLuong(BanGhiEmail& em, std::vector<NhomCongViec>& nhom) {
         }
     }
 
-    // 4) Các tệp không đọc được mã -> theo mã chung của email
-    if (!tepKhongMa.empty() || em.tep.empty()) {
+    // 3b) Nhóm cho các tệp nằm trên Drive mà tên đọc ra được mã
+    int soNgoaiCoMa = 0;
+    for (size_t i = 0; i < ngoaiCoMa.size(); i++) {
+        if (!ngoaiCoMa[i]) continue;
+        NhomCongViec& n = timNhom(maNgoai[i].ma);
+        if (n.nguon == "khong_xac_dinh") n.nguon = "ten_tep";
+        n.do_tin_cay = std::max(n.do_tin_cay, maNgoai[i].diem);
+        n.ghi_chu += (n.ghi_chu.empty() ? "" : " | ");
+        n.ghi_chu += "Tệp \"" + catUtf8(em.ten_tep_ngoai[i], 200) +
+                     "\" nằm trên Google Drive, không có bản trong kho";
+        soNgoaiCoMa++;
+    }
+
+    // 4) Các tệp không đọc được mã -> theo mã chung của email.
+    // Thư không có tệp nào mà đã đọc được mã từ tên tệp trên Drive thì thôi,
+    // đừng đẻ thêm một công việc mồ côi mang mã của tiêu đề.
+    if (!tepKhongMa.empty() || (em.tep.empty() && soNgoaiCoMa == 0)) {
         // Trường hợp hay gặp: trường gửi một tệp đặt tên đúng quy ước, kèm thêm
         // công văn hoặc phụ lục đặt tên tự do. Nếu cả thư chỉ có ĐÚNG MỘT nhóm
         // mã đầy đủ và tiêu đề không chỉ sang mã khác, thì các tệp không mã gần

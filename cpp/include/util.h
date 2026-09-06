@@ -73,9 +73,18 @@ std::string thuMucChuongTrinh();                     // thư mục chứa file t
 std::string tenMayChu();
 std::string phanMoRong(const std::string& tenTep);   // trả về "pdf" (chữ thường)
 
+// Một tệp được chia sẻ bằng đường dẫn thay vì đính kèm thẳng vào thư
+struct TepChiaSe {
+    std::string url;
+    std::string ten;      // tên tệp Gmail hiện trong "Drive chip"; rỗng nếu chỉ là link dán tay
+};
+
 // Tìm các liên kết chia sẻ tệp (Google Drive/Docs, OneDrive, Dropbox…) nằm trong
-// thân thư. Dùng khi trường không đính kèm tệp mà chỉ dán đường dẫn.
+// thân thư. Dùng khi trường không đính kèm tệp mà chỉ dán đường dẫn, hoặc khi
+// tệp vượt 25 MB nên Gmail tự tải lên Drive rồi chèn "Drive chip" thay cho tệp.
 // Quét cả bản text lẫn bản HTML, bỏ trùng, giữ nguyên thứ tự xuất hiện.
+std::vector<TepChiaSe> timTepChiaSe(const std::string& text, const std::string& html);
+// Bản rút gọn chỉ lấy đường dẫn
 std::vector<std::string> timLienKetChiaSe(const std::string& text, const std::string& html);
 std::string doanMimeTuTen(const std::string& tenTep);
 void nguGiay(int giay);

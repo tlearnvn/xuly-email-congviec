@@ -21,7 +21,7 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 | Tài liệu | Nội dung |
 |---|---|
-| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 59 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 61 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
 | [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
 | [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
 | [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
@@ -244,6 +244,15 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.5.0 — 06/09/2026
+
+- **Xử lý được tệp Gmail tự chuyển sang Drive khi vượt 25 MB.** Trường đính kèm đàng hoàng, đặt tên đúng quy ước, nhưng tệp nặng quá nên Gmail tự đưa lên Drive rồi thay tệp bằng một ô link. Thư đó `has:attachment` là **sai**, nên bản 1.4.x vẫn bỏ sót; nay cụm nới truy vấn thêm bốn toán tử riêng của Gmail: `has:drive`, `has:document`, `has:spreadsheet`, `has:presentation`.
+- **Đọc mã hồ sơ từ tên tệp trên Drive.** Gmail giữ nguyên tên tệp gốc trong ô link, nên `001_003_TAT.pdf` vẫn tách ra được mã y như tên tệp đính kèm thường — kể cả khi tiêu đề thư không có mã. Trước đây thư loại này ra `?_?_?` và nằm chờ phân luồng tay.
+- **Hai tệp Drive hai mã thì tách hai công việc** cho đúng hai người xử lý, thay vì gom một cục mồ côi. Thứ tự ưu tiên giữ nguyên: tên tệp trước, tiêu đề sau.
+- **Trang chi tiết và phân luồng tay hiện TÊN TỆP** thay vì đường dẫn dài. Tên tệp lưu chung vào cột `email.lien_ket_ngoai` sẵn có (mỗi dòng `đường-dẫn<TAB>tên-tệp`) nên nơi đã cài bản 1.4.x **không phải nâng cấp cơ sở dữ liệu thêm lần nữa**; dòng cũ chỉ có đường dẫn vẫn đọc bình thường.
+- **Không nhầm link dán tay thành tên tệp:** kiểu `<a href="URL">URL</a>` thì chữ hiển thị chính là đường dẫn, hệ thống bỏ qua.
+- **Tài liệu:** quy trình kỹ thuật thêm mục 3.3 *Tệp vượt 25 MB — Gmail tự đưa lên Drive* (bảng 10 tổ hợp chạy thật); hướng dẫn sử dụng thêm mục 16.4 và mục cho các trường *Tệp nặng quá 25 MB thì làm sao?* kèm cách làm nhẹ tệp.
+
 ### 1.4.1 — 06/09/2026
 
 - **Dò link đúng thứ tự xuất hiện:** bộ dò link trước đây quét hết `https://` rồi mới quét `http://`, nên thư có link `http://` đứng trước link `https://` sẽ bị đảo thứ tự. Nay quét đúng một lượt từ trái sang phải, xét cả hai giao thức tại từng vị trí.

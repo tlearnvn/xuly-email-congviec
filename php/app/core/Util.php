@@ -247,7 +247,12 @@ class Util
     }
 
     /**
-     * Tách cột email.lien_ket_ngoai (mỗi dòng một link) thành mảng đã lọc.
+     * Tách cột email.lien_ket_ngoai thành mảng ['url' => …, 'ten' => …].
+     *
+     * Mỗi dòng là một link; có tên tệp thì nằm sau dấu TAB (tên tệp Gmail hiện
+     * trong "Drive chip" khi tệp vượt 25 MB). Dòng chỉ có link — dữ liệu lưu từ
+     * bản 1.4.x — vẫn đọc được bình thường, tên để rỗng.
+     *
      * Lọc lại lần nữa dù bên nhận đã lọc: dòng cũ có từ trước khi có bộ lọc,
      * hoặc ai đó sửa tay bằng phpMyAdmin, vẫn không được thành thẻ <a> nguy hiểm.
      */
@@ -255,15 +260,25 @@ class Util
     {
         if ($raw === null || trim($raw) === '') return [];
         $ra = [];
-        foreach (preg_split('/[\r\n]+/', $raw) ?: [] as $u) {
-            $u = trim($u);
+        $daCo = [];
+        foreach (preg_split('/[\r\n]+/', $raw) ?: [] as $dong) {
+            $p = explode("\t", $dong, 2);
+            $u = trim($p[0]);
             if ($u === '' || strlen($u) > 900) continue;
             if (!preg_match('~^https?://~i', $u)) continue;
             if (preg_match('/[\x00-\x20\x7F]/', $u)) continue;
-            if (!in_array($u, $ra, true)) $ra[] = $u;
+            if (isset($daCo[$u])) continue;
+            $daCo[$u] = true;
+            $ra[] = ['url' => $u, 'ten' => mb_substr(trim($p[1] ?? ''), 0, 300)];
             if (count($ra) >= 50) break;
         }
         return $ra;
+    }
+
+    /** Nhãn ngắn cho một link chia sẻ: ưu tiên tên tệp, không có thì lấy tên miền */
+    public static function nhanLinkChiaSe(array $lk): string
+    {
+        return $lk['ten'] !== '' ? $lk['ten'] : self::mienCuaLink($lk['url']);
     }
 
     /** Tên miền của một URL, dùng làm nhãn ngắn cho link chia sẻ */
