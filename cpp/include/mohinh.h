@@ -188,6 +188,9 @@ struct ThongKePhien {
     int so_cho_phan_luong = 0;
     int so_mail_spam = 0;              // vớt được từ hộp Thư rác
     int so_mail_link = 0;              // không tệp đính kèm, chỉ có link chia sẻ
+    // Thư lấy về rồi mới thấy không có tệp lẫn link chia sẻ nên bỏ. Chỉ đếm
+    // trong bộ nhớ để cảnh báo cuối phiên, không lưu thành cột riêng.
+    int so_mail_bo_qua = 0;
     int so_loi = 0;
     int64_t bat_dau = 0;
     int64_t ket_thuc = 0;

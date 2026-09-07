@@ -55,6 +55,10 @@ public:
     // Nới truy vấn: "has:attachment" -> "(has:attachment OR "drive.google.com" OR …)".
     // Truy vấn không có "has:attachment" (hoặc chỉ có "-has:attachment") thì giữ nguyên.
     static std::string moRongTruyVanLink(const std::string& truyVan);
+    // Truy vấn có lọc theo tệp đính kèm hay không (has:attachment, has:drive,
+    // filename:, tên miền chia sẻ…). Không lọc thì Gmail trả về MỌI thư, hạn mức
+    // "số mail mỗi lần quét" bị tiêu vào cả thư không liên quan.
+    static bool truyVanCoLocTep(const std::string& truyVan);
     bool layMail(const std::string& id, Json& ra, std::string& loi);
     bool layTepDinhKem(const std::string& idMail, const std::string& idTep,
                        std::string& duLieu, std::string& loi);

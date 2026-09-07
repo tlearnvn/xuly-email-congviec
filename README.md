@@ -21,7 +21,7 @@ vào MySQL (tệp lưu dạng BLOB), **không xoá thư trên Gmail**.
 
 | Tài liệu | Nội dung |
 |---|---|
-| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 71 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
+| 📕 **[Bản PDF trọn bộ](docs/pdf/He-thong-phan-luong-Mail-cong-vu.pdf)** | Quy trình kỹ thuật + hướng dẫn sử dụng, 75 trang, đầy đủ sơ đồ và ảnh chụp — bản in ấn |
 | [Quy trình kỹ thuật](docs/QUY-TRINH-KY-THUAT.md) | Hệ thống hoạt động thế nào, vì sao thiết kế như vậy |
 | [Hướng dẫn sử dụng](docs/HUONG-DAN-SU-DUNG.md) | Dùng hàng ngày, đi lần lượt từng màn hình |
 | [Cài đặt web trên cPanel](docs/HUONG-DAN-WEB-CPANEL.md) | Từng bước đưa web lên hosting |
@@ -244,6 +244,15 @@ Số phiên bản theo quy ước `CHÍNH.PHỤ.VÁ`: **CHÍNH** đổi khi thay
 **PHỤ** khi thêm tính năng, **VÁ** khi sửa lỗi. Số *build* tăng mỗi lần đóng gói.
 
 <!-- BAT-DAU-CHANGELOG -->
+### 1.8.0 — 07/09/2026
+
+- **Cảnh báo khi điều kiện lọc Gmail không chặt theo tệp** — bịt một lỗ bỏ sót im lặng. Truy vấn kiểu `newer_than:1d` **vẫn lấy được** thư có tệp, nhưng nó tiêu hạn mức *Số mail mỗi lần quét* vào cả thư không liên quan; Gmail trả thư mới nhất trước nên báo cáo cũ hơn bị đẩy ra ngoài hạn mức. Phiên chạy xong không lỗi, số liệu trông bình thường, mà thiếu thư.
+- **Nhắc ở bốn nơi:** ngay dưới ô nhập trong bộ nhận mail (kèm nút *Thêm `has:attachment` giúp tôi* tự sửa hộ), trong nhật ký lúc mở phiên, trong nhật ký lúc đóng phiên, và trên Bảng điều khiển của web dưới ô *Phiên nhận mail gần nhất*.
+- **Cảnh báo cuối phiên dựa vào số liệu thật, không phỏng đoán:** chỉ nói *"CÓ THỂ CÒN THƯ CHƯA LẤY TỚI"* khi phiên đã dùng **hết hạn mức** VÀ hơn **50%** thư bị bỏ vì không có tệp lẫn link. Hạn mức còn thừa thì hạ giọng thành nhắc hiệu năng chứ không báo mất thư. Thêm số đếm *bỏ qua vì không có tệp* vào dòng tổng kết phiên.
+- **Sửa lệch giữa ba bản nhận diện:** luật phải viết ba lần — `Gmail::truyVanCoLocTep` (C++, lúc chạy phiên), `Util::truyVanCoLocTep` (PHP, Bảng điều khiển) và `coLocTep` trong `cpp/webui/app.js` (JavaScript, nhắc theo từng ký tự lúc đang gõ). Bản PHP viết trước bằng `strpos` đơn thuần, bản JavaScript thì gộp cả toán tử lẫn tên miền vào một mảng — cả hai đều tính `has:attachmentx` là có lọc nên **đúng lúc cần nhắc nhất thì im**. Nay cả ba kiểm biên của điều kiện, tách riêng nhóm toán tử với nhóm tên miền, và cùng bỏ qua `-has:attachment` (phủ định thì vẫn phải nhắc).
+- **Bộ so chéo 29 ca chạy cả ba bản, đọc thẳng hàm ra khỏi `app.js`** thay vì sao chép tay. Lỗi của bản JavaScript sống sót qua vòng so chéo trước đúng vì vòng đó chỉ có C++ với PHP — hai bản ấy đã khớp nhau nên không phát hiện được gì.
+- **Tài liệu:** hướng dẫn sử dụng thêm mục 16.0 kèm bảng hỏi–đáp và 2 ảnh; quy trình kỹ thuật thêm mục 3.0 nêu vì sao lỗi này không sửa được bằng mã mà chỉ nói ra được, kèm hai điểm dễ sai đã trả giá để biết.
+
 ### 1.7.0 — 06/09/2026
 
 - **Dọn dữ liệu thử nghiệm:** trang mới trong *Cài đặt* xoá sạch dữ liệu công việc để chạy thử lại từ đầu — thư đã nhận, công việc, tệp đính kèm, kho nội dung tệp, phiên đồng bộ, tệp tải lên dở. **Giữ nguyên** danh mục trường, người xử lý kèm tài khoản đăng nhập, mã văn bản chính thức và mọi thiết lập, nên dọn xong chạy thử lại được ngay mà không phải khai báo lại.

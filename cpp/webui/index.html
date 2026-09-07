@@ -260,6 +260,14 @@
         <div class="luoi-truong">
           <label class="rong">Điều kiện tìm kiếm của Gmail
             <input type="text" id="gmail_truy_van" placeholder="has:attachment newer_than:30d">
+            <div class="nhac nhac-canh" id="canh-bao-loc-tep" hidden>
+              <b>Điều kiện này không lọc theo tệp đính kèm.</b> Gmail sẽ trả về <b>mọi thư</b>
+              trong khoảng đó. Thư có tệp vẫn nhận được, nhưng hạn mức <i>Số mail mỗi lần quét</i>
+              bị tiêu vào cả thư không liên quan — Gmail trả thư mới nhất trước, nên hộp thư đông
+              thì báo cáo cũ hơn có thể bị bỏ sót mà không báo lỗi.
+              <button type="button" class="nut-lien" id="nut-them-has-attachment">Thêm
+                <code>has:attachment</code> giúp tôi</button>
+            </div>
           </label>
           <label>Số mail mỗi lần quét<input type="number" id="gmail_so_mail_moi_lan" value="50"></label>
           <label>Chu kỳ tự động (phút)<input type="number" id="ung_dung_chu_ky_phut" value="15"></label>

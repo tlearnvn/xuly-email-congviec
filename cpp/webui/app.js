@@ -213,6 +213,7 @@
       const j = await goi('/api/cau-hinh');
       cauHinh = j.cau_hinh || {};
       TRUONG.forEach((k) => dat(idCua(k), cauHinh[k]));
+      capNhatNhacLocTep();
       const cd = cauHinh['luu_tru.che_do'] || 'mysql';
       const r = document.querySelector('input[name=che_do][value="' + cd + '"]');
       if (r) r.checked = true;
@@ -364,6 +365,67 @@
     await chay(ev.currentTarget, () => goi('/api/gmail/thoat', { method: 'POST', body: '{}' }), 'Đã đăng xuất');
     napCauHinh();
   });
+
+  // --- Nhắc khi điều kiện lọc không chặt theo tệp ---
+  // Truy vấn kiểu "newer_than:1d" vẫn lấy được thư có tệp, nhưng Gmail trả về
+  // MỌI thư nên hạn mức bị tiêu vào cả thư không liên quan, và vì Gmail trả thư
+  // mới nhất trước, báo cáo cũ hơn có thể bị đẩy ra ngoài hạn mức mà không báo
+  // lỗi gì. Đây là kiểu bỏ sót im lặng nên phải nhắc ngay lúc người dùng gõ.
+  // Luật này phải GIỐNG HỆT hai bản kia: Gmail::truyVanCoLocTep (C++, dùng lúc
+  // chạy phiên) và Util::truyVanCoLocTep (PHP, dùng ở Bảng điều khiển). Sửa một
+  // bản thì phải sửa cả ba rồi chạy lại bộ so chéo 29 ca, vì lệch nhau thì chỗ
+  // này nhắc mà chỗ kia im - hoặc ngược lại.
+  // Hai nhóm dấu hiệu đối xử KHÁC nhau, không gộp làm một được:
+  const TOAN_TU_LOC_TEP = [                          // toán tử Gmail: phải kiểm biên
+    'has:attachment', 'has:drive', 'has:document', 'has:spreadsheet',
+    'has:presentation', 'filename:'
+  ];
+  const MIEN_LOC_TEP = [                             // tên miền: nằm trong dấu ngoặc kép nên so chuỗi con
+    'drive.google.com', 'docs.google.com', '1drv.ms', 'onedrive.live.com',
+    'sharepoint.com', 'dropbox.com', 'mega.nz', 'wetransfer.com'
+  ];
+  function coLocTep(q) {
+    const s = String(q || '').trim().toLowerCase();
+    if (!s) return false;                            // ô rỗng = dùng mặc định, đã có has:attachment
+    const t = ' ' + s + ' ';
+    // Toán tử phải là điều kiện ĐỨNG RIÊNG. Thiếu bước kiểm biên thì
+    // "has:attachmentx" cũng bị tính là có lọc nên không nhắc, mà Gmail lại coi
+    // đó là chuỗi tìm kiếm thường - đúng lúc cần nhắc nhất thì im.
+    for (const d of TOAN_TU_LOC_TEP) {
+      let i = -1;
+      while ((i = t.indexOf(d, i + 1)) >= 0) {
+        const truoc = t[i - 1];
+        const sau = t[i + d.length];
+        // Biên trái không nhận '-': "-has:attachment" là phủ định, vẫn phải nhắc
+        const bienTrai = truoc === ' ' || truoc === '(';
+        // "filename:" luôn có giá trị đi kèm nên không đòi biên phải là khoảng trắng
+        const bienPhai = d.endsWith(':') || sau === ' ' || sau === ')';
+        if (bienTrai && bienPhai) return true;
+      }
+    }
+    for (const d of MIEN_LOC_TEP) if (t.indexOf(d) >= 0) return true;
+    return false;
+  }
+  function capNhatNhacLocTep() {
+    const o = $('#gmail_truy_van');
+    const nhac = $('#canh-bao-loc-tep');
+    if (!o || !nhac) return;
+    // Ô để trống nghĩa là dùng giá trị mặc định (đã có has:attachment) nên không nhắc
+    const q = o.value.trim();
+    nhac.hidden = q === '' || coLocTep(q);
+  }
+  {
+    const o = $('#gmail_truy_van');
+    if (o) ['input', 'change'].forEach((e) => o.addEventListener(e, capNhatNhacLocTep));
+    const nut = $('#nut-them-has-attachment');
+    if (nut) nut.addEventListener('click', () => {
+      const x = $('#gmail_truy_van');
+      if (!x) return;
+      x.value = ('has:attachment ' + x.value.trim()).trim();
+      capNhatNhacLocTep();
+      x.focus();
+    });
+  }
 
   // --- Phân luồng ---
   $('#nut-luu-phan-luong').addEventListener('click', (ev) =>

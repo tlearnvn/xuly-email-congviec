@@ -346,6 +346,7 @@ bool UngDung::xuLyMotMail(const std::string& id, ThongKePhien& tk, std::string& 
     // vô can (chữ "drive.google.com" nằm trong chữ ký chẳng hạn). Thư không tệp
     // mà cũng không có link chia sẻ thì không phải hồ sơ - bỏ, đừng làm rác kho.
     if (em.tep.empty() && em.lien_ket_ngoai.empty()) {
+        tk.so_mail_bo_qua++;
         NK.go("mail", "Bỏ qua mail không có tệp đính kèm và không có link chia sẻ: " +
                       catUtf8(em.tieu_de, 100));
         return true;
@@ -490,6 +491,22 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
                       (quetSpam ? " | có quét hộp Thư rác" : " | bỏ qua hộp Thư rác") +
                       (nhanLink ? " | có bắt link chia sẻ" : " | bỏ qua link chia sẻ"));
 
+    // Truy vấn không lọc theo tệp (ví dụ chỉ "newer_than:1d") thì Gmail trả về
+    // MỌI thư trong khoảng đó. Thư có tệp vẫn nằm trong số đó nên vẫn nhận được,
+    // nhưng hạn mức bị tiêu vào cả thư không liên quan - Gmail trả thư mới nhất
+    // trước, nên báo cáo cũ hơn có thể bị đẩy ra ngoài hạn mức mà không ai biết.
+    // Đây là kiểu bỏ sót IM LẶNG nên phải nói ra, dù không phải lỗi.
+    const bool coLocTep = Gmail::truyVanCoLocTep(truyVan);
+    if (!coLocTep) {
+        NK.canhBao("dong_bo",
+            "Điều kiện lọc \"" + truyVan + "\" KHÔNG lọc theo tệp đính kèm, nên Gmail trả về "
+            "mọi thư trong khoảng đó. Thư có tệp vẫn nhận được, nhưng hạn mức " +
+            std::to_string(soLuong) + " mail/lần bị tiêu vào cả thư không liên quan - hộp thư "
+            "đông thì báo cáo cũ hơn có thể bị bỏ sót mà không báo lỗi. Nên thêm "
+            "\"has:attachment\" vào điều kiện, hệ thống sẽ tự nới ra để bắt cả thư dán link "
+            "Drive và tệp lớn Gmail tự chuyển.");
+    }
+
     datTienTrinh("liet_ke", 0, 0, "Đang lấy danh sách mail...");
     std::vector<std::string> ids;
     std::string canhBaoSpam;
@@ -527,12 +544,37 @@ bool UngDung::dongBo(ThongKePhien& tk, std::string& loi, int gioiHan, const std:
     char buf[400];
     std::snprintf(buf, sizeof(buf),
         "Hoàn tất: quét %d mail, mới %d, bản mới %d, trùng %d, công việc %d, tệp %d, "
-        "chờ phân luồng %d, dùng AI %d, vớt từ Thư rác %d, chỉ có link %d, lỗi %d (%.1f giây)",
+        "chờ phân luồng %d, dùng AI %d, vớt từ Thư rác %d, chỉ có link %d, "
+        "bỏ qua vì không có tệp %d, lỗi %d (%.1f giây)",
         tk.so_mail_quet, tk.so_mail_moi, tk.so_mail_ban_moi, tk.so_mail_trung, tk.so_cong_viec,
-        tk.so_tep, tk.so_cho_phan_luong, tk.so_dung_ai, tk.so_mail_spam, tk.so_mail_link, tk.so_loi,
+        tk.so_tep, tk.so_cho_phan_luong, tk.so_dung_ai, tk.so_mail_spam, tk.so_mail_link,
+        tk.so_mail_bo_qua, tk.so_loi,
         (double)(tk.ket_thuc - tk.bat_dau));
     tk.thong_diep = buf;
     NK.tin("dong_bo", tk.thong_diep);
+
+    // Cảnh báo lần hai, nhưng lần này bằng SỐ LIỆU THẬT của phiên vừa chạy thay
+    // vì phỏng đoán: hạn mức đã dùng hết mà phần lớn lại là thư không có tệp,
+    // nghĩa là gần như chắc chắn còn báo cáo chưa lấy tới.
+    if (!coLocTep && tk.so_mail_bo_qua > 0 && tk.so_mail_quet > 0) {
+        int phanTram = tk.so_mail_bo_qua * 100 / tk.so_mail_quet;
+        bool hetHanMuc = tk.so_mail_quet >= soLuong;
+        if (hetHanMuc && phanTram >= 50) {
+            NK.canhBao("dong_bo",
+                "CÓ THỂ CÒN THƯ CHƯA LẤY TỚI: phiên này dùng hết hạn mức " +
+                std::to_string(soLuong) + " mail, mà " + std::to_string(tk.so_mail_bo_qua) +
+                " thư (" + std::to_string(phanTram) + "%) bị bỏ vì không có tệp đính kèm lẫn "
+                "link chia sẻ. Gmail trả thư mới nhất trước, nên báo cáo cũ hơn có thể nằm "
+                "ngoài hạn mức. Hãy thêm \"has:attachment\" vào điều kiện lọc rồi chạy lại, "
+                "hoặc tăng số mail mỗi lần quét.");
+        } else if (phanTram >= 50) {
+            NK.canhBao("dong_bo",
+                std::to_string(tk.so_mail_bo_qua) + "/" + std::to_string(tk.so_mail_quet) +
+                " thư quét về không có tệp đính kèm lẫn link chia sẻ (" +
+                std::to_string(phanTram) + "%). Chưa mất thư nào vì hạn mức còn thừa, nhưng "
+                "thêm \"has:attachment\" vào điều kiện lọc sẽ nhanh hơn nhiều.");
+        }
+    }
 
     std::string l2;
     kho_->dongPhien(tk, tk.so_loi > 0 ? "hoan_tat" : "hoan_tat", l2);

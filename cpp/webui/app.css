@@ -239,3 +239,13 @@ input::placeholder{color:#a9b3c6;}
   .ben-chan{display:flex;justify-content:space-between;align-items:center;}
   .chinh{padding:1rem;}
 }
+
+/* ---- Nhắc nhở ngay dưới ô nhập (ví dụ điều kiện lọc không chặt) ---- */
+.nhac{margin:.5rem 0 0;padding:.65rem .85rem;border-radius:var(--tron-nho);
+  border:1px solid;font-size:.8rem;line-height:1.6;}
+.nhac[hidden]{display:none !important;}
+.nhac code{font-size:.76rem;}
+.nhac-canh{background:#fff8ec;border-color:#f6ddb4;color:#8e560b;}
+.nut-lien{display:inline;font:inherit;font-weight:600;padding:0;margin-left:.2rem;
+  background:none;border:0;color:var(--xanh);cursor:pointer;text-decoration:underline;}
+.nut-lien:hover{color:var(--xanh-dam);}

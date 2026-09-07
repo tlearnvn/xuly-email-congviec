@@ -226,19 +226,49 @@ static const char* MIEN_TIM_KIEM[] = {
     nullptr
 };
 
+// Tìm một điều kiện đứng riêng trong truy vấn, KHÔNG tính khi bị phủ định
+// bằng dấu trừ ("-has:attachment"). Trả về vị trí, hoặc npos nếu không có.
+static size_t timDieuKien(const std::string& thap, const std::string& moc) {
+    size_t p = 0;
+    while ((p = thap.find(moc, p)) != std::string::npos) {
+        size_t sau = p + moc.size();
+        char t = (p == 0) ? ' ' : thap[p - 1];
+        char s = (sau >= thap.size()) ? ' ' : thap[sau];
+        bool bienTrai  = (t == ' ' || t == '(');
+        // "filename:" luôn có giá trị đi kèm nên không đòi biên phải là khoảng trắng
+        bool bienPhai = moc.back() == ':' || s == ' ' || s == ')';
+        if (bienTrai && bienPhai) return p;
+        p = sau;
+    }
+    return std::string::npos;
+}
+
+bool Gmail::truyVanCoLocTep(const std::string& truyVan) {
+    // Truy vấn rỗng nghĩa là lấy mọi thư - đúng nghĩa "không lọc theo tệp".
+    if (trim(truyVan).empty()) return false;
+    const std::string thap = toLower(truyVan);
+
+    // Các toán tử Gmail chỉ ra thư có tệp, kể cả tệp đưa lên Drive
+    static const char* DAU_HIEU[] = {
+        "has:attachment", "has:drive", "has:document", "has:spreadsheet",
+        "has:presentation", "filename:", nullptr
+    };
+    for (int i = 0; DAU_HIEU[i]; i++)
+        if (timDieuKien(thap, DAU_HIEU[i]) != std::string::npos) return true;
+
+    // Lọc theo tên miền chia sẻ cũng coi là có lọc (bắt thư dán link Drive)
+    for (int i = 0; MIEN_TIM_KIEM[i]; i++)
+        if (thap.find(toLower(MIEN_TIM_KIEM[i])) != std::string::npos) return true;
+
+    return false;
+}
+
 std::string Gmail::moRongTruyVanLink(const std::string& truyVan) {
     // Chỉ nới khi truy vấn đang lọc "has:attachment" - vì chính điều kiện đó
     // loại thẳng thư chỉ dán link. Truy vấn không lọc theo tệp thì đã lấy đủ rồi.
     const std::string moc = "has:attachment";
     std::string thap = toLower(truyVan);
-    size_t p = 0, tim = std::string::npos;
-    while ((p = thap.find(moc, p)) != std::string::npos) {
-        size_t sau = p + moc.size();
-        char t = (p == 0) ? ' ' : thap[p - 1];              // '-has:attachment' thì bỏ qua
-        char s = (sau >= thap.size()) ? ' ' : thap[sau];
-        if ((t == ' ' || t == '(') && (s == ' ' || s == ')')) { tim = p; break; }
-        p = sau;
-    }
+    size_t tim = timDieuKien(thap, moc);
     if (tim == std::string::npos) return truyVan;
 
     // has:drive / has:document / has:spreadsheet / has:presentation là các toán

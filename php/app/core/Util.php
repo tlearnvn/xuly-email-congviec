@@ -328,6 +328,45 @@ class Util
         return '';
     }
 
+    /**
+     * Điều kiện lọc Gmail có lọc theo tệp đính kèm hay không.
+     *
+     * Truy vấn kiểu "newer_than:1d" vẫn lấy được thư có tệp, nhưng Gmail trả về
+     * MỌI thư nên hạn mức "số mail mỗi lần quét" bị tiêu vào cả thư không liên
+     * quan — và vì Gmail trả thư mới nhất trước, báo cáo cũ hơn có thể bị đẩy ra
+     * ngoài hạn mức mà không báo lỗi. Đây là kiểu bỏ sót im lặng nên phải nhắc.
+     *
+     * Giữ cùng một luật với Gmail::truyVanCoLocTep() ở phần C++.
+     */
+    public static function truyVanCoLocTep(?string $truyVan): bool
+    {
+        $q = trim((string)$truyVan);
+        if ($q === '') return false;                 // rỗng = lấy mọi thư
+        $t = ' ' . mb_strtolower($q) . ' ';
+
+        // Toán tử Gmail: phải là điều kiện ĐỨNG RIÊNG, không phải chuỗi con.
+        // Thiếu bước kiểm biên thì "has:attachmentx" cũng bị tính là có lọc.
+        foreach (['has:attachment', 'has:drive', 'has:document', 'has:spreadsheet',
+                  'has:presentation', 'filename:'] as $d) {
+            $i = -1;
+            while (($i = strpos($t, $d, $i + 1)) !== false) {
+                $truoc = $t[$i - 1] ?? ' ';
+                $sau   = $t[$i + strlen($d)] ?? ' ';
+                $bienTrai = ($truoc === ' ' || $truoc === '(');
+                // "filename:" luôn có giá trị đi kèm nên không đòi biên phải
+                $bienPhai = (substr($d, -1) === ':' || $sau === ' ' || $sau === ')');
+                if ($bienTrai && $bienPhai) return true;
+            }
+        }
+
+        // Tên miền chia sẻ: khớp chuỗi con là đủ (thường nằm trong dấu nháy)
+        foreach (['drive.google.com', 'docs.google.com', '1drv.ms', 'onedrive.live.com',
+                  'sharepoint.com', 'dropbox.com', 'mega.nz', 'wetransfer.com'] as $d) {
+            if (strpos($t, $d) !== false) return true;
+        }
+        return false;
+    }
+
     /** Tệp Office đời cũ (97-2003) — cần bộ đọc OLE2 thay vì bộ đọc ZIP */
     public static function laOfficeDoiCu(string $duoi): bool
     {

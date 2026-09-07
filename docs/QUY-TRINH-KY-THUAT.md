@@ -155,6 +155,67 @@ một lượt quét riêng cho hộp Thư rác ([mục 3.1](#31-thư-bị-google
 mở rộng `has:attachment` để bắt cả thư chỉ dán link chia sẻ
 ([mục 3.2](#32-thư-không-đính-kèm-tệp-chỉ-dán-link-google-drive)).
 
+### 3.0. Điều kiện lọc không chặt theo tệp: bỏ sót không kèm lỗi
+
+Truy vấn `newer_than:1d` **vẫn lấy được** thư có tệp — nó không lọc gì nên Gmail trả về mọi
+thư, thư có tệp nằm trong đó. Nhưng nó tiêu hạn mức *Số mail mỗi lần quét* vào cả thư không
+liên quan, và Gmail trả **thư mới nhất trước**, nên báo cáo cũ hơn bị đẩy ra ngoài hạn mức.
+Phiên chạy xong, không lỗi, số liệu trông bình thường — mà thiếu thư.
+
+Đây là cùng một họ lỗi với [mục 3.1](#31-thư-bị-google-xếp-vào-hộp-thư-rác) và
+[3.2](#32-thư-không-đính-kèm-tệp-chỉ-dán-link-google-drive): **bỏ sót im lặng**. Khác ở chỗ
+hai mục kia là lỗi của hệ thống và đã sửa được bằng mã; mục này là **hệ quả của một thiết lập
+hợp lý** mà người dùng không có cách nào biết. Không sửa bằng mã được, chỉ nói ra được — nên
+hệ thống nhắc ở ba nơi:
+
+| Nơi | Khi nào | Nội dung |
+|---|---|---|
+| Bộ nhận mail, ngay dưới ô nhập | Vừa gõ xong, chưa cần lưu | Giải thích hệ quả + nút **Thêm `has:attachment` giúp tôi** tự sửa hộ |
+| Nhật ký, lúc mở phiên | Mỗi lần đồng bộ | Nêu truy vấn, hạn mức, và cách sửa |
+| Nhật ký, lúc đóng phiên | Chỉ khi **có số liệu chứng minh** | Dùng hết hạn mức **và** hơn 50% thư bị bỏ vì không có tệp → *"CÓ THỂ CÒN THƯ CHƯA LẤY TỚI…"* kèm số thật |
+| Bảng điều khiển web | Mỗi lần mở trang | Dựa vào cột `phien_dong_bo.truy_van` của phiên gần nhất |
+
+Cảnh báo cuối phiên là cái đáng giá nhất, vì nó **không phỏng đoán**: nó chỉ nói khi phiên
+thật đã dùng hết hạn mức mà phần lớn lại là thư vô can. Trường hợp hạn mức còn thừa thì hạ
+giọng xuống thành nhắc hiệu năng, không phải cảnh báo mất thư.
+
+**Luật nhận diện phải viết ba lần, và cả ba phải khớp nhau.** Không phải hai — chỗ nhắc sớm
+nhất, ngay lúc người dùng đang gõ, chạy trong trình duyệt nên phải có bản JavaScript riêng:
+
+| Bản | Tệp | Dùng ở đâu |
+|---|---|---|
+| C++ | `Gmail::truyVanCoLocTep()` | bộ nhận mail, lúc mở và đóng phiên |
+| PHP | `Util::truyVanCoLocTep()` | web, Bảng điều khiển |
+| JS | `coLocTep()` trong `cpp/webui/app.js` | ô nhập của bộ nhận mail, nhắc theo từng ký tự |
+
+Cùng một danh sách dấu hiệu, nhưng **chia hai nhóm, đối xử khác nhau** — gộp làm một là sai:
+
+```
+nhóm toán tử (phải kiểm biên):  has:attachment  has:drive  has:document
+                                has:spreadsheet  has:presentation  filename:
+nhóm tên miền (so chuỗi con):   "drive.google.com"  "docs.google.com"  "1drv.ms"  …
+```
+
+Tên miền so chuỗi con vì nó nằm trong dấu ngoặc kép; toán tử thì không được, vì:
+
+Ba điểm dễ sai, đã trả giá để biết:
+
+- **Phải kiểm biên của điều kiện, không phải khớp chuỗi con.** Bản PHP viết trước bằng
+  `strpos` đơn thuần, nên `has:attachmentx` cũng bị tính là có lọc. Bản C++ kiểm biên trái
+  (`' '` hoặc `'('`) và biên phải (`' '` hoặc `')'`) nên không mắc. Chạy so chéo **29 ca giữa
+  hai bản** mới lộ ra lệch đúng ở ca đó.
+- **Bản JavaScript mắc y hệt lỗi đó, và im lặng lâu hơn cả.** Nó gộp cả toán tử lẫn tên miền
+  vào một mảng rồi chỉ xét ký tự trước có phải `-` hay không, nên `has:attachmentx` không
+  được nhắc. Hai bản kia đã đúng nên **so chéo giữa chúng không phát hiện được gì**; chỉ khi
+  bấm thử từng ca trên GUI của bản đã đóng gói mới lộ. Rút ra: bộ so chéo nay **đọc thẳng
+  hàm `coLocTep` ra khỏi `app.js`** rồi chạy chung 29 ca đó với hai bản kia, không sao chép
+  tay — sao chép tay thì bản thử nghiệm đúng mà bản chạy thật vẫn sai.
+- **`-has:attachment` vẫn phải bị nhắc.** Dấu trừ là phủ định — nó *loại* thư có tệp, nên
+  đúng là điều kiện không lọc lấy thư có tệp. Cả ba bản đều kiểm ký tự ngay trước.
+
+> Ngoại lệ duy nhất không nhắc: ô để **trống**. Khi đó hệ thống dùng mặc định
+> `has:attachment newer_than:30d`, tự nó đã chặt.
+
 ### 3.1. Thư bị Google xếp vào hộp Thư rác
 
 Đây là tình huống dễ mất dữ liệu nhất mà lại khó phát hiện: trường **có gửi**, nhưng Google

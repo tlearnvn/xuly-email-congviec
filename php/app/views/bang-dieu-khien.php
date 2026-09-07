@@ -142,6 +142,21 @@
       <?php if (!empty($phien['thong_diep'])): ?>
         <p class="chu-nho chu-mo" style="margin-top:.6rem"><?= Util::h(Util::catChu($phien['thong_diep'], 300)) ?></p>
       <?php endif; ?>
+
+      <?php /* Điều kiện lọc không chặt theo tệp là kiểu bỏ sót im lặng: chạy vẫn
+               ra kết quả, không báo lỗi, mà có thể thiếu thư. Nhắc ở đây vì đây
+               là trang quản trị xem hằng ngày, không phải trang Nhật ký. */ ?>
+      <?php if (!empty($phien['truy_van']) && !Util::truyVanCoLocTep($phien['truy_van'])): ?>
+        <div class="nhan nhan-canh" style="margin:.8rem 0 0;font-size:.82rem">
+          <strong>Điều kiện lọc không lọc theo tệp đính kèm.</strong>
+          Phiên vừa rồi chạy với <code><?= Util::h(Util::catChu($phien['truy_van'], 120)) ?></code>,
+          nên Gmail trả về mọi thư trong khoảng đó. Thư có tệp vẫn nhận được, nhưng hạn mức
+          <i>Số mail mỗi lần quét</i> bị tiêu vào cả thư không liên quan — hộp thư đông thì báo
+          cáo cũ hơn có thể bị bỏ sót mà <b>không báo lỗi</b>.
+          Nên thêm <code>has:attachment</code> vào <i>Điều kiện tìm kiếm của Gmail</i> trong bộ
+          nhận mail; hệ thống tự nới ra để bắt cả thư dán link Drive và tệp lớn Gmail tự chuyển.
+        </div>
+      <?php endif; ?>
     </div>
     <?php endif; ?>
 

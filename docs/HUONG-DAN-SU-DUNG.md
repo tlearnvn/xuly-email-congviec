@@ -628,6 +628,46 @@ Gmail → Spam, Phishing and Malware → Allowlist*.
 > Hệ thống chỉ xin quyền **đọc** hộp thư (`gmail.readonly`) nên **không thể tự gỡ nhãn Thư
 > rác** giúp anh — đó là cái giá của việc không bao giờ đụng vào hộp thư công vụ.
 
+### 16.0. Điều kiện lọc phải chặt theo tệp, nếu không sẽ bỏ sót âm thầm
+
+Ô **Điều kiện tìm kiếm của Gmail** trông vô hại, nhưng đặt sai kiểu là mất thư mà **không
+báo lỗi gì**. Đặt `newer_than:1d` chẳng hạn:
+
+| Câu hỏi | Trả lời |
+|---|---|
+| Có lấy được thư có tệp đính kèm không? | **Có.** Điều kiện đó không lọc gì nên Gmail trả về mọi thư, thư có tệp nằm trong đó |
+| Vậy có gì sai? | Hạn mức *Số mail mỗi lần quét* bị tiêu vào **cả thư không liên quan** |
+| Hậu quả? | Gmail trả **thư mới nhất trước**. Hộp thư nhận 200 thư/ngày mà chỉ 12 thư là báo cáo, thì 50 thư đầu có thể không chứa hết 12 thư đó — **báo cáo cũ hơn bị bỏ sót** |
+
+Vì vậy hệ thống nhắc ngay khi anh gõ điều kiện không lọc theo tệp:
+
+![Nhắc khi điều kiện lọc không chặt](hinh/bnm-09-nhac-loc-tep.png)
+
+Bấm **Thêm `has:attachment` giúp tôi** là xong. Hệ thống sẽ **tự nới** điều kiện đó ra thành
+13 điều kiện OR để bắt đủ ba loại thư — đính kèm tệp, dán link Drive, và tệp lớn Gmail tự
+chuyển (xem [mục 16.3](#163-bắt-cả-thư-chỉ-dán-link-google-drive) và
+[16.4](#164-tệp-nặng-quá-25-mb--gmail-tự-chuyển-thành-link-drive)).
+
+**Nhắc ở ba nơi**, để không lọt qua mắt:
+
+1. **Ngay lúc gõ** trong bộ nhận mail — như ảnh trên.
+2. **Trong nhật ký** mỗi lần chạy đồng bộ. Và nếu phiên đó dùng **hết hạn mức** mà **hơn một
+   nửa** số thư bị bỏ vì không có tệp, nhật ký ghi thêm một dòng cảnh báo mạnh hơn kèm số
+   liệu thật: *"CÓ THỂ CÒN THƯ CHƯA LẤY TỚI: phiên này dùng hết hạn mức 50 mail, mà 43 thư
+   (86%) bị bỏ vì không có tệp đính kèm lẫn link chia sẻ…"*
+3. **Trên Bảng điều khiển của web**, ngay dưới ô *Phiên nhận mail gần nhất* — vì đây là trang
+   quản trị xem hằng ngày, không phải trang Nhật ký:
+
+![Cảnh báo trên Bảng điều khiển](hinh/web-22-canh-bao-loc-tep.png)
+
+Các điều kiện **được coi là có lọc theo tệp** (không bị nhắc): `has:attachment`, `has:drive`,
+`has:document`, `has:spreadsheet`, `has:presentation`, `filename:…`, hoặc có tên miền chia sẻ
+như `"drive.google.com"`. Ô **để trống** cũng không bị nhắc, vì khi đó hệ thống dùng giá trị
+mặc định `has:attachment newer_than:30d`.
+
+> `-has:attachment` (dấu trừ = phủ định, tức là *loại* thư có tệp) **vẫn bị nhắc** — vì đó
+> đúng là điều kiện không lọc lấy thư có tệp.
+
 ### 16.3. Bắt cả thư chỉ dán link Google Drive
 
 ![Ô đánh dấu bắt thư chỉ có link chia sẻ](hinh/bnm-08-nhan-link.png)
